@@ -1,6 +1,7 @@
 *.log
 .DS_Store
 .env
+logixys-cargo-project-doc.md
 .env.backup
 .env.production
 .phpactor.json
