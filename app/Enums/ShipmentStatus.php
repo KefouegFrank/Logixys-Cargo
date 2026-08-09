@@ -2,9 +2,6 @@
 
 namespace App\Enums;
 
-// Codes and step grouping per doc section 8. Display labels and the
-// four-step bar / exception-banner split come with the events and
-// public tracking features.
 enum ShipmentStatus: string
 {
     case Pending = 'PENDING';
