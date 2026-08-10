@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ServiceType;
 use App\Enums\ShipmentMode;
 use App\Enums\ShipmentStatus;
+use App\Services\ShipmentTotalsCalculator;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,12 +18,30 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'origin_label', 'origin_lat', 'origin_lng', 'destination_label', 'destination_lat', 'destination_lng', 'distance_km',
     'pickup_date', 'expected_delivery_date', 'delivered_at',
     'goods_description', 'package_count', 'total_weight_kg', 'total_volume_cbm', 'declared_value', 'currency',
-    'freight_cost', 'insurance_cost', 'customs_cost', 'other_cost', 'total_ht',
-    'tax_rate', 'tax_label', 'tax_amount', 'tax_exemption_note', 'total_ttc',
+    'freight_cost', 'insurance_cost', 'customs_cost', 'other_cost',
+    'tax_rate', 'tax_label', 'tax_exemption_note',
     'payment_mode', 'payment_status', 'created_by',
 ])]
 class Shipment extends Model
 {
+    // total_ht/tax_amount/total_ttc are derived and recomputed on every save; never set directly.
+    protected static function booted(): void
+    {
+        static::saving(function (Shipment $shipment) {
+            $totals = app(ShipmentTotalsCalculator::class)->calculate(
+                (float) $shipment->freight_cost,
+                (float) $shipment->insurance_cost,
+                (float) $shipment->customs_cost,
+                (float) $shipment->other_cost,
+                (float) $shipment->tax_rate,
+            );
+
+            $shipment->total_ht = $totals->totalHt;
+            $shipment->tax_amount = $totals->taxAmount;
+            $shipment->total_ttc = $totals->totalTtc;
+        });
+    }
+
     protected function casts(): array
     {
         return [

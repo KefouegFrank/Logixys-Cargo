@@ -24,8 +24,6 @@ class ShipmentSeeder extends Seeder
 
         foreach ($this->lanes() as $lane) {
             $charges = $lane['charges'];
-            $totalHt = array_sum($charges);
-            $taxAmount = round($totalHt * 0.20, 2);
 
             $shipment = Shipment::create([
                 'tracking_number' => $this->trackingNumbers->generate(),
@@ -56,9 +54,7 @@ class ShipmentSeeder extends Seeder
                 'insurance_cost' => $charges['insurance'],
                 'customs_cost' => $charges['customs'],
                 'other_cost' => $charges['other'],
-                'total_ht' => $totalHt,
-                'tax_amount' => $taxAmount,
-                'total_ttc' => $totalHt + $taxAmount,
+                'tax_rate' => 20,
                 'created_by' => $agent->id,
             ]);
 
