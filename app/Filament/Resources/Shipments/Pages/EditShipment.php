@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Shipments\Pages;
 
+use App\Filament\Resources\Shipments\Actions\UpdateStatusAction;
 use App\Filament\Resources\Shipments\ShipmentResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
@@ -13,6 +14,7 @@ class EditShipment extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            UpdateStatusAction::make(),
             DeleteAction::make(),
         ];
     }
