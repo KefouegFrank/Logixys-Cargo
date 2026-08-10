@@ -2,11 +2,18 @@
 
 namespace App\Filament\Resources\Shipments\Tables;
 
+use App\Enums\ServiceType;
+use App\Enums\ShipmentStatus;
+use App\Models\Shipment;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class ShipmentsTable
 {
@@ -15,140 +22,49 @@ class ShipmentsTable
         return $table
             ->columns([
                 TextColumn::make('tracking_number')
-                    ->searchable(),
+                    ->label('Tracking #')
+                    ->searchable()
+                    ->copyable(),
+                TextColumn::make('receiver_name')
+                    ->label('Receiver')
+                    ->formatStateUsing(fn (Shipment $record) => $record->receiver_company
+                        ? "{$record->receiver_name} ({$record->receiver_company})"
+                        : $record->receiver_name)
+                    ->searchable(query: function (Builder $query, string $search) {
+                        $query->where(fn (Builder $q) => $q
+                            ->where('receiver_name', 'like', "%{$search}%")
+                            ->orWhere('receiver_company', 'like', "%{$search}%"));
+                    }),
+                TextColumn::make('shipper_city')
+                    ->label('Route')
+                    ->formatStateUsing(fn (Shipment $record) => "{$record->shipper_city} → {$record->receiver_city}"),
                 TextColumn::make('status')
                     ->badge()
-                    ->searchable(),
-                TextColumn::make('service_type')
-                    ->badge()
-                    ->searchable(),
-                TextColumn::make('shipment_mode')
-                    ->badge()
-                    ->searchable(),
-                TextColumn::make('carrier_name')
-                    ->searchable(),
-                TextColumn::make('carrier_reference')
-                    ->searchable(),
-                TextColumn::make('locale')
-                    ->searchable(),
-                TextColumn::make('shipper_name')
-                    ->searchable(),
-                TextColumn::make('shipper_company')
-                    ->searchable(),
-                TextColumn::make('shipper_email')
-                    ->searchable(),
-                TextColumn::make('shipper_phone')
-                    ->searchable(),
-                TextColumn::make('shipper_address')
-                    ->searchable(),
-                TextColumn::make('shipper_postcode')
-                    ->searchable(),
-                TextColumn::make('shipper_city')
-                    ->searchable(),
-                TextColumn::make('shipper_country')
-                    ->searchable(),
-                TextColumn::make('receiver_name')
-                    ->searchable(),
-                TextColumn::make('receiver_company')
-                    ->searchable(),
-                TextColumn::make('receiver_email')
-                    ->searchable(),
-                TextColumn::make('receiver_phone')
-                    ->searchable(),
-                TextColumn::make('receiver_address')
-                    ->searchable(),
-                TextColumn::make('receiver_postcode')
-                    ->searchable(),
-                TextColumn::make('receiver_city')
-                    ->searchable(),
-                TextColumn::make('receiver_country')
-                    ->searchable(),
-                TextColumn::make('origin_label')
-                    ->searchable(),
-                TextColumn::make('origin_lat')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('origin_lng')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('destination_label')
-                    ->searchable(),
-                TextColumn::make('destination_lat')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('destination_lng')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('distance_km')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('pickup_date')
-                    ->date()
-                    ->sortable(),
-                TextColumn::make('expected_delivery_date')
-                    ->date()
-                    ->sortable(),
-                TextColumn::make('delivered_at')
-                    ->dateTime()
-                    ->sortable(),
-                TextColumn::make('package_count')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('total_weight_kg')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('total_volume_cbm')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('declared_value')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('currency')
-                    ->searchable(),
-                TextColumn::make('freight_cost')
-                    ->money()
-                    ->sortable(),
-                TextColumn::make('insurance_cost')
-                    ->money()
-                    ->sortable(),
-                TextColumn::make('customs_cost')
-                    ->money()
-                    ->sortable(),
-                TextColumn::make('other_cost')
-                    ->money()
-                    ->sortable(),
-                TextColumn::make('total_ht')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('tax_rate')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('tax_label')
-                    ->searchable(),
-                TextColumn::make('tax_amount')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('total_ttc')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('payment_mode')
-                    ->searchable(),
-                TextColumn::make('payment_status')
-                    ->searchable(),
-                TextColumn::make('created_by')
-                    ->numeric()
-                    ->sortable(),
+                    ->color(fn (Shipment $record) => match ($record->status) {
+                        ShipmentStatus::Delivered => 'success',
+                        ShipmentStatus::OnHold, ShipmentStatus::Cancelled => 'danger',
+                        ShipmentStatus::Returned => 'warning',
+                        default => 'info',
+                    }),
                 TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->label('Created')
+                    ->date()
+                    ->sortable(),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
-                //
+                SelectFilter::make('status')->options(ShipmentStatus::class),
+                SelectFilter::make('service_type')->options(ServiceType::class),
+                Filter::make('created_between')
+                    ->schema([
+                        DatePicker::make('created_from')->label('Created from'),
+                        DatePicker::make('created_until')->label('Created until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when($data['created_from'] ?? null, fn (Builder $q, string $date) => $q->whereDate('created_at', '>=', $date))
+                            ->when($data['created_until'] ?? null, fn (Builder $q, string $date) => $q->whereDate('created_at', '<=', $date));
+                    }),
             ])
             ->recordActions([
                 EditAction::make(),
