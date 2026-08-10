@@ -10,12 +10,13 @@ use App\Enums\UserRole;
 use App\Models\Shipment;
 use App\Models\ShipmentEvent;
 use App\Models\User;
+use App\Services\TrackingNumberGenerator;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 
 class ShipmentSeeder extends Seeder
 {
-    private const TRACKING_CHARSET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+    public function __construct(private readonly TrackingNumberGenerator $trackingNumbers = new TrackingNumberGenerator) {}
 
     public function run(): void
     {
@@ -27,7 +28,7 @@ class ShipmentSeeder extends Seeder
             $taxAmount = round($totalHt * 0.20, 2);
 
             $shipment = Shipment::create([
-                'tracking_number' => $this->trackingNumber(),
+                'tracking_number' => $this->trackingNumbers->generate(),
                 'status' => end($lane['statuses']),
                 'service_type' => $lane['service_type'],
                 'shipment_mode' => $lane['shipment_mode'],
@@ -90,18 +91,6 @@ class ShipmentSeeder extends Seeder
 
             $occurredAt = $occurredAt->clone()->addDays(2);
         }
-    }
-
-    private function trackingNumber(): string
-    {
-        $suffix = '';
-        $max = strlen(self::TRACKING_CHARSET) - 1;
-
-        for ($i = 0; $i < 9; $i++) {
-            $suffix .= self::TRACKING_CHARSET[random_int(0, $max)];
-        }
-
-        return 'LGXY'.$suffix;
     }
 
     private function lanes(): array
