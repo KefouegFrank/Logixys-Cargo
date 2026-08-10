@@ -109,11 +109,11 @@ class ShipmentForm
                     TextInput::make('package_count')->numeric()->disabled()->dehydrated(false)->default(0),
                     TextInput::make('total_weight_kg')->numeric()->disabled()->dehydrated(false)->default(0),
                     TextInput::make('total_volume_cbm')->numeric()->disabled()->dehydrated(false)->default(0),
-                    TextInput::make('declared_value')->numeric()->prefix('€'),
+                    TextInput::make('declared_value')->numeric()->prefix('€')->disabled()->dehydrated(false)->default(0),
                     TextInput::make('currency')->maxLength(3)->default('EUR')->required(),
                 ])
                 ->columns(3)
-                ->footer('Package count, weight, and volume are calculated from the package rows below.'),
+                ->footer('Package count, weight, volume, and declared value are calculated from the package rows below.'),
 
             Section::make('Charges')
                 ->columns(3)

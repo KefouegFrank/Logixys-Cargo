@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'receiver_name', 'receiver_company', 'receiver_email', 'receiver_phone', 'receiver_address', 'receiver_postcode', 'receiver_city', 'receiver_country',
     'origin_label', 'origin_lat', 'origin_lng', 'destination_label', 'destination_lat', 'destination_lng',
     'pickup_date', 'expected_delivery_date', 'delivered_at',
-    'goods_description', 'package_count', 'total_weight_kg', 'total_volume_cbm', 'declared_value', 'currency',
+    'goods_description', 'currency',
     'freight_cost', 'insurance_cost', 'customs_cost', 'other_cost',
     'tax_rate', 'tax_label', 'tax_exemption_note',
     'payment_mode', 'payment_status', 'created_by',
@@ -93,6 +93,20 @@ class Shipment extends Model
     public function packages(): HasMany
     {
         return $this->hasMany(Package::class);
+    }
+
+    // package_count/total_weight_kg/total_volume_cbm/declared_value are derived from package
+    // rows; called by Package's model events whenever a row is added, changed, or removed.
+    public function recalculatePackageAggregates(): void
+    {
+        $packages = $this->packages()->get();
+
+        $this->forceFill([
+            'package_count' => $packages->count(),
+            'total_weight_kg' => $packages->sum('weight_kg'),
+            'total_volume_cbm' => $packages->sum(fn (Package $package) => $package->totalVolumeM3() ?? 0),
+            'declared_value' => $packages->sum('amount'),
+        ])->save();
     }
 
     /** @return HasMany<ShipmentEvent, $this> */

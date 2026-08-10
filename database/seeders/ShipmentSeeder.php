@@ -46,8 +46,6 @@ class ShipmentSeeder extends Seeder
                 'pickup_date' => Carbon::now()->subDays(7),
                 'expected_delivery_date' => Carbon::now()->addDays(3),
                 'goods_description' => $lane['goods_description'],
-                'package_count' => count($lane['packages']),
-                'total_weight_kg' => array_sum(array_column($lane['packages'], 'weight_kg')),
                 'currency' => 'EUR',
                 'freight_cost' => $charges['freight'],
                 'insurance_cost' => $charges['insurance'],
@@ -100,7 +98,7 @@ class ShipmentSeeder extends Seeder
                 'destination_label' => 'Lyon, France', 'destination_lat' => 45.7640, 'destination_lng' => 4.8357,
                 'goods_description' => 'Pieces detachees industrielles',
                 'packages' => [
-                    ['quantity' => 2, 'package_type' => PackageType::Palette, 'weight_kg' => 340, 'amount' => 0],
+                    ['quantity' => 2, 'package_type' => PackageType::Palette, 'weight_kg' => 340, 'length_cm' => 120, 'width_cm' => 100, 'height_cm' => 150, 'unit_value' => 800],
                 ],
                 'charges' => ['freight' => 420, 'insurance' => 15, 'customs' => 0, 'other' => 0],
                 'statuses' => [ShipmentStatus::Pending, ShipmentStatus::PickedUp, ShipmentStatus::InTransit],
@@ -115,7 +113,7 @@ class ShipmentSeeder extends Seeder
                 'destination_label' => 'New York JFK, USA', 'destination_lat' => 40.6413, 'destination_lng' => -73.7781,
                 'goods_description' => 'Cosmetiques et parfums',
                 'packages' => [
-                    ['quantity' => 5, 'package_type' => PackageType::Carton, 'weight_kg' => 60, 'amount' => 0],
+                    ['quantity' => 5, 'package_type' => PackageType::Carton, 'weight_kg' => 60, 'length_cm' => 40, 'width_cm' => 30, 'height_cm' => 25, 'unit_value' => 200],
                 ],
                 'charges' => ['freight' => 890, 'insurance' => 40, 'customs' => 60, 'other' => 0],
                 'statuses' => [ShipmentStatus::Pending, ShipmentStatus::PickedUp, ShipmentStatus::InTransit, ShipmentStatus::OutForDelivery],
@@ -130,7 +128,7 @@ class ShipmentSeeder extends Seeder
                 'destination_label' => 'Douala, Cameroun', 'destination_lat' => 4.0511, 'destination_lng' => 9.7679,
                 'goods_description' => 'Materiaux de construction',
                 'packages' => [
-                    ['quantity' => 1, 'package_type' => PackageType::Conteneur, 'weight_kg' => 4200, 'amount' => 0],
+                    ['quantity' => 1, 'package_type' => PackageType::Conteneur, 'weight_kg' => 4200, 'length_cm' => 590, 'width_cm' => 235, 'height_cm' => 239, 'unit_value' => 15000],
                 ],
                 'charges' => ['freight' => 2100, 'insurance' => 90, 'customs' => 150, 'other' => 0],
                 'statuses' => [ShipmentStatus::Pending, ShipmentStatus::PickedUp, ShipmentStatus::InTransit, ShipmentStatus::AtCustoms],
@@ -145,7 +143,7 @@ class ShipmentSeeder extends Seeder
                 'destination_label' => 'Entrepot Logixys, Paris', 'destination_lat' => 48.8300, 'destination_lng' => 2.3700,
                 'goods_description' => 'Stock saisonnier textile',
                 'packages' => [
-                    ['quantity' => 10, 'package_type' => PackageType::Caisse, 'weight_kg' => 25, 'amount' => 0],
+                    ['quantity' => 10, 'package_type' => PackageType::Caisse, 'weight_kg' => 25, 'length_cm' => 40, 'width_cm' => 30, 'height_cm' => 30, 'unit_value' => 50],
                 ],
                 'charges' => ['freight' => 80, 'insurance' => 10, 'customs' => 0, 'other' => 120],
                 'statuses' => [ShipmentStatus::Pending, ShipmentStatus::PickedUp, ShipmentStatus::Delivered],
@@ -160,7 +158,7 @@ class ShipmentSeeder extends Seeder
                 'destination_label' => 'Entrepot sous douane, Marseille', 'destination_lat' => 43.3200, 'destination_lng' => 5.3800,
                 'goods_description' => 'Textiles importes',
                 'packages' => [
-                    ['quantity' => 1, 'package_type' => PackageType::Conteneur, 'weight_kg' => 3100, 'amount' => 0],
+                    ['quantity' => 1, 'package_type' => PackageType::Conteneur, 'weight_kg' => 3100, 'length_cm' => 590, 'width_cm' => 235, 'height_cm' => 239, 'unit_value' => 12000],
                 ],
                 'charges' => ['freight' => 0, 'insurance' => 0, 'customs' => 310, 'other' => 0],
                 'statuses' => [ShipmentStatus::Pending, ShipmentStatus::PickedUp, ShipmentStatus::OnHold],

@@ -48,6 +48,39 @@ class ShipmentTest extends TestCase
         $this->assertSame('120.00', $shipment->total_ttc);
     }
 
+    public function test_package_aggregates_recalculate_when_a_package_is_added(): void
+    {
+        $shipment = $this->makeShipment();
+
+        $shipment->packages()->create([
+            'quantity' => 2, 'package_type' => 'palette', 'weight_kg' => 340,
+            'length_cm' => 120, 'width_cm' => 100, 'height_cm' => 150, 'unit_value' => 800,
+        ]);
+
+        $shipment->refresh();
+
+        $this->assertSame(1, $shipment->package_count);
+        $this->assertSame('340.00', $shipment->total_weight_kg);
+        $this->assertSame('3.600', $shipment->total_volume_cbm);
+        $this->assertSame('1600.00', $shipment->declared_value);
+    }
+
+    public function test_package_aggregates_recalculate_when_a_package_is_removed(): void
+    {
+        $shipment = $this->makeShipment();
+
+        $package = $shipment->packages()->create([
+            'quantity' => 1, 'package_type' => 'carton', 'weight_kg' => 60, 'unit_value' => 100,
+        ]);
+
+        $package->delete();
+        $shipment->refresh();
+
+        $this->assertSame(0, $shipment->package_count);
+        $this->assertSame('0.00', $shipment->total_weight_kg);
+        $this->assertSame('0.00', $shipment->declared_value);
+    }
+
     private function makeShipment(array $overrides = []): Shipment
     {
         $user = User::create([
