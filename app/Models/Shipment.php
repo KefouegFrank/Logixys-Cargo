@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ServiceType;
 use App\Enums\ShipmentMode;
 use App\Enums\ShipmentStatus;
+use App\Services\DistanceCalculator;
 use App\Services\ShipmentTotalsCalculator;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'tracking_number', 'status', 'service_type', 'shipment_mode', 'carrier_name', 'carrier_reference', 'locale',
     'shipper_name', 'shipper_company', 'shipper_email', 'shipper_phone', 'shipper_address', 'shipper_postcode', 'shipper_city', 'shipper_country',
     'receiver_name', 'receiver_company', 'receiver_email', 'receiver_phone', 'receiver_address', 'receiver_postcode', 'receiver_city', 'receiver_country',
-    'origin_label', 'origin_lat', 'origin_lng', 'destination_label', 'destination_lat', 'destination_lng', 'distance_km',
+    'origin_label', 'origin_lat', 'origin_lng', 'destination_label', 'destination_lat', 'destination_lng',
     'pickup_date', 'expected_delivery_date', 'delivered_at',
     'goods_description', 'package_count', 'total_weight_kg', 'total_volume_cbm', 'declared_value', 'currency',
     'freight_cost', 'insurance_cost', 'customs_cost', 'other_cost',
@@ -39,6 +40,19 @@ class Shipment extends Model
             $shipment->total_ht = $totals->totalHt;
             $shipment->tax_amount = $totals->taxAmount;
             $shipment->total_ttc = $totals->totalTtc;
+        });
+
+        // distance_km is fixed at creation from origin/destination coordinates, not recomputed on edit.
+        static::creating(function (Shipment $shipment) {
+            if ($shipment->origin_lat !== null && $shipment->origin_lng !== null
+                && $shipment->destination_lat !== null && $shipment->destination_lng !== null) {
+                $shipment->distance_km = app(DistanceCalculator::class)->calculate(
+                    (float) $shipment->origin_lat,
+                    (float) $shipment->origin_lng,
+                    (float) $shipment->destination_lat,
+                    (float) $shipment->destination_lng,
+                );
+            }
         });
     }
 

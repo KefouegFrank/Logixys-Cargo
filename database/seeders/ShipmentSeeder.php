@@ -43,7 +43,6 @@ class ShipmentSeeder extends Seeder
                 'destination_label' => $lane['destination_label'],
                 'destination_lat' => $lane['destination_lat'],
                 'destination_lng' => $lane['destination_lng'],
-                'distance_km' => $lane['distance_km'],
                 'pickup_date' => Carbon::now()->subDays(7),
                 'expected_delivery_date' => Carbon::now()->addDays(3),
                 'goods_description' => $lane['goods_description'],
@@ -99,7 +98,6 @@ class ShipmentSeeder extends Seeder
                 'receiver_name' => 'Menuiserie Lyonnaise', 'destination_city' => 'Lyon', 'destination_country' => 'FR',
                 'origin_label' => 'Paris, France', 'origin_lat' => 48.8566, 'origin_lng' => 2.3522,
                 'destination_label' => 'Lyon, France', 'destination_lat' => 45.7640, 'destination_lng' => 4.8357,
-                'distance_km' => 465,
                 'goods_description' => 'Pieces detachees industrielles',
                 'packages' => [
                     ['quantity' => 2, 'package_type' => PackageType::Palette, 'weight_kg' => 340, 'amount' => 0],
@@ -115,7 +113,6 @@ class ShipmentSeeder extends Seeder
                 'receiver_name' => 'Boutique Manhattan', 'destination_city' => 'New York', 'destination_country' => 'US',
                 'origin_label' => 'Paris CDG, France', 'origin_lat' => 49.0097, 'origin_lng' => 2.5479,
                 'destination_label' => 'New York JFK, USA', 'destination_lat' => 40.6413, 'destination_lng' => -73.7781,
-                'distance_km' => 5837,
                 'goods_description' => 'Cosmetiques et parfums',
                 'packages' => [
                     ['quantity' => 5, 'package_type' => PackageType::Carton, 'weight_kg' => 60, 'amount' => 0],
@@ -131,7 +128,6 @@ class ShipmentSeeder extends Seeder
                 'receiver_name' => 'BTP Douala', 'destination_city' => 'Douala', 'destination_country' => 'CM',
                 'origin_label' => 'Le Havre, France', 'origin_lat' => 49.4944, 'origin_lng' => 0.1079,
                 'destination_label' => 'Douala, Cameroun', 'destination_lat' => 4.0511, 'destination_lng' => 9.7679,
-                'distance_km' => 8900,
                 'goods_description' => 'Materiaux de construction',
                 'packages' => [
                     ['quantity' => 1, 'package_type' => PackageType::Conteneur, 'weight_kg' => 4200, 'amount' => 0],
@@ -147,7 +143,6 @@ class ShipmentSeeder extends Seeder
                 'receiver_name' => 'Entrepot Logixys', 'destination_city' => 'Paris', 'destination_country' => 'FR',
                 'origin_label' => 'Paris, France', 'origin_lat' => 48.8566, 'origin_lng' => 2.3522,
                 'destination_label' => 'Entrepot Logixys, Paris', 'destination_lat' => 48.8300, 'destination_lng' => 2.3700,
-                'distance_km' => 12,
                 'goods_description' => 'Stock saisonnier textile',
                 'packages' => [
                     ['quantity' => 10, 'package_type' => PackageType::Caisse, 'weight_kg' => 25, 'amount' => 0],
@@ -163,7 +158,6 @@ class ShipmentSeeder extends Seeder
                 'receiver_name' => 'Entrepot sous douane', 'destination_city' => 'Marseille', 'destination_country' => 'FR',
                 'origin_label' => 'Port de Marseille, France', 'origin_lat' => 43.2965, 'origin_lng' => 5.3698,
                 'destination_label' => 'Entrepot sous douane, Marseille', 'destination_lat' => 43.3200, 'destination_lng' => 5.3800,
-                'distance_km' => 8,
                 'goods_description' => 'Textiles importes',
                 'packages' => [
                     ['quantity' => 1, 'package_type' => PackageType::Conteneur, 'weight_kg' => 3100, 'amount' => 0],
