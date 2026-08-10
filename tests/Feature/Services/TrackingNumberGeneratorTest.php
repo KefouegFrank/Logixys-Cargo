@@ -53,7 +53,8 @@ class TrackingNumberGeneratorTest extends TestCase
             'shipment_mode' => ShipmentMode::DoorToDoor,
             'shipper_name' => 'Shipper', 'shipper_city' => 'Paris',
             'receiver_name' => 'Receiver', 'receiver_city' => 'Lyon', 'receiver_country' => 'FR',
-            'origin_label' => 'Paris', 'destination_label' => 'Lyon',
+            'origin_label' => 'Paris', 'origin_lat' => 48.8566, 'origin_lng' => 2.3522,
+            'destination_label' => 'Lyon', 'destination_lat' => 45.7640, 'destination_lng' => 4.8357,
             'created_by' => $user->id,
         ]);
     }

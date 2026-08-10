@@ -6,6 +6,7 @@ use App\Enums\ServiceType;
 use App\Enums\ShipmentMode;
 use App\Enums\ShipmentStatus;
 use App\Services\DistanceCalculator;
+use App\Services\Geocoding\GeocodingService;
 use App\Services\ShipmentTotalsCalculator;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
@@ -42,8 +43,21 @@ class Shipment extends Model
             $shipment->total_ttc = $totals->totalTtc;
         });
 
-        // distance_km is fixed at creation from origin/destination coordinates, not recomputed on edit.
+        // Geocode origin/destination on write if coordinates weren't given, then fix
+        // distance_km once from the result. Neither is recomputed on later edits.
         static::creating(function (Shipment $shipment) {
+            if ($shipment->origin_lat === null && $shipment->origin_lng === null && $shipment->origin_label) {
+                $coords = app(GeocodingService::class)->geocode($shipment->origin_label);
+                $shipment->origin_lat = $coords['lat'] ?? null;
+                $shipment->origin_lng = $coords['lng'] ?? null;
+            }
+
+            if ($shipment->destination_lat === null && $shipment->destination_lng === null && $shipment->destination_label) {
+                $coords = app(GeocodingService::class)->geocode($shipment->destination_label);
+                $shipment->destination_lat = $coords['lat'] ?? null;
+                $shipment->destination_lng = $coords['lng'] ?? null;
+            }
+
             if ($shipment->origin_lat !== null && $shipment->origin_lng !== null
                 && $shipment->destination_lat !== null && $shipment->destination_lng !== null) {
                 $shipment->distance_km = app(DistanceCalculator::class)->calculate(

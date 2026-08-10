@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'geocoder' => [
+        'provider' => env('GEOCODER_PROVIDER', 'nominatim'),
+        'api_key' => env('GEOCODER_API_KEY'),
+        'user_agent' => env('GEOCODER_USER_AGENT'),
+    ],
+
 ];

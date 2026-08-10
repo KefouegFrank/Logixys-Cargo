@@ -8,6 +8,7 @@ use App\Enums\ShipmentStatus;
 use App\Models\Shipment;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class ShipmentTest extends TestCase
@@ -81,6 +82,40 @@ class ShipmentTest extends TestCase
         $this->assertSame('0.00', $shipment->declared_value);
     }
 
+    public function test_origin_and_destination_are_geocoded_when_coordinates_are_omitted(): void
+    {
+        Http::fake([
+            'nominatim.openstreetmap.org/*' => Http::sequence()
+                ->push([['lat' => '48.8566', 'lon' => '2.3522']])
+                ->push([['lat' => '45.7640', 'lon' => '4.8357']]),
+        ]);
+
+        $shipment = $this->makeShipment([
+            'origin_lat' => null, 'origin_lng' => null,
+            'destination_lat' => null, 'destination_lng' => null,
+        ]);
+
+        $this->assertSame('48.8566000', $shipment->origin_lat);
+        $this->assertSame('2.3522000', $shipment->origin_lng);
+        $this->assertSame('45.7640000', $shipment->destination_lat);
+        $this->assertSame('4.8357000', $shipment->destination_lng);
+        $this->assertNotNull($shipment->distance_km);
+    }
+
+    public function test_geocoding_failure_leaves_coordinates_and_distance_null(): void
+    {
+        Http::fake(['nominatim.openstreetmap.org/*' => Http::response([])]);
+
+        $shipment = $this->makeShipment([
+            'origin_lat' => null, 'origin_lng' => null,
+            'destination_lat' => null, 'destination_lng' => null,
+        ]);
+
+        $this->assertNull($shipment->origin_lat);
+        $this->assertNull($shipment->destination_lat);
+        $this->assertNull($shipment->distance_km);
+    }
+
     private function makeShipment(array $overrides = []): Shipment
     {
         $user = User::create([
@@ -94,7 +129,8 @@ class ShipmentTest extends TestCase
             'shipment_mode' => ShipmentMode::DoorToDoor,
             'shipper_name' => 'Shipper', 'shipper_city' => 'Paris',
             'receiver_name' => 'Receiver', 'receiver_city' => 'Lyon', 'receiver_country' => 'FR',
-            'origin_label' => 'Paris', 'destination_label' => 'Lyon',
+            'origin_label' => 'Paris', 'origin_lat' => 48.8566, 'origin_lng' => 2.3522,
+            'destination_label' => 'Lyon', 'destination_lat' => 45.7640, 'destination_lng' => 4.8357,
             'created_by' => $user->id,
         ], $overrides));
     }

@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 #[Fillable(['query_normalized', 'lat', 'lng', 'provider'])]
 class GeocodeCache extends Model
 {
+    protected $table = 'geocode_cache';
+
     const UPDATED_AT = null;
 
     protected function casts(): array
