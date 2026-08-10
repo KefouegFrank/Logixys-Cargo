@@ -3,8 +3,10 @@
 namespace App\Filament\Resources\Shipments\Actions;
 
 use App\Enums\ShipmentStatus;
+use App\Filament\Forms\Components\LocationPinField;
 use App\Models\Shipment;
 use App\Models\ShipmentEvent;
+use App\Services\Geocoding\GeocodingService;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DateTimePicker;
@@ -12,6 +14,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -38,7 +41,22 @@ class UpdateStatusAction
                         ->orderBy('location_label')
                         ->pluck('location_label')
                         ->all())
-                    ->required(),
+                    ->required()
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function (?string $state, Set $set) {
+                        if (! filled($state)) {
+                            return;
+                        }
+
+                        $coords = app(GeocodingService::class)->geocode($state);
+
+                        if ($coords !== null) {
+                            $set('location_position', ['lat' => $coords['lat'], 'lng' => $coords['lng'], 'isManual' => false]);
+                        }
+                    }),
+                LocationPinField::make('location_position')
+                    ->label('Pin')
+                    ->live(),
                 DateTimePicker::make('occurred_at')
                     ->label('Date and time')
                     ->default(now())
@@ -56,10 +74,15 @@ class UpdateStatusAction
                 // Select::options(ShipmentStatus::class) already casts this back to the enum.
                 $status = $data['status'];
 
-                DB::transaction(function () use ($record, $data, $status) {
+                $position = $data['location_position'] ?? [];
+
+                DB::transaction(function () use ($record, $data, $status, $position) {
                     $record->events()->create([
                         'status' => $status,
                         'location_label' => $data['location_label'],
+                        'location_lat' => $position['lat'] ?? null,
+                        'location_lng' => $position['lng'] ?? null,
+                        'is_manual_position' => $position['isManual'] ?? false,
                         'occurred_at' => $data['occurred_at'],
                         'remarks' => $data['remarks'] ?? null,
                         'is_public' => $data['is_public'],
