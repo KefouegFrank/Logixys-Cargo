@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Logixys Cargo">
+  <rect x="10" y="30" width="20" height="4.5" rx="2.25" fill="#0D1B2A"/>
+  <rect x="6" y="40" width="26" height="4.5" rx="2.25" fill="#0D1B2A"/>
+  <rect x="12" y="50" width="16" height="4.5" rx="2.25" fill="#0D1B2A"/>
+  <path d="M46 12 L64 12 L64 60 L86 60 L68 88 L34 88 L34 30 Z" fill="#0D1B2A"/>
+  <path d="M64 12 L86 12 L64 32 Z" fill="#D4AF37"/>
+</svg>
