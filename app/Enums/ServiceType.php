@@ -20,4 +20,9 @@ enum ServiceType: string
             default => null,
         };
     }
+
+    public function label(): string
+    {
+        return __('shipment.service_type.'.$this->value);
+    }
 }

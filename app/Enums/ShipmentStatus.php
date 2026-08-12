@@ -13,4 +13,9 @@ enum ShipmentStatus: string
     case OnHold = 'ON_HOLD';
     case Returned = 'RETURNED';
     case Cancelled = 'CANCELLED';
+
+    public function label(): string
+    {
+        return __('shipment.status.'.$this->value);
+    }
 }

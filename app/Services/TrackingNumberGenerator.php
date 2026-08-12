@@ -34,6 +34,11 @@ class TrackingNumberGenerator
         return strtoupper(str_replace([' ', '-'], '', $input));
     }
 
+    public static function matchesFormat(string $normalized): bool
+    {
+        return (bool) preg_match('/^'.self::PREFIX.'['.self::ALPHABET.']{'.self::SUFFIX_LENGTH.'}$/', $normalized);
+    }
+
     protected function randomSuffix(): string
     {
         $suffix = '';
