@@ -101,6 +101,15 @@
     padding-inline-end: max(1rem, calc((100vw - var(--container-page)) / 2));
 }
 
+/* Snap-scrolling card tracks: the arrows are the affordance, not a scrollbar. */
+@utility no-scrollbar {
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
 /* Outlined display type for the hero watermark. */
 @utility text-outline {
     color: transparent;

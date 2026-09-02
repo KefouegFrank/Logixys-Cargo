@@ -91,6 +91,46 @@ Alpine.data('heroCarousel', (count, interval) => ({
 }));
 
 /*
+ * Snap-scrolling card track, used below xl where the services grid becomes a
+ * carousel. Native scroll-snap does the paging, so touch, trackpad and keyboard
+ * all work for free; this only drives the arrows and their disabled states.
+ */
+Alpine.data('cardScroller', () => ({
+    atStart: true,
+    atEnd: false,
+
+    init() {
+        this.$nextTick(() => this.sync());
+        window.addEventListener('resize', () => this.sync(), { passive: true });
+    },
+
+    sync() {
+        const track = this.$refs.track;
+
+        if (! track) {
+            return;
+        }
+
+        const max = track.scrollWidth - track.clientWidth;
+
+        // The cards' offset plate overhangs ~10px; that decoration shouldn't
+        // read as more content, so the end tolerance has to clear it.
+        this.atStart = track.scrollLeft <= 2;
+        this.atEnd = track.scrollLeft >= max - 16;
+    },
+
+    page(direction) {
+        const track = this.$refs.track;
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        track.scrollBy({
+            left: direction * track.clientWidth,
+            behavior: reduced ? 'auto' : 'smooth',
+        });
+    },
+}));
+
+/*
  * Language switching is a normal navigation, so the browser would land the new
  * page at the top. Stash the offset on the way out and put it back on the way
  * in; the head script has kept the page blank until this runs.

@@ -5,4 +5,6 @@
 
 @section('content')
     <x-hero.carousel />
+
+    <x-services.grid />
 @endsection
