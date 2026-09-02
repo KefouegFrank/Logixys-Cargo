@@ -19,9 +19,16 @@ class TrackingControllerTest extends TestCase
         $this->get('/')->assertRedirect('/fr');
     }
 
-    public function test_invalid_locale_is_rejected(): void
+    public function test_unsupported_locale_is_rejected(): void
     {
-        $this->get('/de/suivi')->assertNotFound();
+        $this->get('/pt/suivi')->assertNotFound();
+    }
+
+    public function test_every_supported_locale_is_served(): void
+    {
+        foreach (array_keys(config('locales')) as $locale) {
+            $this->get("/{$locale}/suivi")->assertOk();
+        }
     }
 
     public function test_lookup_form_renders(): void
@@ -87,6 +94,79 @@ class TrackingControllerTest extends TestCase
 
         $this->get("/fr/suivi/{$shipment->tracking_number}")
             ->assertSee('<meta name="robots" content="noindex">', false);
+    }
+
+    public function test_shows_the_four_step_bar_for_an_in_progress_status(): void
+    {
+        $shipment = $this->shipment(['status' => ShipmentStatus::InTransit]);
+
+        $response = $this->get("/fr/suivi/{$shipment->tracking_number}");
+
+        $response->assertOk();
+        $response->assertSee(__('shipment.status.IN_TRANSIT'));
+        $response->assertSee('<ol', false);
+        $response->assertDontSee('border-amber-300', false);
+        $response->assertDontSee('border-red-300', false);
+    }
+
+    public function test_shows_the_exception_banner_instead_of_the_bar_for_on_hold(): void
+    {
+        $shipment = $this->shipment(['status' => ShipmentStatus::OnHold]);
+
+        $response = $this->get("/fr/suivi/{$shipment->tracking_number}");
+
+        $response->assertOk();
+        $response->assertSee(__('shipment.status.ON_HOLD'));
+        $response->assertSee('border-amber-300', false);
+        $response->assertDontSee('<ol', false); // the four-step bar is not rendered
+    }
+
+    public function test_shows_the_danger_exception_banner_for_cancelled(): void
+    {
+        $shipment = $this->shipment(['status' => ShipmentStatus::Cancelled]);
+
+        $this->get("/fr/suivi/{$shipment->tracking_number}")
+            ->assertOk()
+            ->assertSee('border-red-300', false);
+    }
+
+    public function test_timeline_shows_public_events_most_recent_first(): void
+    {
+        $shipment = $this->shipment();
+        $agent = User::first();
+
+        $shipment->events()->create([
+            'status' => ShipmentStatus::Pending, 'location_label' => 'Paris',
+            'occurred_at' => now()->subDays(2), 'is_public' => true, 'created_by' => $agent->id,
+        ]);
+        $shipment->events()->create([
+            'status' => ShipmentStatus::PickedUp, 'location_label' => 'Lyon',
+            'occurred_at' => now()->subDay(), 'is_public' => true, 'created_by' => $agent->id,
+        ]);
+
+        $response = $this->get("/fr/suivi/{$shipment->tracking_number}");
+
+        $response->assertOk();
+        $response->assertSeeInOrder([__('shipment.status.PICKED_UP'), 'Lyon', __('shipment.status.PENDING'), 'Paris']);
+    }
+
+    public function test_timeline_excludes_internal_events_and_remarks(): void
+    {
+        $shipment = $this->shipment();
+        $agent = User::first();
+
+        $shipment->events()->create([
+            'status' => ShipmentStatus::InTransit, 'location_label' => 'Secret Depot',
+            'remarks' => 'Confidential internal note', 'occurred_at' => now(),
+            'is_public' => false, 'created_by' => $agent->id,
+        ]);
+
+        $response = $this->get("/fr/suivi/{$shipment->tracking_number}");
+
+        $response->assertOk();
+        $response->assertDontSee('Secret Depot');
+        $response->assertDontSee('Confidential internal note');
+        $response->assertDontSee(__('tracking.timeline_heading'));
     }
 
     public function test_lookup_is_rate_limited(): void

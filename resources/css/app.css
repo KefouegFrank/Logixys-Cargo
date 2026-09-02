@@ -1,20 +1,33 @@
 @import 'tailwindcss';
+@import './theme.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
-@theme {
-    --font-sans: 'Open Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
-    --font-heading: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+/* Keeps Alpine-controlled panels hidden until Alpine boots. */
+[x-cloak] {
+    display: none !important;
+}
 
-    /*
-     * Brand tokens. Gold fails WCAG AA contrast as text on light backgrounds
-     * (~2.2:1) -- use it for fills (buttons, accents, underlines) with dark
-     * or white text on top, never as body text color.
-     */
-    --color-brand-navy: #0d1b2a;
-    --color-brand-blue: #1e40af;
-    --color-brand-gold: #d4af37;
-    --color-brand-gray: #e6e8eb;
+html {
+    scroll-behavior: smooth;
+}
+
+/*
+ * Motion is decorative here, so honour the OS setting rather than overriding it.
+ * Transitions still fire, just fast enough to read as instant, which keeps
+ * Alpine's x-transition callbacks working.
+ */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }

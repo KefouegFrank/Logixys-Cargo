@@ -3,31 +3,41 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Logixys Cargo')</title>
+    <title>@yield('title', config('app.name'))</title>
+    @hasSection('description')
+        <meta name="description" content="@yield('description')">
+    @endif
     @hasSection('robots')
         <meta name="robots" content="@yield('robots')">
     @endif
-    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
-    @vite(['resources/css/app.css'])
-</head>
-<body class="min-h-screen bg-white font-sans text-brand-navy antialiased">
-    <header class="border-b border-brand-gray">
-        <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-            <a href="{{ url('/'.app()->getLocale()) }}" class="flex items-center gap-2">
-                <span class="h-7 w-7">{!! file_get_contents(resource_path('images/logo-mark.svg')) !!}</span>
-                <span class="font-heading text-lg font-bold text-brand-navy">Logixys Cargo</span>
-            </a>
-        </div>
-    </header>
 
-    <main class="mx-auto max-w-5xl px-4 py-10">
-        @yield('content')
+    @foreach (\App\Support\LocaleSwitcher::options() as $alternate)
+        <link rel="alternate" hreflang="{{ $alternate['code'] }}" href="{{ $alternate['url'] }}">
+    @endforeach
+    <link rel="alternate" hreflang="x-default" href="{{ \App\Support\LocaleSwitcher::options()[0]['url'] }}">
+
+    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
+    @fonts
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="min-h-screen bg-surface font-sans text-ink antialiased">
+    <a
+        href="#main"
+        class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-field focus:bg-navy-900 focus:px-4 focus:py-2 focus:text-white"
+    >{{ __('nav.skip_to_content') }}</a>
+
+    <x-layout.header />
+
+    <main id="main" class="py-10">
+        <x-layout.container>
+            @yield('content')
+        </x-layout.container>
     </main>
 
-    <footer class="mt-16 border-t border-brand-gray py-8">
-        <div class="mx-auto max-w-5xl px-4 text-sm text-gray-500">
-            &copy; {{ now()->year }} Logixys Cargo
-        </div>
+    <footer class="mt-16 border-t border-line py-8">
+        <x-layout.container class="text-sm text-ink-subtle">
+            &copy; {{ now()->year }} {{ config('app.name') }}
+        </x-layout.container>
     </footer>
 </body>
 </html>

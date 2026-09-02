@@ -7,23 +7,23 @@ return [
         'IN_TRANSIT' => 'En transit',
         'AT_CUSTOMS' => 'En douane',
         'OUT_FOR_DELIVERY' => 'En cours de livraison',
-        'DELIVERED' => 'Livre',
+        'DELIVERED' => 'Livré',
         'ON_HOLD' => 'En attente de traitement',
-        'RETURNED' => 'Retourne',
-        'CANCELLED' => 'Annule',
+        'RETURNED' => 'Retourné',
+        'CANCELLED' => 'Annulé',
     ],
 
     'service_type' => [
         'road' => 'Transport routier',
-        'air' => 'Fret aerien',
+        'air' => 'Fret aérien',
         'sea' => 'Fret maritime',
         'warehousing' => 'Entreposage et transit',
-        'customs' => 'Dedouanement',
+        'customs' => 'Dédouanement',
     ],
 
     'shipment_mode' => [
-        'door_to_door' => 'Porte a porte',
-        'door_to_port' => 'Porte a port',
-        'port_to_port' => 'Port a port',
+        'door_to_door' => 'Porte à porte',
+        'door_to_port' => 'Porte à port',
+        'port_to_port' => 'Port à port',
     ],
 ];

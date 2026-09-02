@@ -31,12 +31,13 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->favicon(asset('favicon.svg'))
-            ->brandLogo(fn () => $this->logoHtml('logo-mark.svg', '#0D1B2A'))
-            ->darkModeBrandLogo(fn () => $this->logoHtml('logo-mark-light.svg', '#FFFFFF'))
+            ->brandLogo(fn () => $this->logoHtml('mark', config('brand.colors.navy')))
+            ->darkModeBrandLogo(fn () => $this->logoHtml('mark_light', config('brand.colors.ink_inverse')))
             ->brandLogoHeight('2rem')
-            ->font('Open Sans', provider: BunnyFontProvider::class)
+            ->font(config('brand.fonts.body'), provider: BunnyFontProvider::class)
             ->colors([
-                'primary' => Color::hex('#D4AF37'),
+                'primary' => Color::hex(config('brand.colors.gold')),
+                'gray' => Color::hex(config('brand.colors.navy')),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
@@ -64,9 +65,9 @@ class AdminPanelProvider extends PanelProvider
             ]);
     }
 
-    private function logoHtml(string $svgFile, string $textColor): HtmlString
+    private function logoHtml(string $variant, string $textColor): HtmlString
     {
-        $svg = file_get_contents(resource_path("images/{$svgFile}"));
+        $svg = file_get_contents(resource_path(config("brand.logo.{$variant}")));
 
         return new HtmlString(
             '<span style="display: flex; align-items: center; gap: 0.5rem;">'

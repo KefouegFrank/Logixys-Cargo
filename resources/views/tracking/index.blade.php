@@ -5,7 +5,7 @@
 
 @section('content')
     <div class="mx-auto max-w-md text-center">
-        <h1 class="font-heading text-2xl font-bold text-brand-navy">{{ __('tracking.form_heading') }}</h1>
+        <h1 class="font-heading text-2xl font-bold text-ink">{{ __('tracking.form_heading') }}</h1>
 
         <form method="GET" action="{{ route('tracking.index', app()->getLocale()) }}" class="mt-6 flex gap-2">
             <label for="number" class="sr-only">{{ __('tracking.form_label') }}</label>
@@ -15,11 +15,11 @@
                 name="number"
                 placeholder="{{ __('tracking.form_placeholder') }}"
                 required
-                class="w-full rounded-md border border-brand-gray px-4 py-2 focus:border-brand-blue focus:outline-none"
+                class="w-full rounded-field border border-line px-4 py-2 transition-colors duration-200 focus:border-focus focus:outline-none"
             >
-            <button type="submit" class="shrink-0 rounded-md bg-brand-gold px-5 py-2 font-semibold text-brand-navy">
+            <x-ui.button type="submit" class="shrink-0">
                 {{ __('tracking.form_submit') }}
-            </button>
+            </x-ui.button>
         </form>
     </div>
 @endsection

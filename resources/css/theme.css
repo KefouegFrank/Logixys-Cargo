@@ -1,0 +1,91 @@
+/*
+ * Logixys Cargo design tokens. Single source of truth for the public site.
+ * Navy 900 and gold 400 are sampled from the logo; every other step is derived
+ * in OKLCH from those two anchors, so the ramps stay one family.
+ */
+
+@theme {
+    /* Navy — the logo mark and wordmark. */
+    --color-navy-50: #f0f6fd;
+    --color-navy-100: #e0e9f4;
+    --color-navy-200: #c7d6e8;
+    --color-navy-300: #a8bdd6;
+    --color-navy-400: #849ebd;
+    --color-navy-500: #6380a2;
+    --color-navy-600: #466285;
+    --color-navy-700: #2e496a;
+    --color-navy-800: #1d3655;
+    --color-navy-900: #102946;
+    --color-navy-950: #03162d;
+
+    /* Gold — the logo's speed marks and "CARGO" rule. */
+    --color-gold-50: #fdfaed;
+    --color-gold-100: #fbf2ce;
+    --color-gold-200: #fbe99f;
+    --color-gold-300: #fbdf6d;
+    --color-gold-400: #f9d52a;
+    --color-gold-500: #e0bb00;
+    --color-gold-600: #bf9b00;
+    --color-gold-700: #9e7d00;
+    --color-gold-800: #7d6000;
+    --color-gold-900: #634a00;
+    --color-gold-950: #3c2c00;
+
+    /* Shipment state. Each fg is AA on its own bg (6.8:1 or better). */
+    --color-success-fg: #065f46;
+    --color-success-bg: #ecfdf5;
+    --color-success-border: #6ee7b7;
+    --color-warning-fg: #92400e;
+    --color-warning-bg: #fffbeb;
+    --color-warning-border: #fcd34d;
+    --color-danger-fg: #991b1b;
+    --color-danger-bg: #fef2f2;
+    --color-danger-border: #fca5a5;
+
+    --radius-field: 0.5rem;
+    --radius-card: 0.75rem;
+    --radius-pill: 9999px;
+
+    --container-page: 75rem; /* 1200px */
+    --container-prose: 42rem;
+
+    --shadow-card: 0 1px 2px 0 rgb(16 41 70 / 0.04), 0 4px 16px -2px rgb(16 41 70 / 0.08);
+    --shadow-raised: 0 2px 4px -1px rgb(16 41 70 / 0.06), 0 12px 32px -4px rgb(16 41 70 / 0.12);
+
+    /* Decelerating curve for reveals and movement; colours use the default ease. */
+    --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/*
+ * Semantic aliases. `inline` is required whenever a theme variable references
+ * another one, otherwise the value fails to resolve through the cascade.
+ */
+@theme inline {
+    /* From the Vite font plugin, which needs @fonts in the layout. Named inline
+       as well so a layout that forgets it degrades instead of losing font-family. */
+    --font-sans: var(--font-open-sans, 'Open Sans'), ui-sans-serif, system-ui, sans-serif;
+    --font-heading: var(--font-montserrat, 'Montserrat'), ui-sans-serif, system-ui, sans-serif;
+
+    --color-ink: var(--color-navy-900);
+    --color-ink-muted: var(--color-navy-600);
+    --color-ink-subtle: var(--color-navy-500);
+    --color-ink-inverse: #ffffff;
+
+    --color-surface: #ffffff;
+    --color-surface-sunken: var(--color-navy-50);
+    --color-surface-inverse: var(--color-navy-900);
+
+    --color-line: var(--color-navy-200);
+    --color-line-strong: var(--color-navy-300);
+
+    --color-accent: var(--color-gold-400);
+    --color-accent-hover: var(--color-gold-500);
+    --color-accent-text: var(--color-gold-800);
+
+    --color-focus: var(--color-navy-700);
+}
+
+/*
+ * Gold is a fill, never text on a light background — #f9d52a on white is 1.44:1.
+ * Use accent-text (gold-800, 5.9:1) when a gold-ish word has to be readable.
+ */

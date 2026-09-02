@@ -20,4 +20,5 @@ return [
     'result_pickup_date' => 'Pickup date',
     'result_expected_delivery' => 'Expected delivery',
     'timeline_heading' => 'History',
+    'progress_label' => 'Shipment progress',
 ];
