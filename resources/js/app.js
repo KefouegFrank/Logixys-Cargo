@@ -90,5 +90,48 @@ Alpine.data('heroCarousel', (count, interval) => ({
     },
 }));
 
+/*
+ * Language switching is a normal navigation, so the browser would land the new
+ * page at the top. Stash the offset on the way out and put it back on the way
+ * in; the head script has kept the page blank until this runs.
+ */
+const LOCALE_SCROLL_KEY = 'logixys:locale-scroll';
+
+document.addEventListener('click', (event) => {
+    if (! event.target.closest('a[data-locale-link]')) {
+        return;
+    }
+
+    try {
+        sessionStorage.setItem(LOCALE_SCROLL_KEY, String(window.scrollY));
+    } catch (e) {
+        // Private mode with storage disabled: fall back to a normal navigation.
+    }
+});
+
+function restoreLocaleScroll() {
+    let offset = null;
+
+    try {
+        offset = sessionStorage.getItem(LOCALE_SCROLL_KEY);
+        sessionStorage.removeItem(LOCALE_SCROLL_KEY);
+    } catch (e) {
+        // Ignore: nothing to restore.
+    }
+
+    if (offset !== null) {
+        // 'instant' so the smooth scroll-behavior on <html> doesn't animate it.
+        window.scrollTo({ top: parseInt(offset, 10) || 0, behavior: 'instant' });
+    }
+
+    document.documentElement.classList.remove('is-switching-locale');
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', restoreLocaleScroll);
+} else {
+    restoreLocaleScroll();
+}
+
 window.Alpine = Alpine;
 Alpine.start();

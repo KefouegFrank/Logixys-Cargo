@@ -14,6 +14,19 @@ html {
 }
 
 /*
+ * Switching language is a full page load. Hold the new page blank for the
+ * instant it takes to put the previous scroll position back, then fade in,
+ * so the visitor stays where they were reading instead of jumping to the top.
+ */
+body {
+    transition: opacity 250ms ease;
+}
+
+.is-switching-locale body {
+    opacity: 0;
+}
+
+/*
  * Motion is decorative here, so honour the OS setting rather than overriding it.
  * Transitions still fire, just fast enough to read as instant, which keeps
  * Alpine's x-transition callbacks working.

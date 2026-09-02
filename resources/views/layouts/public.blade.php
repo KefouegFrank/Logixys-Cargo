@@ -17,6 +17,27 @@
     <link rel="alternate" hreflang="x-default" href="{{ \App\Support\LocaleSwitcher::options()[0]['url'] }}">
 
     <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
+
+    {{-- Blocking on purpose: this has to settle before the first paint, or the
+         page flashes at the top before the previous scroll position is put back. --}}
+    <script>
+        (function () {
+            if ('scrollRestoration' in history) {
+                history.scrollRestoration = 'manual';
+            }
+
+            try {
+                if (sessionStorage.getItem('logixys:locale-scroll') === null) return;
+            } catch (e) {
+                return;
+            }
+
+            var root = document.documentElement;
+            root.classList.add('is-switching-locale');
+            // Never strand the page hidden if the module fails to load.
+            setTimeout(function () { root.classList.remove('is-switching-locale'); }, 800);
+        })();
+    </script>
     @fonts
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')

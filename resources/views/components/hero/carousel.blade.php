@@ -39,17 +39,11 @@
     <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-navy-950/70 to-transparent" aria-hidden="true"></div>
 
     {{-- Watermark: the service word, oversized and outlined, bottom right. --}}
-    <div class="pointer-events-none absolute bottom-4 right-6 z-0 hidden max-w-[60%] select-none overflow-hidden xl:block" aria-hidden="true">
+    <div class="pointer-events-none absolute bottom-4 right-6 z-0 hidden h-[6.5rem] w-[60%] select-none overflow-hidden xl:block" aria-hidden="true">
         @foreach ($slides as $i => $slide)
             <p
-                x-show="active === {{ $i }}"
-                x-transition:enter="transition-opacity duration-700"
-                x-transition:enter-start="opacity-0"
-                x-transition:enter-end="opacity-100"
-                x-transition:leave="transition-opacity duration-300"
-                x-transition:leave-start="opacity-100"
-                x-transition:leave-end="opacity-0"
-                class="text-outline whitespace-nowrap font-heading text-[5rem] font-extrabold uppercase leading-none tracking-[0.12em] 2xl:text-[6.5rem]"
+                :class="active === {{ $i }} ? 'opacity-100' : 'opacity-0'"
+                class="text-outline absolute bottom-0 right-0 whitespace-nowrap font-heading text-[5rem] font-extrabold uppercase leading-none tracking-[0.12em] transition-opacity duration-700 2xl:text-[6.5rem]"
             >{{ __("hero.slides.{$slide['key']}.watermark") }}</p>
         @endforeach
     </div>
@@ -63,16 +57,17 @@
         <div class="grid max-w-2xl">
             @foreach ($slides as $i => $slide)
                 @php $t = "hero.slides.{$slide['key']}"; @endphp
+                {{--
+                    All three stay in the same grid cell and in flow, so the cell
+                    keeps the height of the tallest slide and the tracking form
+                    below never moves. `visibility` is transitionable in a useful
+                    way: it flips on immediately, and off only once the fade ends.
+                --}}
                 <div
-                    class="[grid-area:1/1]"
-                    x-show="active === {{ $i }}"
-                    x-transition:enter="transition ease-smooth duration-500 delay-150"
-                    x-transition:enter-start="opacity-0 translate-y-4"
-                    x-transition:enter-end="opacity-100 translate-y-0"
-                    x-transition:leave="transition ease-in duration-200"
-                    x-transition:leave-start="opacity-100 translate-y-0"
-                    x-transition:leave-end="opacity-0 -translate-y-2"
-                    :aria-hidden="active !== {{ $i }}"
+                    class="[grid-area:1/1] transition-[opacity,transform,visibility] duration-500 ease-smooth"
+                    :class="active === {{ $i }}
+                        ? 'visible opacity-100 translate-y-0 delay-150'
+                        : 'invisible opacity-0 translate-y-4'"
                 >
                     <p class="font-heading text-xs font-bold uppercase tracking-[0.25em] text-accent sm:text-sm">
                         {{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }}. {{ __("{$t}.eyebrow") }}
@@ -93,7 +88,6 @@
                         size="lg"
                         :href="route($slide['route'], ['locale' => $locale])"
                         class="mt-7"
-                        ::tabindex="active === {{ $i }} ? 0 : -1"
                     >
                         {{ __("{$t}.cta") }}
                         <x-heroicon-m-arrow-right class="h-4 w-4" aria-hidden="true" />
@@ -109,7 +103,7 @@
     <p class="sr-only" aria-live="polite" x-text="`{{ __('hero.slide_of', ['current' => '__C__', 'total' => count($slides)]) }}`.replace('__C__', active + 1)"></p>
 
     {{-- Autoplay progress. Hidden once the visitor takes over. --}}
-    <div class="absolute inset-x-0 bottom-0 z-20 h-1 bg-white/10" x-show="! stopped" x-cloak aria-hidden="true">
+    {{-- <div class="absolute inset-x-0 bottom-0 z-20 h-1 bg-white/10" x-show="! stopped" x-cloak aria-hidden="true">
         <div class="h-full bg-accent" :style="`width: ${progress}%`"></div>
-    </div>
+    </div> --}}
 </section>

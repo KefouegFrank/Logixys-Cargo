@@ -23,14 +23,9 @@
         @else
             loading="lazy" decoding="async"
         @endif
-        x-show="active === {{ $index }}"
-        x-transition:enter="transition-opacity ease-out duration-700"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="transition-opacity ease-in duration-700"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-        :class="active === {{ $index }} && ! reduced && 'motion-safe:animate-hero-pan'"
-        class="absolute inset-0 h-full w-full object-cover"
+        {{-- Opacity rather than x-show: every layer stays in flow, so nothing
+             reflows mid-change and the cross-fade has no gap. --}}
+        :class="active === {{ $index }} ? 'opacity-100 motion-safe:animate-hero-pan' : 'opacity-0'"
+        class="absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-out"
     >
 </picture>

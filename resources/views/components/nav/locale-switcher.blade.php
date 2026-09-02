@@ -43,6 +43,7 @@
                     <a
                         href="{{ $locale['url'] }}"
                         hreflang="{{ $locale['code'] }}"
+                        data-locale-link
                         @if ($locale['active']) aria-current="true" @endif
                         @class([
                             'flex items-center gap-2.5 rounded-field px-3 py-2 text-sm transition-colors duration-150',
@@ -94,6 +95,7 @@
                         <a
                             href="{{ $locale['url'] }}"
                             hreflang="{{ $locale['code'] }}"
+                            data-locale-link
                             @if ($locale['active']) aria-current="true" @endif
                             @class([
                                 'flex items-center gap-2.5 px-4 py-2.5 text-sm transition-colors duration-150',
