@@ -18,9 +18,9 @@
     ];
 
     $sizes = [
-        'sm' => 'gap-1.5 px-3.5 py-2 text-xs',
-        'md' => 'gap-2 px-5 py-2.5 text-sm',
-        'lg' => 'gap-2.5 px-7 py-3.5 text-base',
+        'sm' => 'gap-1.5 px-4 py-3 text-xs',
+        'md' => 'gap-2 px-6 py-4 text-sm',
+        'lg' => 'gap-2.5 px-8 py-5 text-base',
     ];
 
     $classes = trim(implode(' ', [

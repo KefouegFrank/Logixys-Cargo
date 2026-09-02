@@ -10,7 +10,7 @@ final class LocaleSwitcher
     /**
      * Every supported locale pointing at the equivalent of the current page.
      *
-     * @return array<int, array{code: string, native: string, short: string, url: string, active: bool}>
+     * @return array<int, array{code: string, native: string, short: string, flag: string, url: string, active: bool}>
      */
     public static function options(): array
     {
@@ -21,6 +21,7 @@ final class LocaleSwitcher
                 'code' => $code,
                 'native' => $meta['native'],
                 'short' => $meta['short'],
+                'flag' => $meta['flag'],
                 'url' => self::urlFor($code),
                 'active' => $code === $current,
             ],
@@ -33,7 +34,7 @@ final class LocaleSwitcher
     {
         $code = App::currentLocale();
 
-        return ['code' => $code] + config("locales.{$code}", ['native' => $code, 'short' => mb_strtoupper($code)]);
+        return ['code' => $code] + config("locales.{$code}", ['native' => $code, 'short' => mb_strtoupper($code), 'flag' => '']);
     }
 
     /**

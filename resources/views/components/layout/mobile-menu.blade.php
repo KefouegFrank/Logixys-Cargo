@@ -44,7 +44,7 @@
             @endforeach
         </nav>
 
-        <x-nav.locale-switcher variant="drawer" class="border-b border-line" />
+        <x-nav.locale-switcher variant="drawer" />
 
         <div class="space-y-4 px-5 py-5">
             <x-ui.button

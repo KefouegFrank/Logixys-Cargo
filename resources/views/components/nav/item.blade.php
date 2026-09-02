@@ -16,7 +16,7 @@
         href="{{ $href }}"
         @if ($active) aria-current="page" @endif
         {{ $attributes->class([
-            'relative block border-b border-line py-3.5 pl-5 pr-5 font-heading text-base font-bold text-ink',
+            'relative block py-3.5 pl-5 pr-5 font-heading text-base font-bold text-ink',
             'transition-[background-color,padding] duration-200',
             'before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-accent before:origin-top',
             'before:transition-transform before:duration-300 before:ease-smooth',

@@ -61,10 +61,10 @@
  * another one, otherwise the value fails to resolve through the cascade.
  */
 @theme inline {
-    /* From the Vite font plugin, which needs @fonts in the layout. Named inline
-       as well so a layout that forgets it degrades instead of losing font-family. */
-    --font-sans: var(--font-open-sans, 'Open Sans'), ui-sans-serif, system-ui, sans-serif;
-    --font-heading: var(--font-montserrat, 'Montserrat'), ui-sans-serif, system-ui, sans-serif;
+    /* From the Vite font plugin, which needs @fonts in the layout; named inline
+       too so a layout that forgets it still gets a family. */
+    --font-sans: var(--font-krub, 'Krub'), ui-sans-serif, system-ui, sans-serif;
+    --font-heading: var(--font-rubik, 'Rubik'), ui-sans-serif, system-ui, sans-serif;
 
     --color-ink: var(--color-navy-900);
     --color-ink-muted: var(--color-navy-600);
@@ -85,7 +85,6 @@
     --color-focus: var(--color-navy-700);
 }
 
-/*
- * Gold is a fill, never text on a light background — #f9d52a on white is 1.44:1.
- * Use accent-text (gold-800, 5.9:1) when a gold-ish word has to be readable.
- */
+@utility content-edge {
+    padding-inline-end: max(1rem, calc((100vw - var(--container-page)) / 2));
+}

@@ -9,11 +9,12 @@ export default defineConfig({
             input: ['resources/css/app.css', 'resources/js/app.js'],
             refresh: true,
             fonts: [
-                bunny('Montserrat', {
+                // Rubik for headings, Krub for paragraphs — see theme.css.
+                bunny('Rubik', {
                     weights: [600, 700, 800],
                 }),
-                bunny('Open Sans', {
-                    weights: [400, 600],
+                bunny('Krub', {
+                    weights: [300, 400, 500, 600],
                 }),
             ],
         }),
