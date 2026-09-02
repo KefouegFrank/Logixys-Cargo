@@ -32,7 +32,7 @@
         {{ $attributes->class([
             'relative flex items-center whitespace-nowrap py-6 font-heading text-sm font-bold tracking-wide',
             'transition-colors duration-200',
-            'after:absolute after:inset-x-0 after:bottom-4 after:h-0.5 after:origin-left after:bg-ink',
+            'after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-left after:bg-ink',
             'after:transition-transform after:duration-300 after:ease-smooth',
             'text-ink after:scale-x-100' => $active,
             'text-ink/70 after:scale-x-0 hover:text-ink hover:after:scale-x-100' => ! $active,

@@ -54,6 +54,18 @@
 
     /* Decelerating curve for reveals and movement; colours use the default ease. */
     --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* Slow drift on the active hero image so a held slide isn't dead still. */
+    --animate-hero-pan: hero-pan 12s ease-out forwards;
+
+    @keyframes hero-pan {
+        from {
+            transform: scale(1);
+        }
+        to {
+            transform: scale(1.08);
+        }
+    }
 }
 
 /*
@@ -87,4 +99,10 @@
 
 @utility content-edge {
     padding-inline-end: max(1rem, calc((100vw - var(--container-page)) / 2));
+}
+
+/* Outlined display type for the hero watermark. */
+@utility text-outline {
+    color: transparent;
+    -webkit-text-stroke: 1px rgb(255 255 255 / 0.22);
 }

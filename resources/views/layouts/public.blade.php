@@ -19,6 +19,7 @@
     <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
     @fonts
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('head')
 </head>
 <body class="min-h-screen bg-surface font-sans text-ink antialiased">
     <a
@@ -28,10 +29,10 @@
 
     <x-layout.header />
 
-    <main id="main" class="py-10">
-        <x-layout.container>
-            @yield('content')
-        </x-layout.container>
+    {{-- Unconstrained on purpose: pages mix full-bleed bands (the hero) with
+         contained ones, so each section wraps itself in x-layout.container. --}}
+    <main id="main">
+        @yield('content')
     </main>
 
     <footer class="mt-16 border-t border-line py-8">

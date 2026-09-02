@@ -20,7 +20,7 @@
     <div class="hidden lg:grid lg:grid-cols-[auto_1fr]">
         <a
             href="{{ route('home', ['locale' => app()->getLocale()]) }}"
-            class="row-span-2 flex w-72 items-center justify-center bg-navy-900 px-8 xl:w-80"
+            class="row-span-2 flex w-80 items-center justify-center bg-navy-900 px-8 xl:w-[26rem]"
         >
             <x-brand.logo variant="light" class="h-11" />
         </a>
