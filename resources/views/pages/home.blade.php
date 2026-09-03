@@ -7,4 +7,6 @@
     <x-hero.carousel />
 
     <x-services.grid />
+
+    <x-about.section />
 @endsection

@@ -58,6 +58,19 @@
     /* Slow drift on the active hero image so a held slide isn't dead still. */
     --animate-hero-pan: hero-pan 12s ease-out forwards;
 
+    /* Circular badge text. The reduced-motion block caps iterations at 1, which
+       parks it rather than spinning it fast — the reason that pairing matters. */
+    --animate-badge-spin: badge-spin 18s linear infinite;
+
+    @keyframes badge-spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
     @keyframes hero-pan {
         from {
             transform: scale(1);
