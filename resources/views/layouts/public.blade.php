@@ -56,10 +56,8 @@
         @yield('content')
     </main>
 
-    <footer class="mt-16 border-t border-line py-8">
-        <x-layout.container class="text-sm text-ink-subtle">
-            &copy; {{ now()->year }} {{ config('app.name') }}
-        </x-layout.container>
-    </footer>
+    <x-layout.cta-band />
+
+    <x-layout.footer />
 </body>
 </html>

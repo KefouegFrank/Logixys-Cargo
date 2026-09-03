@@ -16,6 +16,11 @@ Route::prefix('{locale}')
         Route::view('services', 'pages.services')->name('services');
         Route::view('contact', 'pages.contact')->name('contact');
 
+        // Legal pages ship with placeholder text; the client supplies the wording.
+        Route::view('mentions-legales', 'pages.legal.notice')->name('legal.notice');
+        Route::view('confidentialite', 'pages.legal.privacy')->name('legal.privacy');
+        Route::view('cgv', 'pages.legal.terms')->name('legal.terms');
+
         Route::get('suivi', [TrackingController::class, 'index'])->name('tracking.index');
         Route::get('suivi/{number}', [TrackingController::class, 'show'])
             ->name('tracking.show')

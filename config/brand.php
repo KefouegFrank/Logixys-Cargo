@@ -35,10 +35,12 @@ return [
         'email' => 'contact@logixyscargo.fr',
         'phone' => '+33 0 00 00 00 00',
         'phone_href' => '+33000000000',
+        'hours_weekday' => 'Lun – Ven : 08h00 – 18h00',
+        'hours_weekend' => 'Sam – Dim : fermé',
     ],
 
     'fonts' => [
-        'heading' => 'Montserrat',
-        'body' => 'Open Sans',
+        'heading' => 'Rubik',
+        'body' => 'Krub',
     ],
 ];
