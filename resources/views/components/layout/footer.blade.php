@@ -11,7 +11,7 @@
     ];
 
     $legalLinks = [
-        ['route' => 'legal.notice', 'label' => 'legal.notice.title'],
+        // ['route' => 'legal.notice', 'label' => 'legal.notice.title'],
         ['route' => 'legal.privacy', 'label' => 'legal.privacy.title'],
         ['route' => 'legal.terms', 'label' => 'legal.terms.title'],
     ];
@@ -19,10 +19,14 @@
 
 <footer class="relative bg-navy-950 text-navy-200">
     <x-layout.container>
-        <div class="grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8 lg:py-16">
-            {{-- Brand --}}
-            <div>
-                <x-brand.logo variant="light" class="h-10" />
+        {{--
+            Mobile: single stacked column. Tablet: brand spans the full row on
+            top, the other three sit in a row below it. Desktop: all four in
+            one row.
+        --}}
+        <div class="grid grid-cols-1 gap-10 py-10 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-4 lg:gap-8 lg:py-16">
+            <div class="sm:col-span-3 lg:col-span-1">
+                <x-brand.logo variant="light" class="h-13" />
                 <p class="mt-5 max-w-xs text-base leading-relaxed text-navy-300">{{ __('footer.blurb') }}</p>
             </div>
 

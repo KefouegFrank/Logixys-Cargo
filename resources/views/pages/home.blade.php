@@ -9,4 +9,6 @@
     <x-services.grid />
 
     <x-about.section />
+
+    <x-process.section />
 @endsection
