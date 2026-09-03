@@ -91,6 +91,51 @@ Alpine.data('heroCarousel', (count, interval) => ({
 }));
 
 /*
+ * Stat count-up. Each tile owns its own observer rather than sharing one
+ * across the row, so tiles staggered by CSS delay still start counting the
+ * moment they individually cross the viewport.
+ */
+Alpine.data('statCounter', (target, duration = 1500) => ({
+    display: 0,
+
+    init() {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            this.display = target;
+
+            return;
+        }
+
+        const observer = new IntersectionObserver(([entry]) => {
+            if (! entry.isIntersecting) {
+                return;
+            }
+
+            observer.disconnect();
+            this.run(duration, target);
+        }, { threshold: 0.4 });
+
+        observer.observe(this.$el);
+    },
+
+    run(duration, target) {
+        const start = performance.now();
+
+        const step = (now) => {
+            const progress = Math.min((now - start) / duration, 1);
+            const eased = 1 - (1 - progress) ** 3; // ease-out cubic
+
+            this.display = Math.round(target * eased);
+
+            if (progress < 1) {
+                requestAnimationFrame(step);
+            }
+        };
+
+        requestAnimationFrame(step);
+    },
+}));
+
+/*
  * Snap-scrolling card track, used below xl where the services grid becomes a
  * carousel. Native scroll-snap does the paging, so touch, trackpad and keyboard
  * all work for free; this only drives the arrows and their disabled states.

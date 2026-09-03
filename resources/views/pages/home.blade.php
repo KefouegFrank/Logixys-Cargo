@@ -11,4 +11,6 @@
     <x-about.section />
 
     <x-process.section />
+
+    <x-why-choose.section />
 @endsection
