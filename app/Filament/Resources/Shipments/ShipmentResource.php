@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Shipments;
 
+use App\Enums\ShipmentStatus;
 use App\Filament\Resources\Shipments\Pages\CreateShipment;
 use App\Filament\Resources\Shipments\Pages\EditShipment;
 use App\Filament\Resources\Shipments\Pages\ListShipments;
@@ -20,6 +21,23 @@ class ShipmentResource extends Resource
     protected static ?string $model = Shipment::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
+    protected static string|\UnitEnum|null $navigationGroup = 'Exploitation';
+
+    protected static ?int $navigationSort = 1;
+
+    protected static ?string $navigationLabel = 'Expéditions';
+
+    protected static ?string $modelLabel = 'expédition';
+
+    protected static ?string $pluralModelLabel = 'Expéditions';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) static::getModel()::query()
+            ->whereNotIn('status', [ShipmentStatus::Delivered, ShipmentStatus::Cancelled])
+            ->count();
+    }
 
     public static function form(Schema $schema): Schema
     {

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Setting;
 use App\Services\Geocoding\GeocoderProvider;
 use App\Services\Geocoding\NominatimGeocoder;
 use Filament\Support\Assets\Css;
@@ -32,6 +33,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->overlayBrandSettings();
+
         FilamentAsset::register([
             Css::make('leaflet-css')->html(
                 '<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" '
@@ -43,5 +46,22 @@ class AppServiceProvider extends ServiceProvider
                     'crossorigin' => '',
                 ]),
         ]);
+    }
+
+    /**
+     * Anything the admin has filled in on the Settings page wins over the config
+     * placeholders, so the 18 config('brand.contact.*') call sites stay untouched.
+     */
+    private function overlayBrandSettings(): void
+    {
+        $stored = collect(Setting::values())
+            ->filter(fn (?string $value) => filled($value))
+            ->all();
+
+        if ($stored === []) {
+            return;
+        }
+
+        config(['brand.contact' => [...config('brand.contact'), ...$stored]]);
     }
 }

@@ -2,7 +2,9 @@
 
 namespace App\Enums;
 
-enum ShipmentMode: string
+use Filament\Support\Contracts\HasLabel;
+
+enum ShipmentMode: string implements HasLabel
 {
     case DoorToDoor = 'door_to_door';
     case DoorToPort = 'door_to_port';
@@ -11,5 +13,10 @@ enum ShipmentMode: string
     public function label(): string
     {
         return __('shipment.shipment_mode.'.$this->value);
+    }
+
+    public function getLabel(): string
+    {
+        return $this->label();
     }
 }

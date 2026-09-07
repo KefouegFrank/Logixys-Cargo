@@ -2,7 +2,9 @@
 
 namespace App\Enums;
 
-enum ServiceType: string
+use Filament\Support\Contracts\HasLabel;
+
+enum ServiceType: string implements HasLabel
 {
     case Road = 'road';
     case Air = 'air';
@@ -24,5 +26,10 @@ enum ServiceType: string
     public function label(): string
     {
         return __('shipment.service_type.'.$this->value);
+    }
+
+    public function getLabel(): string
+    {
+        return $this->label();
     }
 }

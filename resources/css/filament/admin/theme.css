@@ -1,0 +1,165 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+@theme {
+    /* Headings only; the panel's body face is set in AdminPanelProvider. */
+    --font-brand-heading: 'Rubik', ui-sans-serif, system-ui, sans-serif;
+
+    /* Mirrors --shadow-card on the public site, tinted navy rather than black. */
+    --shadow-brand-card: 0 1px 2px 0 rgb(16 41 70 / 0.04), 0 4px 16px -2px rgb(16 41 70 / 0.08);
+}
+
+/*
+ * Auth pages. The wash is info-50/100 (navy at very low chroma) so the screen reads
+ * as ours without the heavy navy field that would fight the white form card.
+ */
+.fi-simple-layout {
+    background-color: var(--info-50);
+    background-image: radial-gradient(
+        56rem 34rem at 50% -8%,
+        color-mix(in oklab, var(--info-200) 60%, transparent),
+        transparent 72%
+    );
+}
+
+.dark .fi-simple-layout {
+    background-color: var(--info-950);
+    background-image: radial-gradient(
+        56rem 34rem at 50% -8%,
+        color-mix(in oklab, var(--info-900) 75%, transparent),
+        transparent 72%
+    );
+}
+
+.fi-simple-main {
+    box-shadow: var(--shadow-brand-card);
+    border-top: 3px solid var(--primary-400);
+    overflow: hidden;
+}
+
+.dark .fi-simple-main {
+    background-color: var(--info-900);
+    box-shadow: 0 12px 32px -4px rgb(3 22 45 / 0.45);
+}
+
+.fi-simple-header-heading {
+    font-family: var(--font-brand-heading);
+    letter-spacing: -0.015em;
+}
+
+/* Filament puts the height on the wrapping .fi-logo; the raster just fills it. */
+.fi-brand-lockup {
+    height: 100%;
+    width: auto;
+}
+
+/*
+ * Navy chrome. The topbar and sidebar form one brand band around a light work
+ * area, which is also what separates navigation from content at a glance.
+ */
+.fi-topbar,
+.fi-sidebar {
+    background-color: var(--info-900);
+}
+
+.fi-topbar {
+    border-bottom: 1px solid color-mix(in oklab, var(--primary-400) 35%, transparent);
+    box-shadow: none;
+}
+
+.dark .fi-topbar,
+.dark .fi-sidebar {
+    background-color: var(--info-950);
+}
+
+/* Everything sitting on the navy band: labels, icons, the collapse chevrons. */
+.fi-sidebar .fi-sidebar-item-label,
+.dark .fi-sidebar .fi-sidebar-item-label {
+    color: var(--info-200);
+}
+
+.fi-sidebar .fi-sidebar-item-btn > .fi-icon,
+.dark .fi-sidebar .fi-sidebar-item-btn > .fi-icon {
+    color: var(--info-400);
+}
+
+.fi-sidebar .fi-sidebar-group-label,
+.fi-sidebar .fi-sidebar-group-collapse-button,
+.dark .fi-sidebar .fi-sidebar-group-label {
+    color: var(--info-400);
+}
+
+.fi-sidebar .fi-sidebar-item-btn:hover {
+    background-color: var(--info-800);
+}
+
+.fi-sidebar .fi-sidebar-item-btn:hover > .fi-sidebar-item-label,
+.fi-sidebar .fi-sidebar-item-btn:hover > .fi-icon {
+    color: var(--color-white);
+}
+
+/* Active: white ink on a lifted navy tile, with gold carrying the accent. */
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn,
+.dark .fi-sidebar-item.fi-active > .fi-sidebar-item-btn {
+    background-color: var(--info-800);
+    position: relative;
+}
+
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-sidebar-item-label,
+.dark .fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-sidebar-item-label {
+    color: var(--color-white);
+}
+
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-icon,
+.dark .fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-icon {
+    color: var(--primary-400);
+}
+
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn::before {
+    content: '';
+    position: absolute;
+    inset-block: 0.35rem;
+    inset-inline-start: 0;
+    width: 3px;
+    border-radius: 9999px;
+    background-color: var(--primary-400);
+}
+
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-sidebar-item-grouped-border > .fi-sidebar-item-grouped-border-part {
+    background-color: var(--primary-400);
+}
+
+/* Nav badges: brand gold with navy ink, matching the public site's CTA pairing. */
+.fi-sidebar .fi-badge {
+    background-color: var(--primary-400);
+    color: var(--info-950);
+}
+
+/* The generated avatar is navy on navy in the topbar; gold reads at a glance. */
+.fi-topbar .fi-user-avatar {
+    background-color: var(--primary-400) !important;
+    color: var(--info-950);
+    outline: 2px solid color-mix(in oklab, var(--primary-400) 30%, transparent);
+    outline-offset: 2px;
+}
+
+.fi-topbar .fi-icon-btn {
+    color: var(--info-200);
+}
+
+.fi-topbar .fi-icon-btn:hover {
+    color: var(--color-white);
+}
+
+/*
+ * Filament resolves a pale primary to gold-600 on dark surfaces, which reads muddy.
+ * The public site puts bright gold straight onto navy, so match it — 9.9:1 on the text.
+ */
+.dark .fi-btn.fi-color-primary {
+    --dark-bg: var(--primary-400);
+    --dark-text: var(--primary-950);
+    --dark-hover-bg: var(--primary-300);
+    --dark-hover-text: var(--primary-950);
+}

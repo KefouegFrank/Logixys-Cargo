@@ -2,7 +2,9 @@
 
 namespace App\Enums;
 
-enum ShipmentStatus: string
+use Filament\Support\Contracts\HasLabel;
+
+enum ShipmentStatus: string implements HasLabel
 {
     case Pending = 'PENDING';
     case PickedUp = 'PICKED_UP';
@@ -17,6 +19,12 @@ enum ShipmentStatus: string
     public function label(): string
     {
         return __('shipment.status.'.$this->value);
+    }
+
+    // Filament reads this for badges, selects and filters across the panel.
+    public function getLabel(): string
+    {
+        return $this->label();
     }
 
     // Null means the status breaks out of the four-step bar into the exception banner.

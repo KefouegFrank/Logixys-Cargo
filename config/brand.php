@@ -13,6 +13,39 @@ return [
         'line' => '#C7D6E8',
     ],
 
+    /*
+     * Full ramps, byte-identical to the @theme block in resources/css/theme.css.
+     * PHP needs them too because Filament takes palettes as arrays, not a base hex.
+     */
+    'ramps' => [
+        'navy' => [
+            50 => '#f0f6fd',
+            100 => '#e0e9f4',
+            200 => '#c7d6e8',
+            300 => '#a8bdd6',
+            400 => '#849ebd',
+            500 => '#6380a2',
+            600 => '#466285',
+            700 => '#2e496a',
+            800 => '#1d3655',
+            900 => '#102946',
+            950 => '#03162d',
+        ],
+        'gold' => [
+            50 => '#fdfaed',
+            100 => '#fbf2ce',
+            200 => '#fbe99f',
+            300 => '#fbdf6d',
+            400 => '#f9d52a',
+            500 => '#e0bb00',
+            600 => '#bf9b00',
+            700 => '#9e7d00',
+            800 => '#7d6000',
+            900 => '#634a00',
+            950 => '#3c2c00',
+        ],
+    ],
+
     'logo' => [
         'mark' => 'images/logo-mark.svg',
         'mark_light' => 'images/logo-mark-light.svg',
