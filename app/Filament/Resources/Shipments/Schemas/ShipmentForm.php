@@ -136,7 +136,6 @@ class ShipmentForm
                         ->pluck('location_label')
                         ->all()),
                 Select::make('event_status')
-                    ->native(false)
                     ->label('Statut')
                     ->options(ShipmentStatus::class)
                     ->placeholder('Sélectionner le type'),
@@ -144,7 +143,6 @@ class ShipmentForm
                     ->label('Remarques')
                     ->rows(3),
                 Select::make('locale')
-                    ->native(false)
                     ->label('Langue du client')
                     ->options(fn () => collect(config('locales'))->map(fn (array $l) => $l['native'])->all())
                     ->default(config('app.locale'))
@@ -232,12 +230,12 @@ class ShipmentForm
     {
         return [
             Select::make('service_type')
-                ->native(false)->label('Type d\'expédition')->options(ServiceType::class)->required(),
+                ->label('Type d\'expédition')->options(ServiceType::class)->required(),
             self::derived('total_weight_kg', 'Poids', 'kg'),
             self::derived('package_count', 'Forfaits'),
             Textarea::make('goods_description')->label('Produit')->rows(2),
             Select::make('payment_mode')
-                ->native(false)->label('Mode de paiement')->options(PaymentMode::class),
+                ->label('Mode de paiement')->options(PaymentMode::class),
             Select::make('carrier_id')
                 ->label('Transporteur')
                 ->relationship('carrier', 'name')
@@ -268,7 +266,7 @@ class ShipmentForm
                 ->maxLength(120)
                 ->helperText('Repris du transporteur choisi'),
             Select::make('shipment_mode')
-                ->native(false)->label('Mode')->options(ShipmentMode::class)->required(),
+                ->label('Mode')->options(ShipmentMode::class)->required(),
             self::derived('total_quantity', 'Quantité'),
             TextInput::make('freight_cost')
                 ->label('Total du fret')
@@ -371,7 +369,7 @@ class ShipmentForm
                     ])
                     ->schema([
                         TextInput::make('quantity')->numeric()->minValue(1)->default(1)->required()->live(onBlur: true),
-                        Select::make('package_type')->label('Type de pièce')->options(PackageType::class)->native(false)->required(),
+                        Select::make('package_type')->label('Type de pièce')->options(PackageType::class)->required(),
                         TextInput::make('description')->maxLength(255),
                         TextInput::make('length_cm')->numeric()->live(onBlur: true),
                         TextInput::make('width_cm')->numeric()->live(onBlur: true),

@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Shipments\Pages;
 
+use App\Filament\Resources\Shipments\Actions\InvoiceAction;
+use App\Filament\Resources\Shipments\Actions\WaybillAction;
 use App\Filament\Resources\Shipments\ShipmentResource;
 use App\Services\ShipmentEventRecorder;
 use Filament\Actions\DeleteAction;
@@ -17,6 +19,8 @@ class EditShipment extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            InvoiceAction::make(),
+            WaybillAction::make(),
             DeleteAction::make(),
         ];
     }

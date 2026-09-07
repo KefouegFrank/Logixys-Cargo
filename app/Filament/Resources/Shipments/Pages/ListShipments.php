@@ -13,7 +13,7 @@ class ListShipments extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()->label('Ajouter un nouvel envoi'),
         ];
     }
 }
