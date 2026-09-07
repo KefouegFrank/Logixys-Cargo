@@ -20,8 +20,6 @@ class Package extends Model
             $package->amount = round((float) $package->unit_value * $package->quantity, 2);
         });
 
-        static::saved(fn (Package $package) => $package->shipment->recalculatePackageAggregates());
-        static::deleted(fn (Package $package) => $package->shipment->recalculatePackageAggregates());
     }
 
     protected function casts(): array

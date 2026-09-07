@@ -75,7 +75,7 @@ class TrackingControllerTest extends TestCase
 
     public function test_nonexistent_number_shows_the_same_generic_not_found(): void
     {
-        $this->get('/fr/suivi/LGXY000000000')
+        $this->get('/fr/suivi/LGXY000000000-CARGO')
             ->assertOk()
             ->assertSee(__('tracking.not_found_heading'));
     }
@@ -188,7 +188,7 @@ class TrackingControllerTest extends TestCase
         );
 
         return Shipment::create(array_merge([
-            'tracking_number' => 'LGXY'.fake()->unique()->bothify('#########'),
+            'tracking_number' => 'LGXY'.fake()->unique()->bothify('#########').'-CARGO',
             'status' => ShipmentStatus::Pending,
             'service_type' => ServiceType::Road,
             'shipment_mode' => ShipmentMode::DoorToDoor,

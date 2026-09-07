@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Shipments\Tables;
 
 use App\Enums\ServiceType;
 use App\Enums\ShipmentStatus;
-use App\Filament\Resources\Shipments\Actions\UpdateStatusAction;
 use App\Models\Shipment;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -68,7 +67,6 @@ class ShipmentsTable
                     }),
             ])
             ->recordActions([
-                UpdateStatusAction::make(),
                 EditAction::make(),
             ])
             ->toolbarActions([

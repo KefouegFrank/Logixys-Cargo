@@ -35,16 +35,13 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->overlayBrandSettings();
 
+        // Self-hosted: a blocked or unreachable CDN left the map a blank box with no
+        // error anywhere in the UI.
         FilamentAsset::register([
             Css::make('leaflet-css')->html(
-                '<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" '
-                .'integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />'
+                '<link rel="stylesheet" href="'.asset('vendor/leaflet/leaflet.css').'" />'
             ),
-            Js::make('leaflet-js', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js')
-                ->extraAttributes([
-                    'integrity' => 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=',
-                    'crossorigin' => '',
-                ]),
+            Js::make('leaflet-js', asset('vendor/leaflet/leaflet.js')),
         ]);
     }
 

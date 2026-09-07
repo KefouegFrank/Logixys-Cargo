@@ -6,7 +6,7 @@ use App\Enums\ShipmentStatus;
 use App\Filament\Resources\Shipments\Pages\CreateShipment;
 use App\Filament\Resources\Shipments\Pages\EditShipment;
 use App\Filament\Resources\Shipments\Pages\ListShipments;
-use App\Filament\Resources\Shipments\RelationManagers\PackagesRelationManager;
+use App\Filament\Resources\Shipments\RelationManagers\EventsRelationManager;
 use App\Filament\Resources\Shipments\Schemas\ShipmentForm;
 use App\Filament\Resources\Shipments\Tables\ShipmentsTable;
 use App\Models\Shipment;
@@ -52,7 +52,7 @@ class ShipmentResource extends Resource
     public static function getRelations(): array
     {
         return [
-            PackagesRelationManager::class,
+            EventsRelationManager::class,
         ];
     }
 

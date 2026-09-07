@@ -9,17 +9,16 @@ class TrackingNumberGenerator
 {
     private const PREFIX = 'LGXY';
 
-    // Crockford base32: 0-9 and A-Z minus I, L, O, U (ambiguous when read aloud).
-    private const ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+    private const DIGITS = 9;
 
-    private const SUFFIX_LENGTH = 9;
+    private const SUFFIX = '-CARGO';
 
     private const MAX_ATTEMPTS = 10;
 
     public function generate(): string
     {
         for ($attempt = 0; $attempt < self::MAX_ATTEMPTS; $attempt++) {
-            $candidate = self::PREFIX.$this->randomSuffix();
+            $candidate = self::PREFIX.$this->randomDigits().self::SUFFIX;
 
             if (! Shipment::where('tracking_number', $candidate)->exists()) {
                 return $candidate;
@@ -29,25 +28,28 @@ class TrackingNumberGenerator
         throw new RuntimeException('Could not generate a unique tracking number after '.self::MAX_ATTEMPTS.' attempts.');
     }
 
+    /**
+     * Rebuilds the canonical stored form from whatever a visitor pastes into the
+     * tracking box — spacing, casing, a missing hyphen or a missing -CARGO suffix.
+     */
     public static function normalize(string $input): string
     {
-        return strtoupper(str_replace([' ', '-'], '', $input));
+        $bare = strtoupper(preg_replace('/[^A-Z0-9]/i', '', $input) ?? '');
+
+        if (str_ends_with($bare, 'CARGO')) {
+            $bare = substr($bare, 0, -5);
+        }
+
+        return $bare.self::SUFFIX;
     }
 
     public static function matchesFormat(string $normalized): bool
     {
-        return (bool) preg_match('/^'.self::PREFIX.'['.self::ALPHABET.']{'.self::SUFFIX_LENGTH.'}$/', $normalized);
+        return (bool) preg_match('/^'.self::PREFIX.'\d{'.self::DIGITS.'}'.self::SUFFIX.'$/', $normalized);
     }
 
-    protected function randomSuffix(): string
+    protected function randomDigits(): string
     {
-        $suffix = '';
-        $max = strlen(self::ALPHABET) - 1;
-
-        for ($i = 0; $i < self::SUFFIX_LENGTH; $i++) {
-            $suffix .= self::ALPHABET[random_int(0, $max)];
-        }
-
-        return $suffix;
+        return str_pad((string) random_int(0, 10 ** self::DIGITS - 1), self::DIGITS, '0', STR_PAD_LEFT);
     }
 }

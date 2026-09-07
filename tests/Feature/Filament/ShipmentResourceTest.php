@@ -29,12 +29,12 @@ class ShipmentResourceTest extends TestCase
             ->assertOk();
     }
 
-    public function test_admin_can_load_the_shipment_edit_page_with_packages_relation_manager(): void
+    public function test_admin_can_load_the_shipment_edit_page_with_its_packages(): void
     {
         $admin = $this->admin();
 
         $shipment = Shipment::create([
-            'tracking_number' => 'LGXY'.fake()->bothify('#########'),
+            'tracking_number' => 'LGXY'.fake()->bothify('#########').'-CARGO',
             'status' => ShipmentStatus::Pending,
             'service_type' => ServiceType::Road,
             'shipment_mode' => ShipmentMode::DoorToDoor,

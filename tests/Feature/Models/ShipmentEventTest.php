@@ -61,7 +61,7 @@ class ShipmentEventTest extends TestCase
         ]);
 
         return Shipment::create([
-            'tracking_number' => 'LGXY'.fake()->bothify('#########'),
+            'tracking_number' => 'LGXY'.fake()->bothify('#########').'-CARGO',
             'status' => ShipmentStatus::Pending,
             'service_type' => ServiceType::Road,
             'shipment_mode' => ShipmentMode::DoorToDoor,

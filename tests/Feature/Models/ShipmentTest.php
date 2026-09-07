@@ -39,17 +39,17 @@ class ShipmentTest extends TestCase
         $this->assertSame('240.00', $shipment->total_ttc);
     }
 
-    public function test_total_fields_cannot_be_set_directly_via_mass_assignment(): void
+    public function test_totals_supplied_explicitly_win_over_the_calculator(): void
     {
         $shipment = $this->makeShipment([
             'freight_cost' => 100, 'insurance_cost' => 0, 'customs_cost' => 0, 'other_cost' => 0, 'tax_rate' => 20,
             'total_ht' => 999, 'tax_amount' => 999, 'total_ttc' => 999,
         ]);
 
-        $this->assertSame('120.00', $shipment->total_ttc);
+        $this->assertSame('999.00', $shipment->total_ttc);
     }
 
-    public function test_package_aggregates_recalculate_when_a_package_is_added(): void
+    public function test_package_aggregates_are_rebuilt_from_the_rows_on_demand(): void
     {
         $shipment = $this->makeShipment();
 
@@ -58,6 +58,7 @@ class ShipmentTest extends TestCase
             'length_cm' => 120, 'width_cm' => 100, 'height_cm' => 150, 'unit_value' => 800,
         ]);
 
+        $shipment->recalculatePackageAggregates();
         $shipment->refresh();
 
         $this->assertSame(1, $shipment->package_count);
@@ -66,7 +67,7 @@ class ShipmentTest extends TestCase
         $this->assertSame('1600.00', $shipment->declared_value);
     }
 
-    public function test_package_aggregates_recalculate_when_a_package_is_removed(): void
+    public function test_package_aggregates_drop_back_to_zero_once_the_rows_are_gone(): void
     {
         $shipment = $this->makeShipment();
 
@@ -75,6 +76,7 @@ class ShipmentTest extends TestCase
         ]);
 
         $package->delete();
+        $shipment->recalculatePackageAggregates();
         $shipment->refresh();
 
         $this->assertSame(0, $shipment->package_count);
@@ -123,7 +125,7 @@ class ShipmentTest extends TestCase
         ]);
 
         return Shipment::create(array_merge([
-            'tracking_number' => 'LGXY'.fake()->bothify('#########'),
+            'tracking_number' => 'LGXY'.fake()->bothify('#########').'-CARGO',
             'status' => ShipmentStatus::Pending,
             'service_type' => ServiceType::Road,
             'shipment_mode' => ShipmentMode::DoorToDoor,

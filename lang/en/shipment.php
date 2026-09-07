@@ -26,4 +26,12 @@ return [
         'door_to_port' => 'Door to port',
         'port_to_port' => 'Port to port',
     ],
+
+    'location_type' => [
+        'city' => 'City',
+        'port' => 'Port',
+        'airport' => 'Airport',
+        'warehouse' => 'Warehouse',
+        'terminal' => 'Terminal',
+    ],
 ];

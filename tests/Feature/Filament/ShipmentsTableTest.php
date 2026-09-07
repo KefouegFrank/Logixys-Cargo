@@ -22,11 +22,11 @@ class ShipmentsTableTest extends TestCase
     public function test_search_finds_shipment_by_tracking_number(): void
     {
         $this->actingAs($this->admin());
-        $target = $this->shipment(['tracking_number' => 'LGXYFINDMEXXX']);
-        $other = $this->shipment(['tracking_number' => 'LGXYOTHERYYYY']);
+        $target = $this->shipment(['tracking_number' => 'LGXY111111111-CARGO']);
+        $other = $this->shipment(['tracking_number' => 'LGXY222222222-CARGO']);
 
         Livewire::test(ListShipments::class)
-            ->searchTable('LGXYFINDMEXXX')
+            ->searchTable('LGXY111111111-CARGO')
             ->assertCanSeeTableRecords([$target])
             ->assertCanNotSeeTableRecords([$other]);
     }
@@ -95,7 +95,7 @@ class ShipmentsTableTest extends TestCase
         ]);
 
         return Shipment::create([
-            'tracking_number' => 'LGXY'.fake()->unique()->bothify('#########'),
+            'tracking_number' => 'LGXY'.fake()->unique()->bothify('#########').'-CARGO',
             'status' => ShipmentStatus::Pending,
             'service_type' => ServiceType::Road,
             'shipment_mode' => ShipmentMode::DoorToDoor,

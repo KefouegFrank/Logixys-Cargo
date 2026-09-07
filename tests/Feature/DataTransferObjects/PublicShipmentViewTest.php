@@ -84,7 +84,7 @@ class PublicShipmentViewTest extends TestCase
         // fresh() re-reads DB-level column defaults (package_count, etc.) that
         // Eloquent doesn't reflect on the in-memory object straight after create().
         return Shipment::create(array_merge([
-            'tracking_number' => 'LGXY'.fake()->unique()->bothify('#########'),
+            'tracking_number' => 'LGXY'.fake()->unique()->bothify('#########').'-CARGO',
             'status' => ShipmentStatus::Pending,
             'service_type' => ServiceType::Road,
             'shipment_mode' => ShipmentMode::DoorToDoor,

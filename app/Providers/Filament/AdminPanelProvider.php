@@ -33,6 +33,8 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            // Light only: the panel ships one theme, so the profile menu has no switcher.
+            ->darkMode(false)
             ->brandName('Logixys Cargo')
             ->favicon(asset('favicon.svg'))
             ->brandLogo(fn () => $this->brandLogo())

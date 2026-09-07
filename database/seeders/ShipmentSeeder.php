@@ -59,6 +59,8 @@ class ShipmentSeeder extends Seeder
                 $shipment->packages()->create($package);
             }
 
+            $shipment->recalculatePackageAggregates();
+
             $this->seedEventHistory($shipment, $lane, $agent);
         }
     }

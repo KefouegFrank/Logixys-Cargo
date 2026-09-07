@@ -26,4 +26,12 @@ return [
         'door_to_port' => 'Porte à port',
         'port_to_port' => 'Port à port',
     ],
+
+    'location_type' => [
+        'city' => 'Ville',
+        'port' => 'Port',
+        'airport' => 'Aéroport',
+        'warehouse' => 'Entrepôt',
+        'terminal' => 'Terminal',
+    ],
 ];
