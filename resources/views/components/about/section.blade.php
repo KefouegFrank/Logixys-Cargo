@@ -20,8 +20,11 @@
                 Hidden below lg: there is no room for it to read at that size.
             --}}
             <div class="relative hidden aspect-[66/65] w-full max-w-xl lg:block">
-                {{-- Gold plate, peeking out left and above the first photo. --}}
-                <span class="absolute left-[3%] top-[5.4%] h-[77.7%] w-[25.8%] bg-accent" aria-hidden="true"></span>
+                {{-- Navy plate, matching the Services card's own peeking-plate
+                     device (navy at rest, gold there is a hover-only accent).
+                     Gold stays reserved for the badge — the one focal accent
+                     in this composition, not competing with its backdrop. --}}
+                <span class="absolute left-[3%] top-[5.4%] h-[77.7%] w-[25.8%] bg-navy-100" aria-hidden="true"></span>
 
                 <picture class="absolute left-[9.4%] top-[10.5%] h-[69.2%] w-[42.9%]">
                     <source type="image/webp" srcset="{{ asset('images/about/containers.webp') }}">

@@ -11,5 +11,6 @@ return [
     'close_menu' => "Cerrar el menú",
     'language' => "Idioma",
     'choose_language' => "Elegir idioma",
+    'breadcrumb' => "Migas de pan",
     'skip_to_content' => "Ir al contenido principal",
 ];

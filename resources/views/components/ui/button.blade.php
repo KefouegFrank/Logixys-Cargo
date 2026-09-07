@@ -15,6 +15,10 @@
         'light' => 'bg-white text-ink hover:bg-navy-900 hover:text-white',
         'navy' => 'bg-navy-900 text-white hover:bg-accent hover:text-ink',
         'outline' => 'border-2 border-current text-ink hover:bg-ink hover:text-white',
+        // Gold sitting directly on a navy-900 surface (the nav bar): inverting
+        // to navy-900 on hover would blend into that backdrop, so this deepens
+        // the gold instead of inverting the pair.
+        'accent-on-navy' => 'bg-accent text-ink hover:bg-gold-600',
     ];
 
     $sizes = [

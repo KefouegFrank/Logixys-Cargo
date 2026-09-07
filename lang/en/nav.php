@@ -11,5 +11,6 @@ return [
     'close_menu' => "Close menu",
     'language' => "Language",
     'choose_language' => "Choose a language",
+    'breadcrumb' => "Breadcrumb",
     'skip_to_content' => "Skip to main content",
 ];

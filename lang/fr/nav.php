@@ -11,5 +11,6 @@ return [
     'close_menu' => "Fermer le menu",
     'language' => "Langue",
     'choose_language' => "Choisir la langue",
+    'breadcrumb' => "Fil d'Ariane",
     'skip_to_content' => "Aller au contenu principal",
 ];

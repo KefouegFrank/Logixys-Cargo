@@ -65,12 +65,15 @@
         @click.outside="open = false"
         {{ $attributes->class('relative') }}
     >
+        {{-- White text and a gold focus ring: this sits on the navy bar now,
+             where the shared ink/outline-focus colours (tuned for a gold bar)
+             would be invisible. --}}
         <button
             type="button"
             @click="open = ! open"
             :aria-expanded="open ? 'true' : 'false'"
             aria-haspopup="true"
-            class="flex items-center gap-1.5 rounded-field px-2.5 py-2 font-heading text-sm font-bold text-ink transition-colors duration-200 hover:bg-ink/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+            class="flex items-center gap-1.5 rounded-field px-2.5 py-2 font-heading text-sm font-bold text-white transition-colors duration-200 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
             <span class="sr-only">{{ __('nav.choose_language') }}</span>
             <span class="text-base leading-none" aria-hidden="true">{{ $current['flag'] }}</span>

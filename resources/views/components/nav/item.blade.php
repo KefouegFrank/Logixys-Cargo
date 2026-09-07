@@ -25,17 +25,19 @@
         ]) }}
     >{{ __($label) }}</a>
 @else
-    {{-- Underline is always present; hover wipes it in from the left, active pins it open. --}}
+    {{-- Underline is always present; hover wipes it in from the left, active
+         pins it open. White text on the now-navy bar, gold underline as the
+         one accent touch — not white/ink, which was tuned for a gold bar. --}}
     <a
         href="{{ $href }}"
         @if ($active) aria-current="page" @endif
         {{ $attributes->class([
             'relative flex items-center whitespace-nowrap py-6 font-heading text-sm font-bold tracking-wide',
             'transition-colors duration-200',
-            'after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-left after:bg-ink',
+            'after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-left after:bg-accent',
             'after:transition-transform after:duration-300 after:ease-smooth',
-            'text-ink after:scale-x-100' => $active,
-            'text-ink/70 after:scale-x-0 hover:text-ink hover:after:scale-x-100' => ! $active,
+            'text-white after:scale-x-100' => $active,
+            'text-white/70 after:scale-x-0 hover:text-white hover:after:scale-x-100' => ! $active,
         ]) }}
     >{{ __($label) }}</a>
 @endif
