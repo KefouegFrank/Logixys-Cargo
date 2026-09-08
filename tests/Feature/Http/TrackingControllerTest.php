@@ -235,11 +235,16 @@ class TrackingControllerTest extends TestCase
         $response->assertSeeInOrder([__('tracking.result_destination'), 'Roissy CDG, FR']);
     }
 
-    public function test_the_map_renders_with_the_route_and_the_event_trail(): void
+    public function test_the_map_shows_the_pin_the_agent_set_on_the_latest_event(): void
     {
         $shipment = $this->shipment();
         $agent = User::first();
 
+        $shipment->events()->create([
+            'status' => ShipmentStatus::PickedUp, 'location_label' => 'Marseille',
+            'location_lat' => 43.2965, 'location_lng' => 5.3698, 'is_manual_position' => true,
+            'occurred_at' => now()->subDays(2), 'is_public' => true, 'created_by' => $agent->id,
+        ]);
         $shipment->events()->create([
             'status' => ShipmentStatus::InTransit, 'location_label' => 'Paris CDG',
             'location_lat' => 49.0097, 'location_lng' => 2.5479, 'is_manual_position' => true,
@@ -250,10 +255,13 @@ class TrackingControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertSee(__('tracking.map_heading'));
-        $response->assertSee('id="tracking-map"', false);
         $response->assertSee('vendor/leaflet/leaflet.js', false);
-        $response->assertSee('49.0097', false);
         $response->assertSee(__('tracking.map_here'));
+
+        // Only the most recent pin: no earlier stop, and no origin/destination coordinates.
+        $response->assertSee('49.0097', false);
+        $response->assertDontSee('43.2965', false);
+        $response->assertDontSee((string) $shipment->destination_lat, false);
     }
 
     public function test_the_map_is_left_out_when_nothing_has_coordinates(): void
