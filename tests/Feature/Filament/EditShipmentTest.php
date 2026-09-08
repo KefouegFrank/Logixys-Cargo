@@ -9,8 +9,10 @@ use App\Enums\UserRole;
 use App\Filament\Resources\Shipments\Pages\EditShipment;
 use App\Models\Shipment;
 use App\Models\User;
+use App\Services\ShipmentEventRecorder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Js;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -61,6 +63,39 @@ class EditShipmentTest extends TestCase
 
         $shipment->refresh();
         $this->assertCount(1, $shipment->events);
+    }
+
+    public function test_the_event_fields_clear_themselves_once_the_event_is_posted(): void
+    {
+        Http::fake(['nominatim.openstreetmap.org/*' => Http::response([['lat' => '48.8566', 'lon' => '2.3522']])]);
+        $admin = $this->admin();
+        $this->actingAs($admin);
+
+        $shipment = $this->shipment($admin);
+
+        Livewire::test(EditShipment::class, ['record' => $shipment->id])
+            ->fillForm([
+                'event_status' => ShipmentStatus::PickedUp->value,
+                'event_location' => 'Paris',
+                'event_remarks' => 'left the warehouse',
+            ])
+            ->call('save')
+            ->assertHasNoFormErrors()
+            // Anything left behind here reads as unsaved work to the draft banner, and
+            // would ride along onto whatever event is posted next.
+            ->assertFormSet(array_fill_keys(ShipmentEventRecorder::FIELDS, null));
+    }
+
+    public function test_the_draft_banner_is_scoped_to_the_agent_and_ignores_the_event_fields(): void
+    {
+        $admin = $this->admin();
+        $shipment = $this->shipment($admin);
+
+        $response = $this->actingAs($admin)->get("/admin/shipments/{$shipment->id}/edit");
+
+        $response->assertOk();
+        $response->assertSee("shipment-draft:{$admin->id}:edit:{$shipment->id}", false);
+        $response->assertSee('transientKeys: '.Js::from(ShipmentEventRecorder::FIELDS)->toHtml(), false);
     }
 
     public function test_the_delete_action_is_present_on_the_edit_page(): void

@@ -59,5 +59,7 @@
     <x-layout.cta-band />
 
     <x-layout.footer />
+
+    @stack('scripts')
 </body>
 </html>

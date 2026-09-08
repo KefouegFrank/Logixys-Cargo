@@ -16,16 +16,17 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Lang;
 
 #[Fillable([
     'tracking_number', 'status', 'service_type', 'shipment_mode', 'carrier_name', 'carrier_reference', 'locale',
-    'customer_id', 'carrier_id',
+    'carrier_id',
     'shipper_name', 'shipper_company', 'shipper_email', 'shipper_phone', 'shipper_address', 'shipper_postcode', 'shipper_city', 'shipper_country',
     'receiver_name', 'receiver_company', 'receiver_email', 'receiver_phone', 'receiver_address', 'receiver_postcode', 'receiver_city', 'receiver_country',
     'origin_label', 'origin_lat', 'origin_lng', 'origin_location_id',
     'destination_label', 'destination_lat', 'destination_lng', 'destination_location_id',
     'pickup_date', 'pickup_time', 'departure_time', 'expected_delivery_date', 'delivered_at',
-    'goods_description', 'internal_notes', 'currency',
+    'goods_description', 'currency',
     'package_count', 'total_quantity', 'total_weight_kg', 'volumetric_weight_kg',
     'chargeable_weight_kg', 'total_volume_cbm', 'declared_value',
     'total_ht', 'tax_amount', 'total_ttc',
@@ -57,11 +58,9 @@ class Shipment extends Model
             $shipment->total_ttc = $totals->totalTtc;
         });
 
-        // Geocode origin/destination on write if coordinates weren't given, then fix
-        // distance_km once from the result. Neither is recomputed on later edits.
+        // Both fields are read-only on the form, so they are assigned here rather than
+        // submitted — that also covers the seeders and any later API path.
         static::creating(function (Shipment $shipment) {
-            // Both fields are read-only on the form, so they are assigned here rather than
-            // submitted — that also covers the seeders and any later API path.
             if (blank($shipment->tracking_number)) {
                 $shipment->tracking_number = app(TrackingNumberGenerator::class)->generate();
             }
@@ -69,28 +68,43 @@ class Shipment extends Model
             if (blank($shipment->status)) {
                 $shipment->status = ShipmentStatus::Pending;
             }
+        });
 
-            if ($shipment->origin_lat === null && $shipment->origin_lng === null && $shipment->origin_label) {
-                $coords = app(GeocodingService::class)->geocode($shipment->origin_label);
-                $shipment->origin_lat = $coords['lat'] ?? null;
-                $shipment->origin_lng = $coords['lng'] ?? null;
+        // Fills in coordinates the picked location didn't carry, then refreshes distance.
+        // Runs on edits too — moving the origin used to leave both stale — but only when
+        // the leg actually changed, so an ordinary save never calls the geocoder.
+        static::saving(function (Shipment $shipment) {
+            foreach (['origin', 'destination'] as $point) {
+                if (! $shipment->isDirty("{$point}_label")) {
+                    continue;
+                }
+
+                if ($shipment->{"{$point}_lat"} !== null || $shipment->{"{$point}_lng"} !== null) {
+                    continue;
+                }
+
+                if (blank($shipment->{"{$point}_label"})) {
+                    continue;
+                }
+
+                $coords = app(GeocodingService::class)->geocode($shipment->{"{$point}_label"});
+                $shipment->{"{$point}_lat"} = $coords['lat'] ?? null;
+                $shipment->{"{$point}_lng"} = $coords['lng'] ?? null;
             }
 
-            if ($shipment->destination_lat === null && $shipment->destination_lng === null && $shipment->destination_label) {
-                $coords = app(GeocodingService::class)->geocode($shipment->destination_label);
-                $shipment->destination_lat = $coords['lat'] ?? null;
-                $shipment->destination_lng = $coords['lng'] ?? null;
+            if (! $shipment->isDirty(['origin_lat', 'origin_lng', 'destination_lat', 'destination_lng'])) {
+                return;
             }
 
-            if ($shipment->origin_lat !== null && $shipment->origin_lng !== null
-                && $shipment->destination_lat !== null && $shipment->destination_lng !== null) {
-                $shipment->distance_km = app(DistanceCalculator::class)->calculate(
+            $shipment->distance_km = ($shipment->origin_lat !== null && $shipment->origin_lng !== null
+                && $shipment->destination_lat !== null && $shipment->destination_lng !== null)
+                ? app(DistanceCalculator::class)->calculate(
                     (float) $shipment->origin_lat,
                     (float) $shipment->origin_lng,
                     (float) $shipment->destination_lat,
                     (float) $shipment->destination_lng,
-                );
-            }
+                )
+                : null;
         });
     }
 
@@ -124,10 +138,13 @@ class Shipment extends Model
         ];
     }
 
-    /** @return BelongsTo<Customer, $this> */
-    public function customer(): BelongsTo
+    // payment_status is a free-text column on the admin form, so a value with no
+    // translation shows exactly as it was typed.
+    public function paymentStatusLabel(): string
     {
-        return $this->belongsTo(Customer::class);
+        $key = 'shipment.payment_status.'.$this->payment_status;
+
+        return Lang::has($key) ? __($key) : (string) $this->payment_status;
     }
 
     /** @return BelongsTo<Carrier, $this> */
@@ -185,7 +202,7 @@ class Shipment extends Model
         $divisor = (int) config('shipping.volumetric_divisor', PackageTotalsCalculator::DEFAULT_DIVISOR)
             ?: PackageTotalsCalculator::DEFAULT_DIVISOR;
 
-        $actualWeight = (float) $packages->sum('weight_kg');
+        $actualWeight = (float) $packages->sum(fn (Package $package) => $package->totalWeightKg());
         $volumetricWeight = (float) $packages->sum(fn (Package $package) => $package->totalVolumetricWeightKg($divisor) ?? 0);
 
         $this->forceFill([
@@ -203,12 +220,6 @@ class Shipment extends Model
     public function events(): HasMany
     {
         return $this->hasMany(ShipmentEvent::class);
-    }
-
-    /** @return HasMany<Document, $this> */
-    public function documents(): HasMany
-    {
-        return $this->hasMany(Document::class);
     }
 
     /** @return HasMany<Receipt, $this> */

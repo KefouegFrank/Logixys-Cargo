@@ -54,6 +54,28 @@ class PackageTest extends TestCase
         $this->assertSame(500.0, $dense->chargeableWeightKg(5000));
     }
 
+    public function test_weight_is_per_piece_so_the_line_total_multiplies_by_quantity(): void
+    {
+        $package = new Package(['weight_kg' => 10, 'quantity' => 4]);
+
+        $this->assertSame(40.0, $package->totalWeightKg());
+    }
+
+    public function test_chargeable_weight_compares_two_line_totals_not_mixed_units(): void
+    {
+        // 4 pieces at 10 kg each = 40 kg actual. 50x50x50 / 5000 = 25 kg each = 100 kg
+        // volumetric. The old code compared a bare 10 against the 100, mixing a single
+        // piece's weight with a line total.
+        $package = new Package([
+            'weight_kg' => 10, 'quantity' => 4,
+            'length_cm' => 50, 'width_cm' => 50, 'height_cm' => 50,
+        ]);
+
+        $this->assertSame(40.0, $package->totalWeightKg());
+        $this->assertSame(100.0, $package->totalVolumetricWeightKg(5000));
+        $this->assertSame(100.0, $package->chargeableWeightKg(5000));
+    }
+
     public function test_chargeable_weight_falls_back_to_actual_without_a_divisor(): void
     {
         $package = new Package(['weight_kg' => 12, 'length_cm' => 100, 'width_cm' => 50, 'height_cm' => 40, 'quantity' => 1]);

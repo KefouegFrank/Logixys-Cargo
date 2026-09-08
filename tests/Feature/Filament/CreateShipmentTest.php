@@ -53,7 +53,8 @@ class CreateShipmentTest extends TestCase
 
         $this->assertCount(1, $shipment->packages);
         $this->assertEquals(1, $shipment->package_count);
-        $this->assertEquals(30, $shipment->total_weight_kg);
+        // 2 cartons at 30 kg each.
+        $this->assertEquals(60, $shipment->total_weight_kg);
         $this->assertEquals(240, $shipment->declared_value);
     }
 
@@ -174,7 +175,7 @@ class CreateShipmentTest extends TestCase
             ->fillForm($this->validForm())
             // 100 x 50 x 50 / 5000 = 50 kg volumetric per unit, x2 units.
             ->assertFormSet([
-                'total_weight_kg' => '30.00',
+                'total_weight_kg' => '60.00',
                 'package_count' => 1,
                 'total_quantity' => 2,
                 'volumetric_weight_kg' => '100.00',

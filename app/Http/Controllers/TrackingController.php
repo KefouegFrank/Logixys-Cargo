@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTransferObjects\PublicShipmentView;
 use App\Models\Shipment;
 use App\Services\TrackingNumberGenerator;
 use Illuminate\Contracts\View\View;
@@ -33,7 +32,10 @@ class TrackingController extends Controller
             return $this->notFound();
         }
 
-        $shipment = Shipment::with(['events', 'packages'])
+        // The tracking number is the credential: it is mailed to the customer, validated
+        // against the format before any query, and the lookup is rate limited. A holder of
+        // a valid number sees the whole record, as on the carrier screens this replaces.
+        $shipment = Shipment::with(['carrier', 'packages', 'events'])
             ->where('tracking_number', $normalized)
             ->first();
 
@@ -41,9 +43,7 @@ class TrackingController extends Controller
             return $this->notFound();
         }
 
-        return view('tracking.show', [
-            'shipment' => PublicShipmentView::fromModel($shipment),
-        ]);
+        return view('tracking.show', ['shipment' => $shipment]);
     }
 
     private function notFound(): View

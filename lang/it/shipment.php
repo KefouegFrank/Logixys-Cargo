@@ -48,4 +48,11 @@ return [
         'carte' => 'Carta',
         'credit' => 'Conto credito',
     ],
+
+    'payment_status' => [
+        'unpaid' => 'Non pagato',
+        'paid' => 'Pagato',
+        'partial' => 'Parzialmente pagato',
+        'refunded' => 'Rimborsato',
+    ],
 ];

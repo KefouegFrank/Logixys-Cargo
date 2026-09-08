@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Enums\LocationType;
 use App\Models\Carrier;
-use App\Models\Customer;
 use App\Models\Location;
 use Illuminate\Database\Seeder;
 
@@ -36,12 +35,5 @@ class ReferenceDataSeeder extends Seeder
             Location::updateOrCreate(['name' => $location['name']], $location);
         }
 
-        foreach ([
-            ['name' => 'Claire Dubois', 'company' => 'Atelier Dubois', 'email' => 'claire@atelier-dubois.example', 'city' => 'Paris', 'country' => 'FR'],
-            ['name' => 'Marc Lefevre', 'company' => 'Cosmétiques de Provence', 'email' => 'marc@cosmetiques-provence.example', 'city' => 'Marseille', 'country' => 'FR'],
-            ['name' => 'Awa Ngo', 'company' => 'BTP Douala', 'email' => 'awa@btp-douala.example', 'city' => 'Douala', 'country' => 'CM'],
-        ] as $customer) {
-            Customer::updateOrCreate(['email' => $customer['email']], $customer);
-        }
     }
 }

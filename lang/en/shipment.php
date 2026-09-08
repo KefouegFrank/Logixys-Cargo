@@ -50,4 +50,11 @@ return [
         'carte' => 'Card',
         'credit' => 'Credit account',
     ],
+
+    'payment_status' => [
+        'unpaid' => 'Unpaid',
+        'paid' => 'Paid',
+        'partial' => 'Partially paid',
+        'refunded' => 'Refunded',
+    ],
 ];

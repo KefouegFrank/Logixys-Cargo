@@ -41,12 +41,11 @@ class EditShipment extends EditRecord
     protected function afterSave(): void
     {
         if (app(ShipmentEventRecorder::class)->record($this->record, $this->eventData)) {
-            // Cleared so the next save doesn't post the same event a second time.
+            // Cleared so the next save doesn't post the same event a second time, and so
+            // the map pin and date/time don't carry over onto an unrelated later event.
             $this->form->fill([
                 ...$this->form->getState(shouldCallHooksBefore: false),
-                'event_status' => null,
-                'event_location' => null,
-                'event_remarks' => null,
+                ...array_fill_keys(ShipmentEventRecorder::FIELDS, null),
             ]);
         }
 

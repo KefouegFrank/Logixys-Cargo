@@ -39,7 +39,7 @@
                 <th class="num">Long. (cm)</th>
                 <th class="num">Larg. (cm)</th>
                 <th class="num">Haut. (cm)</th>
-                <th class="num">Poids (kg)</th>
+                <th class="num">Poids unit. (kg)</th>
                 <th class="num">Valeur</th>
             </tr>
         </thead>

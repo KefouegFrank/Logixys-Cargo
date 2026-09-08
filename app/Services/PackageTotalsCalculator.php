@@ -43,7 +43,7 @@ class PackageTotalsCalculator
 
             $count++;
             $quantity += $quantityForRow;
-            $actualWeight += (float) ($row['weight_kg'] ?? 0);
+            $actualWeight += (float) ($row['weight_kg'] ?? 0) * $quantityForRow;
             $volume += ($cubicCm / 1_000_000) * $quantityForRow;
             $value += (float) ($row['unit_value'] ?? 0) * $quantityForRow;
 

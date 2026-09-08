@@ -11,10 +11,11 @@
     </div>
 @else
     @php $currentStep = $status->step(); @endphp
-    <ol class="flex items-start" aria-label="{{ __('tracking.progress_label') }}">
+    {{-- Stacked on a phone: four labels side by side wrap into each other below ~640px. --}}
+    <ol class="space-y-3 sm:flex sm:items-start sm:space-y-0" aria-label="{{ __('tracking.progress_label') }}">
         @foreach (\App\Enums\ShipmentStatus::stepMilestones() as $step => $milestoneStatus)
-            <li class="flex items-center {{ $loop->last ? '' : 'flex-1' }}">
-                <div class="flex flex-col items-center">
+            <li @class(['flex items-center sm:items-start', 'sm:flex-1' => ! $loop->last])>
+                <div class="flex items-center gap-3 sm:flex-col sm:gap-0">
                     <span
                         class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold
                             {{ $step <= $currentStep ? 'bg-ink text-white' : 'border-2 border-line text-ink-subtle' }}"
@@ -22,14 +23,14 @@
                         {{ $step }}
                     </span>
                     <span
-                        class="mt-2 max-w-[6rem] text-center text-xs
+                        class="text-sm sm:mt-2 sm:max-w-[7rem] sm:text-center sm:text-xs
                             {{ $step <= $currentStep ? 'font-medium text-ink' : 'text-ink-subtle' }}"
                     >
                         {{ $milestoneStatus->label() }}
                     </span>
                 </div>
                 @unless ($loop->last)
-                    <div class="mx-2 mt-4 h-0.5 flex-1 {{ $step < $currentStep ? 'bg-ink' : 'bg-line' }}"></div>
+                    <div class="mx-2 mt-4 hidden h-0.5 flex-1 sm:block {{ $step < $currentStep ? 'bg-ink' : 'bg-line' }}"></div>
                 @endunless
             </li>
         @endforeach

@@ -9,7 +9,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('shipments', function (Blueprint $table) {
-            $table->foreignId('customer_id')->nullable()->after('id')->constrained()->nullOnDelete();
             $table->foreignId('carrier_id')->nullable()->after('carrier_reference')->constrained()->nullOnDelete();
 
             // The *_label and *_lat/lng columns stay authoritative: a shipment keeps the
@@ -19,19 +18,16 @@ return new class extends Migration
 
             $table->time('pickup_time')->nullable()->after('pickup_date');
             $table->time('departure_time')->nullable()->after('pickup_time');
-
-            $table->text('internal_notes')->nullable()->after('goods_description');
         });
     }
 
     public function down(): void
     {
         Schema::table('shipments', function (Blueprint $table) {
-            $table->dropConstrainedForeignId('customer_id');
             $table->dropConstrainedForeignId('carrier_id');
             $table->dropConstrainedForeignId('origin_location_id');
             $table->dropConstrainedForeignId('destination_location_id');
-            $table->dropColumn(['pickup_time', 'departure_time', 'internal_notes']);
+            $table->dropColumn(['pickup_time', 'departure_time']);
         });
     }
 };

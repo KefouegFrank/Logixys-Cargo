@@ -15,6 +15,7 @@ use App\Models\Shipment;
 use App\Models\ShipmentEvent;
 use App\Services\Geocoding\GeocodingService;
 use App\Services\PackageTotalsCalculator;
+use App\Services\ShipmentEventRecorder;
 use App\Services\ShipmentTotalsCalculator;
 use App\Services\TrackingNumberGenerator;
 use Filament\Forms\Components\DatePicker;
@@ -71,7 +72,12 @@ class ShipmentForm
     {
         return View::make('filament.shipments.draft-autosave')
             ->viewData(fn (?Shipment $record, string $operation): array => [
-                'draftKey' => 'shipment-draft:'.$operation.($record ? ":{$record->id}" : ''),
+                // Keyed by user as well as record: on a shared workstation one agent's
+                // draft holds customer names and addresses the next must not see.
+                'draftKey' => 'shipment-draft:'.Auth::id().':'.$operation.($record ? ":{$record->id}" : ''),
+                // The sidebar's event fields describe the save, not the shipment, so they
+                // are left out of both the draft and the has-anything-changed comparison.
+                'transientKeys' => ShipmentEventRecorder::FIELDS,
             ]);
     }
 
@@ -378,7 +384,7 @@ class ShipmentForm
                         TableColumn::make('Long. (cm)'),
                         TableColumn::make('Larg. (cm)'),
                         TableColumn::make('Haut. (cm)'),
-                        TableColumn::make('Poids (kg)'),
+                        TableColumn::make('Poids unit. (kg)'),
                         TableColumn::make('Valeur unit. (€)'),
                     ])
                     ->schema([

@@ -69,8 +69,18 @@ class Package extends Model
         return $perUnit * $this->quantity;
     }
 
+    /**
+     * weight_kg is the weight of ONE piece, matching the dimensions and unit_value
+     * beside it on the same row. The line's real weight is that times the quantity.
+     */
+    public function totalWeightKg(): float
+    {
+        return (float) $this->weight_kg * $this->quantity;
+    }
+
+    // Both sides must be line totals for the comparison to mean anything.
     public function chargeableWeightKg(?int $divisor): float
     {
-        return max((float) $this->weight_kg, $this->totalVolumetricWeightKg($divisor) ?? 0.0);
+        return max($this->totalWeightKg(), $this->totalVolumetricWeightKg($divisor) ?? 0.0);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Http;
 
+use App\Enums\PaymentMode;
 use App\Enums\ServiceType;
 use App\Enums\ShipmentMode;
 use App\Enums\ShipmentStatus;
@@ -46,26 +47,62 @@ class TrackingControllerTest extends TestCase
         $this->get('/fr/suivi')->assertOk()->assertSee(__('tracking.form_heading'));
     }
 
-    public function test_valid_tracking_number_shows_whitelisted_data_only(): void
+    public function test_a_valid_tracking_number_shows_the_whole_record(): void
     {
         $shipment = $this->shipment([
             'shipper_name' => 'Jean Martin',
+            'shipper_company' => 'Pieces Auto Distribution',
             'shipper_email' => 'jean@example.com',
             'shipper_phone' => '0600000000',
-            'shipper_address' => '12 Rue Secrete',
+            'shipper_address' => '12 Rue des Docteurs Charcot',
+            'receiver_name' => 'Miguel Sanchez',
+            'receiver_email' => 'miguel@example.com',
+            'receiver_phone' => '+34639204954',
+            'carrier_name' => 'COLIS EXPRESS EU',
+            'carrier_reference' => 'CEE36',
+            'goods_description' => 'Jantes mercedes ML de 20 pouces',
             'declared_value' => 50000,
+            'freight_cost' => 750,
+            'payment_mode' => PaymentMode::Virement,
+            'payment_status' => 'unpaid',
+            'pickup_time' => '09:00',
+            'departure_time' => '15:00',
         ]);
 
         $response = $this->get("/fr/suivi/{$shipment->tracking_number}");
 
         $response->assertOk();
         $response->assertSee($shipment->tracking_number);
-        $response->assertSee('J. M.');
-        $response->assertDontSee('jean@example.com');
-        $response->assertDontSee('0600000000');
-        $response->assertDontSee('12 Rue Secrete');
-        $response->assertDontSee('50000');
-        $response->assertDontSee('Jean Martin');
+
+        // The number is the credential; whoever holds it gets the same record the agent sees.
+        foreach ([
+            'Jean Martin', 'Pieces Auto Distribution', 'jean@example.com', '0600000000',
+            '12 Rue des Docteurs Charcot', 'Miguel Sanchez', 'miguel@example.com', '+34639204954',
+            'COLIS EXPRESS EU', 'CEE36', 'Jantes mercedes ML de 20 pouces',
+            '50 000,00', '750,00', '09:00', '15:00',
+        ] as $expected) {
+            $response->assertSee($expected, false);
+        }
+
+        $response->assertSee(PaymentMode::Virement->label());
+        $response->assertSee(__('shipment.payment_status.unpaid'));
+    }
+
+    public function test_the_charges_breakdown_is_shown_in_full(): void
+    {
+        $shipment = $this->shipment([
+            'freight_cost' => 890, 'insurance_cost' => 40, 'customs_cost' => 60,
+            'other_cost' => 0, 'tax_rate' => 20, 'tax_label' => 'TVA', 'currency' => 'EUR',
+        ]);
+
+        $response = $this->get("/fr/suivi/{$shipment->tracking_number}");
+
+        $response->assertOk();
+        $response->assertSee(__('tracking.charges_heading'));
+        $response->assertSee('890,00 EUR', false);   // fret
+        $response->assertSee('990,00 EUR', false);   // total HT
+        $response->assertSee('198,00 EUR', false);   // TVA at 20%
+        $response->assertSee('1 188,00 EUR', false); // total TTC
     }
 
     public function test_normalizes_input_before_lookup(): void
@@ -177,6 +214,61 @@ class TrackingControllerTest extends TestCase
         $response->assertDontSee('Secret Depot');
         $response->assertDontSee('Confidential internal note');
         $response->assertDontSee(__('tracking.timeline_heading'));
+    }
+
+    public function test_shows_the_origin_and_destination_the_agent_entered(): void
+    {
+        $shipment = $this->shipment([
+            // Crossed against the parties on purpose: the page used to derive the leg from
+            // the shipper's and receiver's own cities, so it showed these two the wrong
+            // way round whenever they disagreed with the picked locations.
+            'shipper_city' => 'Lyon', 'shipper_country' => 'FR',
+            'receiver_city' => 'Douala', 'receiver_country' => 'CM',
+            'origin_label' => 'Douala, CM',
+            'destination_label' => 'Roissy CDG, FR',
+        ]);
+
+        $response = $this->get("/fr/suivi/{$shipment->tracking_number}");
+
+        $response->assertOk();
+        $response->assertSeeInOrder([__('tracking.result_origin'), 'Douala, CM']);
+        $response->assertSeeInOrder([__('tracking.result_destination'), 'Roissy CDG, FR']);
+    }
+
+    public function test_the_map_renders_with_the_route_and_the_event_trail(): void
+    {
+        $shipment = $this->shipment();
+        $agent = User::first();
+
+        $shipment->events()->create([
+            'status' => ShipmentStatus::InTransit, 'location_label' => 'Paris CDG',
+            'location_lat' => 49.0097, 'location_lng' => 2.5479, 'is_manual_position' => true,
+            'occurred_at' => now()->subDay(), 'is_public' => true, 'created_by' => $agent->id,
+        ]);
+
+        $response = $this->get("/fr/suivi/{$shipment->tracking_number}");
+
+        $response->assertOk();
+        $response->assertSee(__('tracking.map_heading'));
+        $response->assertSee('id="tracking-map"', false);
+        $response->assertSee('vendor/leaflet/leaflet.js', false);
+        $response->assertSee('49.0097', false);
+        $response->assertSee(__('tracking.map_here'));
+    }
+
+    public function test_the_map_is_left_out_when_nothing_has_coordinates(): void
+    {
+        $shipment = $this->shipment([
+            'origin_label' => '', 'origin_lat' => null, 'origin_lng' => null,
+            'destination_label' => '', 'destination_lat' => null, 'destination_lng' => null,
+        ]);
+
+        $response = $this->get("/fr/suivi/{$shipment->tracking_number}");
+
+        $response->assertOk();
+        $response->assertDontSee(__('tracking.map_heading'));
+        $response->assertDontSee('id="tracking-map"', false);
+        $response->assertDontSee('vendor/leaflet/leaflet.js', false);
     }
 
     public function test_lookup_is_rate_limited(): void

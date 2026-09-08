@@ -62,7 +62,8 @@ class ShipmentTest extends TestCase
         $shipment->refresh();
 
         $this->assertSame(1, $shipment->package_count);
-        $this->assertSame('340.00', $shipment->total_weight_kg);
+        // weight_kg is per piece, so the line is 2 x 340.
+        $this->assertSame('680.00', $shipment->total_weight_kg);
         $this->assertSame('3.600', $shipment->total_volume_cbm);
         $this->assertSame('1600.00', $shipment->declared_value);
     }
@@ -116,6 +117,33 @@ class ShipmentTest extends TestCase
         $this->assertNull($shipment->origin_lat);
         $this->assertNull($shipment->destination_lat);
         $this->assertNull($shipment->distance_km);
+    }
+
+    public function test_moving_the_origin_on_an_edit_refreshes_coordinates_and_distance(): void
+    {
+        Http::fake([
+            'nominatim.openstreetmap.org/*' => Http::response([['lat' => '4.0511', 'lon' => '9.7679']]),
+        ]);
+
+        $shipment = $this->makeShipment();
+        $before = $shipment->distance_km;
+
+        $shipment->update(['origin_label' => 'Douala, CM', 'origin_lat' => null, 'origin_lng' => null]);
+
+        $this->assertSame('4.0511000', $shipment->origin_lat);
+        $this->assertSame('9.7679000', $shipment->origin_lng);
+        $this->assertNotSame($before, $shipment->distance_km);
+    }
+
+    public function test_a_save_that_leaves_the_route_alone_never_calls_the_geocoder(): void
+    {
+        Http::fake(['nominatim.openstreetmap.org/*' => Http::response([['lat' => '1', 'lon' => '1']])]);
+
+        $shipment = $this->makeShipment();
+
+        $shipment->update(['goods_description' => 'Pieces detachees']);
+
+        Http::assertNothingSent();
     }
 
     public function test_overdue_scope_matches_a_past_delivery_date_still_in_flight(): void

@@ -41,11 +41,6 @@ class User extends Authenticatable implements FilamentUser
         return $this->role === UserRole::Admin;
     }
 
-    public function isAgent(): bool
-    {
-        return $this->role === UserRole::Agent;
-    }
-
     /** @return HasMany<Shipment> */
     public function createdShipments(): HasMany
     {

@@ -88,7 +88,8 @@
             </tr>
             <tr>
                 <td><span class="lbl">Statut :</span> {{ $shipment->status->label() }}</td>
-                <td colspan="3"><span class="lbl">Commentaire :</span> {{ $shipment->internal_notes }}</td>
+                {{-- Left blank deliberately: somewhere to write on the printed copy. --}}
+                <td colspan="3"><span class="lbl">Commentaire :</span></td>
             </tr>
         </table>
     </div>
