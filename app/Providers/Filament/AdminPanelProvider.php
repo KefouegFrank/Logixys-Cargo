@@ -2,9 +2,9 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Widgets\LatestShipments;
 use App\Filament\Widgets\ShipmentOverview;
 use App\Filament\Widgets\ShipmentsByStatusChart;
+use App\Filament\Widgets\ShipmentsNeedingAttention;
 use Filament\FontProviders\BunnyFontProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -75,7 +75,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 ShipmentOverview::class,
-                LatestShipments::class,
+                ShipmentsNeedingAttention::class,
                 ShipmentsByStatusChart::class,
             ])
             ->middleware([
@@ -100,7 +100,9 @@ class AdminPanelProvider extends PanelProvider
      */
     private function brandLogo(bool $isDarkMode = false): HtmlString
     {
-        $onWhite = (! $isDarkMode) && request()->routeIs('filament.admin.auth.*');
+        // 'filament.admin.auth.*' also matches the profile page (filament.admin.auth.profile)
+        // and logout, both of which render on the navy topbar, not the white auth card.
+        $onWhite = (! $isDarkMode) && request()->routeIs('filament.admin.auth.login');
 
         return new HtmlString(sprintf(
             '<img src="%s" alt="%s" width="%d" height="%d" class="fi-brand-lockup">',

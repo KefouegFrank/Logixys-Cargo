@@ -12,7 +12,7 @@ class ShipmentsByStatusChart extends ChartWidget
 
     protected int|string|array $columnSpan = 1;
 
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 3;
 
     protected ?string $maxHeight = '260px';
 

@@ -3,7 +3,6 @@
 namespace App\Filament\Widgets;
 
 use App\Enums\ShipmentStatus;
-use App\Models\ContactMessage;
 use App\Models\Shipment;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -15,54 +14,50 @@ class ShipmentOverview extends StatsOverviewWidget
 
     protected static ?int $sort = 1;
 
+    /** Statuses that mean a shipment is still on its way. */
+    private const IN_FLIGHT = [
+        ShipmentStatus::Pending,
+        ShipmentStatus::PickedUp,
+        ShipmentStatus::InTransit,
+        ShipmentStatus::AtCustoms,
+        ShipmentStatus::OutForDelivery,
+    ];
+
+    /** Statuses where a shipment stopped moving and needs someone to act on it. */
+    private const BLOCKED = [ShipmentStatus::OnHold, ShipmentStatus::Returned];
+
     protected function getStats(): array
     {
         $monthStart = Carbon::now()->startOfMonth();
 
-        $inFlight = Shipment::query()
-            ->whereIn('status', [
-                ShipmentStatus::Pending,
-                ShipmentStatus::PickedUp,
-                ShipmentStatus::InTransit,
-                ShipmentStatus::AtCustoms,
-                ShipmentStatus::OutForDelivery,
-            ])
-            ->count();
-
-        $onHold = Shipment::query()
-            ->whereIn('status', [ShipmentStatus::OnHold, ShipmentStatus::Returned])
-            ->count();
+        $inFlight = Shipment::query()->whereIn('status', self::IN_FLIGHT)->count();
+        $blocked = Shipment::query()->whereIn('status', self::BLOCKED)->count();
+        $overdue = Shipment::overdue()->count();
 
         $deliveredThisMonth = Shipment::query()
             ->where('status', ShipmentStatus::Delivered)
             ->where('delivered_at', '>=', $monthStart)
             ->count();
 
-        $revenue = Shipment::query()
-            ->where('created_at', '>=', $monthStart)
-            ->sum('total_ttc');
-
-        $unhandled = ContactMessage::query()->where('is_handled', false)->count();
-
         return [
             Stat::make('Expéditions en cours', $inFlight)
-                ->description($onHold > 0 ? "{$onHold} en attente ou retournées" : 'Aucun incident')
-                ->descriptionColor($onHold > 0 ? 'warning' : 'success')
+                ->description('En mouvement en ce moment')
                 ->chart($this->weeklyCreatedTrend())
                 ->color('info'),
+
+            Stat::make('En retard', $overdue)
+                ->description($overdue > 0 ? 'Livraison prévue dépassée' : 'Aucun retard')
+                ->descriptionColor($overdue > 0 ? 'danger' : 'success')
+                ->color($overdue > 0 ? 'danger' : 'gray'),
+
+            Stat::make('Bloquées', $blocked)
+                ->description($blocked > 0 ? 'En attente ou retournées' : 'Aucune')
+                ->descriptionColor($blocked > 0 ? 'warning' : 'success')
+                ->color($blocked > 0 ? 'warning' : 'gray'),
 
             Stat::make('Livrées ce mois', $deliveredThisMonth)
                 ->description($monthStart->translatedFormat('F Y'))
                 ->color('success'),
-
-            Stat::make('Chiffre d\'affaires du mois', number_format((float) $revenue, 2, ',', ' ').' €')
-                ->description('TTC, sur les expéditions créées')
-                ->color('primary'),
-
-            Stat::make('Messages non traités', $unhandled)
-                ->description($unhandled > 0 ? 'À relancer' : 'Boîte à jour')
-                ->descriptionColor($unhandled > 0 ? 'warning' : 'success')
-                ->color($unhandled > 0 ? 'warning' : 'gray'),
         ];
     }
 

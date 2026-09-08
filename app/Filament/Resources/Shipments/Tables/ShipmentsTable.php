@@ -8,6 +8,7 @@ use App\Filament\Resources\Shipments\Actions\InvoiceAction;
 use App\Filament\Resources\Shipments\Actions\WaybillAction;
 use App\Filament\Resources\Shipments\ShipmentResource;
 use App\Models\Shipment;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -106,10 +107,13 @@ class ShipmentsTable
                         ->when($data['created_from'] ?? null, fn (Builder $q, string $date) => $q->whereDate('created_at', '>=', $date))
                         ->when($data['created_until'] ?? null, fn (Builder $q, string $date) => $q->whereDate('created_at', '<=', $date))),
             ])
+            // Grouped: three separate buttons overflowed the row and clipped at the edge.
             ->recordActions([
-                InvoiceAction::make()->iconButton()->tooltip('Facture'),
-                WaybillAction::make()->iconButton()->tooltip('Lettre de transport'),
-                EditAction::make()->iconButton()->tooltip('Modifier'),
+                ActionGroup::make([
+                    EditAction::make()->label('Modifier'),
+                    InvoiceAction::make(),
+                    WaybillAction::make(),
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

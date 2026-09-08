@@ -118,11 +118,35 @@ class ShipmentTest extends TestCase
         $this->assertNull($shipment->distance_km);
     }
 
+    public function test_overdue_scope_matches_a_past_delivery_date_still_in_flight(): void
+    {
+        $overdue = $this->makeShipment([
+            'status' => ShipmentStatus::InTransit,
+            'expected_delivery_date' => now()->subDays(2),
+        ]);
+        $this->makeShipment([
+            'status' => ShipmentStatus::InTransit,
+            'expected_delivery_date' => now()->addDays(2),
+        ]);
+        $this->makeShipment([
+            'status' => ShipmentStatus::Delivered,
+            'expected_delivery_date' => now()->subDays(2),
+        ]);
+        $this->makeShipment([
+            'status' => ShipmentStatus::Cancelled,
+            'expected_delivery_date' => now()->subDays(2),
+        ]);
+        $this->makeShipment(['status' => ShipmentStatus::InTransit, 'expected_delivery_date' => null]);
+
+        $this->assertSame([$overdue->id], Shipment::overdue()->pluck('id')->all());
+    }
+
     private function makeShipment(array $overrides = []): Shipment
     {
-        $user = User::create([
-            'name' => 'Seed User', 'email' => 'seed@example.com', 'password' => 'password', 'role' => 'admin',
-        ]);
+        $user = User::firstOrCreate(
+            ['email' => 'seed@example.com'],
+            ['name' => 'Seed User', 'password' => 'password', 'role' => 'admin'],
+        );
 
         return Shipment::create(array_merge([
             'tracking_number' => 'LGXY'.fake()->bothify('#########').'-CARGO',

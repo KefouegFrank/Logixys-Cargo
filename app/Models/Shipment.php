@@ -11,6 +11,7 @@ use App\Services\PackageTotalsCalculator;
 use App\Services\ShipmentTotalsCalculator;
 use App\Services\TrackingNumberGenerator;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -149,6 +150,21 @@ class Shipment extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Expected delivery date has passed with no delivery and no cancellation recorded.
+     * Shared by the dashboard's "En retard" stat and its shipments-needing-attention table.
+     *
+     * @param  Builder<Shipment>  $query
+     * @return Builder<Shipment>
+     */
+    public function scopeOverdue(Builder $query): Builder
+    {
+        return $query
+            ->whereNotIn('status', [ShipmentStatus::Delivered, ShipmentStatus::Cancelled])
+            ->whereNotNull('expected_delivery_date')
+            ->where('expected_delivery_date', '<', now()->toDateString());
     }
 
     /** @return HasMany<Package, $this> */
