@@ -4,9 +4,11 @@
 @section('robots', 'noindex')
 
 @section('content')
+    <x-layout.page-header :title="__('nav.track_goods')" />
+
     <x-layout.container class="py-10">
         <div class="mx-auto max-w-md text-center">
-            <h1 class="font-heading text-2xl font-bold text-ink">{{ __('tracking.form_heading') }}</h1>
+            <h2 class="font-heading text-2xl font-bold text-ink">{{ __('tracking.form_heading') }}</h2>
 
             <form method="GET" action="{{ route('tracking.index', app()->getLocale()) }}" class="mt-6 flex gap-2">
                 <label for="number" class="sr-only">{{ __('tracking.form_label') }}</label>

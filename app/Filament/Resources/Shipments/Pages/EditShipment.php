@@ -2,8 +2,6 @@
 
 namespace App\Filament\Resources\Shipments\Pages;
 
-use App\Filament\Resources\Shipments\Actions\InvoiceAction;
-use App\Filament\Resources\Shipments\Actions\WaybillAction;
 use App\Filament\Resources\Shipments\ShipmentResource;
 use App\Services\ShipmentEventRecorder;
 use Filament\Actions\DeleteAction;
@@ -16,28 +14,21 @@ class EditShipment extends EditRecord
     /** @var array<string, mixed> */
     protected array $eventData = [];
 
+    // Nothing in the topbar; Save/Delete/Cancel live in the footer below the form.
+    // Facture and Lettre de transport stay on the shipments table row menu only.
     protected function getHeaderActions(): array
     {
-        return [
-            InvoiceAction::make(),
-            WaybillAction::make(),
-            DeleteAction::make(),
-        ];
+        return [];
     }
 
     /** @return array<int, mixed> */
-    public function getSidebarFormActions(): array
+    protected function getFormActions(): array
     {
         return [
             $this->getSaveFormAction(),
+            DeleteAction::make(),
             $this->getCancelFormAction(),
         ];
-    }
-
-    // The schema renders these in the sidebar instead.
-    protected function getFormActions(): array
-    {
-        return [];
     }
 
     protected function mutateFormDataBeforeSave(array $data): array
@@ -52,11 +43,14 @@ class EditShipment extends EditRecord
         if (app(ShipmentEventRecorder::class)->record($this->record, $this->eventData)) {
             // Cleared so the next save doesn't post the same event a second time.
             $this->form->fill([
-                ...$this->form->getState(shouldCallHooks: false),
+                ...$this->form->getState(shouldCallHooksBefore: false),
                 'event_status' => null,
                 'event_location' => null,
                 'event_remarks' => null,
             ]);
         }
+
+        // Saved — the autosaved draft in localStorage has nothing left to protect.
+        $this->dispatch('shipment-draft-saved');
     }
 }

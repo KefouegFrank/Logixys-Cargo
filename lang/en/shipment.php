@@ -34,4 +34,20 @@ return [
         'warehouse' => 'Warehouse',
         'terminal' => 'Terminal',
     ],
+
+    'package_type' => [
+        'carton' => 'Box',
+        'caisse' => 'Crate',
+        'palette' => 'Pallet',
+        'conteneur' => 'Container',
+        'enveloppe' => 'Envelope',
+        'fut' => 'Drum',
+    ],
+
+    'payment_mode' => [
+        'virement' => 'Bank transfer',
+        'especes' => 'Cash',
+        'carte' => 'Card',
+        'credit' => 'Credit account',
+    ],
 ];

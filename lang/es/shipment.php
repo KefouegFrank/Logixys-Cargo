@@ -32,4 +32,20 @@ return [
         'warehouse' => 'Almacén',
         'terminal' => 'Terminal',
     ],
+
+    'package_type' => [
+        'carton' => 'Caja',
+        'caisse' => 'Cajón',
+        'palette' => 'Palet',
+        'conteneur' => 'Contenedor',
+        'enveloppe' => 'Sobre',
+        'fut' => 'Bidón',
+    ],
+
+    'payment_mode' => [
+        'virement' => 'Transferencia bancaria',
+        'especes' => 'Efectivo',
+        'carte' => 'Tarjeta',
+        'credit' => 'Cuenta de crédito',
+    ],
 ];

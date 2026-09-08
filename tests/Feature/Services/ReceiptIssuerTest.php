@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Services;
 
+use App\Enums\PaymentMode;
 use App\Enums\ServiceType;
 use App\Enums\ShipmentMode;
 use App\Enums\ShipmentStatus;
@@ -61,6 +62,16 @@ class ReceiptIssuerTest extends TestCase
         $pdf = app(PdfRenderer::class)->waybill($this->shipment());
 
         $this->assertStringStartsWith('%PDF-', $pdf);
+    }
+
+    public function test_the_waybill_renders_with_every_enum_backed_field_set(): void
+    {
+        // payment_mode had no model cast, so the waybill's ->label() call fatalled on a
+        // raw string whenever a shipment actually had a payment mode recorded.
+        $shipment = $this->shipment(['payment_mode' => PaymentMode::Virement]);
+
+        $this->assertInstanceOf(PaymentMode::class, $shipment->payment_mode);
+        $this->assertStringStartsWith('%PDF-', app(PdfRenderer::class)->waybill($shipment));
     }
 
     /** @param array<string, mixed> $attributes */

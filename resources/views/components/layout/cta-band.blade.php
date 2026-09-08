@@ -5,7 +5,7 @@
     fills only the lower half in footer navy, so the seam runs through the middle
     of the card and it straddles both — as in the reference.
 --}}
-<div class="relative">
+<div class="relative print:hidden">
     <div class="absolute inset-x-0 bottom-0 top-1/2 bg-navy-950" aria-hidden="true"></div>
 
     <x-layout.container class="relative">

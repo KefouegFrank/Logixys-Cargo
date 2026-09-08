@@ -8,11 +8,21 @@ use App\Enums\ShipmentStatus;
 use App\Models\Shipment;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class TrackingControllerTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // ShipmentEvent geocodes a location_label on write; no test here should reach
+        // the real Nominatim service.
+        Http::fake(['nominatim.openstreetmap.org/*' => Http::response([['lat' => '48.8566', 'lon' => '2.3522']])]);
+    }
 
     public function test_root_redirects_to_french(): void
     {

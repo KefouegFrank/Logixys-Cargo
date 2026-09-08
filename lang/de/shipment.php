@@ -32,4 +32,20 @@ return [
         'warehouse' => 'Lager',
         'terminal' => 'Terminal',
     ],
+
+    'package_type' => [
+        'carton' => 'Karton',
+        'caisse' => 'Kiste',
+        'palette' => 'Palette',
+        'conteneur' => 'Container',
+        'enveloppe' => 'Umschlag',
+        'fut' => 'Fass',
+    ],
+
+    'payment_mode' => [
+        'virement' => 'Überweisung',
+        'especes' => 'Bargeld',
+        'carte' => 'Kartenzahlung',
+        'credit' => 'Kreditkonto',
+    ],
 ];

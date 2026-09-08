@@ -54,12 +54,14 @@ class LocationPinField extends Field
 
     public function getCenterLat(): float
     {
-        return (float) ($this->getState()['lat'] ?? 46.6034);
+        // A field with no matching model attribute can hydrate as null on edit
+        // rather than the default array — hence the (array) cast before indexing.
+        return (float) (((array) $this->getState())['lat'] ?? 46.6034);
     }
 
     public function getCenterLng(): float
     {
-        return (float) ($this->getState()['lng'] ?? 2.2137);
+        return (float) (((array) $this->getState())['lng'] ?? 2.2137);
     }
 
     // Siblings live under the same container as this field.

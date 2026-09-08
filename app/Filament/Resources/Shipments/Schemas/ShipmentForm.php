@@ -25,13 +25,13 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TimePicker;
-use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Text;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
@@ -44,6 +44,8 @@ class ShipmentForm
         return $schema
             ->columns(3)
             ->components([
+                self::draftAutosave()->columnSpanFull(),
+
                 Group::make([
                     self::trackingSection(),
                     self::detailsSection(),
@@ -52,7 +54,6 @@ class ShipmentForm
                 Group::make([
                     self::statusSection(),
                     self::mapSection(),
-                    self::formActions(),
                 ])->columnSpan(1),
 
                 // Full width: the packages table carries eight columns and gets cramped
@@ -61,6 +62,16 @@ class ShipmentForm
                     self::packagesSection(),
                     self::chargesSection(),
                 ])->columnSpan(3),
+            ]);
+    }
+
+    // Autosaves the in-progress form to the browser's localStorage and offers to restore
+    // it on reopening — a crash, a reload, or an accidental tab close loses nothing typed.
+    private static function draftAutosave(): View
+    {
+        return View::make('filament.shipments.draft-autosave')
+            ->viewData(fn (?Shipment $record, string $operation): array => [
+                'draftKey' => 'shipment-draft:'.$operation.($record ? ":{$record->id}" : ''),
             ]);
     }
 
@@ -77,6 +88,11 @@ class ShipmentForm
                     ->required()
                     ->maxLength(20)
                     ->unique(ignoreRecord: true)
+                    // Editable, but locked to the shape the public tracking page checks
+                    // before it ever queries the database — anything else is unfindable
+                    // by the customer no matter how correctly it's saved.
+                    ->regex(TrackingNumberGenerator::formatRegex())
+                    ->validationMessages(['regex' => 'Doit suivre le format LGXY + 9 chiffres + -CARGO, ex. LGXY123456789-CARGO.'])
                     // Dehydrated so the number shown on screen is the one that gets saved,
                     // rather than a preview the model would replace at insert time.
                     ->dehydrated()
@@ -163,13 +179,6 @@ class ShipmentForm
                         ->mapWithKeys(fn (ShipmentStatus $status) => [$status->value => $status->label()])
                         ->all()),
             ]);
-    }
-
-    // Create / Save / Cancel, rendered under the sidebar instead of the page footer.
-    private static function formActions(): Actions
-    {
-        return Actions::make(fn ($livewire) => $livewire->getSidebarFormActions())
-            ->fullWidth();
     }
 
     private static function detailsSection(): Section
@@ -297,7 +306,12 @@ class ShipmentForm
             ->getOptionLabelFromRecordUsing(fn (Location $record) => $record->label())
             ->searchable(['name', 'city'])
             ->preload()
-            ->required()
+            // Required only on create: it's the sole way to fill the NOT NULL *_label
+            // column, so a new shipment needs it. On edit, that column already holds a
+            // value — from the form or, for shipments inserted directly (the seeder,
+            // for one), never through a Location — so re-requiring the picker there
+            // blocked editing anything about them until an unrelated field was touched.
+            ->required(fn (string $operation) => $operation === 'create')
             ->live()
             ->afterStateUpdated(function (Set $set, $state) use ($prefix) {
                 $location = $state ? Location::find($state) : null;
@@ -404,9 +418,12 @@ class ShipmentForm
                 TextInput::make('payment_status')->label('Statut de paiement')->default('unpaid')->required()->maxLength(16),
                 TextInput::make('currency')->label('Devise')->default('EUR')->required()->maxLength(3),
                 Textarea::make('tax_exemption_note')->label('Note d\'exonération')->rows(2)->columnSpanFull(),
-                TextInput::make('total_ht')->label('Total HT')->numeric()->prefix('€'),
-                TextInput::make('tax_amount')->label('Montant de la taxe')->numeric()->prefix('€'),
-                TextInput::make('total_ttc')->label('Total TTC')->numeric()->prefix('€'),
+                // Filled by recalculateTotals() below as soon as a charge field is
+                // touched; defaulted so a shipment saved before that ever fires — no
+                // charges entered at all — doesn't submit these as null.
+                TextInput::make('total_ht')->label('Total HT')->numeric()->prefix('€')->default(0),
+                TextInput::make('tax_amount')->label('Montant de la taxe')->numeric()->prefix('€')->default(0),
+                TextInput::make('total_ttc')->label('Total TTC')->numeric()->prefix('€')->default(0),
             ]);
     }
 

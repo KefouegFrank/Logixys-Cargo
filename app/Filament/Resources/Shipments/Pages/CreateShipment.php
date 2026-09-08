@@ -18,20 +18,8 @@ class CreateShipment extends CreateRecord
         return 'Ajouter un nouvel envoi';
     }
 
-    /** @return array<int, mixed> */
-    public function getSidebarFormActions(): array
-    {
-        return [
-            $this->getCreateFormAction(),
-            $this->getCancelFormAction(),
-        ];
-    }
-
-    // The schema renders these in the sidebar instead.
-    protected function getFormActions(): array
-    {
-        return [];
-    }
+    // Create / Cancel render in Filament's default full-width footer, at the bottom
+    // of the page — no override needed here.
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
@@ -43,5 +31,9 @@ class CreateShipment extends CreateRecord
     protected function afterCreate(): void
     {
         app(ShipmentEventRecorder::class)->record($this->record, $this->eventData);
+
+        // Saved — the autosaved draft in localStorage would otherwise resurface on the
+        // next new shipment and offer to restore this one.
+        $this->dispatch('shipment-draft-saved');
     }
 }

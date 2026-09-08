@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 
 class TrackingController extends Controller
 {
-
     public function index(Request $request, string $locale): View|RedirectResponse
     {
         $number = $request->query('number');
@@ -34,7 +33,7 @@ class TrackingController extends Controller
             return $this->notFound();
         }
 
-        $shipment = Shipment::with('events')
+        $shipment = Shipment::with(['events', 'packages'])
             ->where('tracking_number', $normalized)
             ->first();
 

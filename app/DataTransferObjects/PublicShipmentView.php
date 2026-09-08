@@ -10,7 +10,10 @@ use Carbon\CarbonImmutable;
 
 final class PublicShipmentView
 {
-    /** @param array<int, PublicShipmentEvent> $events */
+    /**
+     * @param  array<int, PublicShipmentEvent>  $events
+     * @param  array<int, PublicShipmentPackage>  $packages
+     */
     private function __construct(
         public readonly string $trackingNumber,
         public readonly ShipmentStatus $status,
@@ -32,6 +35,7 @@ final class PublicShipmentView
         public readonly ?CarbonImmutable $pickupDate,
         public readonly ?CarbonImmutable $expectedDeliveryDate,
         public readonly array $events,
+        public readonly array $packages,
     ) {}
 
     public static function fromModel(Shipment $shipment): self
@@ -60,6 +64,10 @@ final class PublicShipmentView
                 ->where('is_public', true)
                 ->sortBy('occurred_at')
                 ->map(fn ($event) => PublicShipmentEvent::fromModel($event))
+                ->values()
+                ->all(),
+            packages: $shipment->packages
+                ->map(fn ($package) => PublicShipmentPackage::fromModel($package))
                 ->values()
                 ->all(),
         );

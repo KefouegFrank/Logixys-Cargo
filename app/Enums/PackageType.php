@@ -2,7 +2,9 @@
 
 namespace App\Enums;
 
-enum PackageType: string
+use Filament\Support\Contracts\HasLabel;
+
+enum PackageType: string implements HasLabel
 {
     case Carton = 'carton';
     case Caisse = 'caisse';
@@ -10,4 +12,14 @@ enum PackageType: string
     case Conteneur = 'conteneur';
     case Enveloppe = 'enveloppe';
     case Fut = 'fut';
+
+    public function label(): string
+    {
+        return __('shipment.package_type.'.$this->value);
+    }
+
+    public function getLabel(): string
+    {
+        return $this->label();
+    }
 }

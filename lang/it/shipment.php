@@ -32,4 +32,20 @@ return [
         'warehouse' => 'Magazzino',
         'terminal' => 'Terminal',
     ],
+
+    'package_type' => [
+        'carton' => 'Scatola',
+        'caisse' => 'Cassa',
+        'palette' => 'Pallet',
+        'conteneur' => 'Container',
+        'enveloppe' => 'Busta',
+        'fut' => 'Fusto',
+    ],
+
+    'payment_mode' => [
+        'virement' => 'Bonifico bancario',
+        'especes' => 'Contanti',
+        'carte' => 'Carta',
+        'credit' => 'Conto credito',
+    ],
 ];

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PaymentMode;
 use App\Enums\ServiceType;
 use App\Enums\ShipmentMode;
 use App\Enums\ShipmentStatus;
@@ -99,6 +100,7 @@ class Shipment extends Model
             'status' => ShipmentStatus::class,
             'service_type' => ServiceType::class,
             'shipment_mode' => ShipmentMode::class,
+            'payment_mode' => PaymentMode::class,
             'origin_lat' => 'decimal:7',
             'origin_lng' => 'decimal:7',
             'destination_lat' => 'decimal:7',

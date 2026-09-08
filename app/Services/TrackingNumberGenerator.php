@@ -45,7 +45,21 @@ class TrackingNumberGenerator
 
     public static function matchesFormat(string $normalized): bool
     {
-        return (bool) preg_match('/^'.self::PREFIX.'\d{'.self::DIGITS.'}'.self::SUFFIX.'$/', $normalized);
+        return (bool) preg_match(self::pattern(), $normalized);
+    }
+
+    /**
+     * The same shape as a delimited regex, for the admin form field — an agent can edit
+     * the auto-generated number, but not save one the public tracking page would reject.
+     */
+    public static function formatRegex(): string
+    {
+        return self::pattern();
+    }
+
+    private static function pattern(): string
+    {
+        return '/^'.self::PREFIX.'\d{'.self::DIGITS.'}'.self::SUFFIX.'$/';
     }
 
     protected function randomDigits(): string

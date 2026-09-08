@@ -17,7 +17,7 @@
     ];
 @endphp
 
-<footer class="relative bg-navy-950 text-navy-200">
+<footer class="relative bg-navy-950 text-navy-200 print:hidden">
     <x-layout.container>
         {{--
             Mobile: single stacked column. Tablet: brand spans the full row on

@@ -9,7 +9,7 @@
     @keydown.escape.window="open = false"
     @scroll.window.throttle.150ms.passive="scrolled = window.scrollY > 24"
     :class="scrolled && 'shadow-raised'"
-    class="sticky top-0 z-40 transition-shadow duration-300"
+    class="sticky top-0 z-40 transition-shadow duration-300 print:hidden"
 >
     {{--
         Desktop: a 2-column grid, not two stacked bands. The logo spans both

@@ -39,6 +39,13 @@
                 this.$refs.map.innerHTML = '';
             }
 
+            // On edit, a field with no matching model attribute can hydrate as a bare
+            // null instead of the {lat,lng,isManual} shape — normalize it back so every
+            // later read of `state` can assume that shape.
+            if (this.state === null || this.state === undefined) {
+                this.state = { lat: null, lng: null, isManual: false };
+            }
+
             const hasPosition = this.state.lat && this.state.lng;
 
             this.map = L.map(this.$refs.map).setView(
@@ -60,7 +67,7 @@
             });
 
             this.$watch('state', (value) => {
-                if (value.lat && value.lng) {
+                if (value?.lat && value?.lng) {
                     this.placeMarker(value.lat, value.lng);
                     this.map.setView([value.lat, value.lng], Math.max(this.map.getZoom(), 13));
                 } else if (this.marker) {

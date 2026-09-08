@@ -153,6 +153,19 @@ class CreateShipmentTest extends TestCase
         $this->assertCount(0, $shipment->events);
     }
 
+    public function test_a_tracking_number_the_public_page_would_reject_cannot_be_saved(): void
+    {
+        $this->actingAs($this->admin());
+
+        // A shape the public tracking page's own format check would refuse to look up.
+        Livewire::test(CreateShipment::class)
+            ->fillForm([...$this->validForm(), 'tracking_number' => 'CEEU123456789-CARGO'])
+            ->call('create')
+            ->assertHasFormErrors(['tracking_number' => 'regex']);
+
+        $this->assertSame(0, Shipment::count());
+    }
+
     public function test_the_derived_fields_track_the_package_rows(): void
     {
         $this->actingAs($this->admin());
