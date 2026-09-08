@@ -18,6 +18,8 @@
     'centerLat' => 46.6034,
     'centerLng' => 2.2137,
     'height' => '420px',
+    // 'vehicle' is the shipment pin; 'office' is the static one on the contact page.
+    'variant' => 'vehicle',
 ])
 
 @php
@@ -42,6 +44,7 @@
         marker: null,
         failed: false,
         editable: @js((bool) $editable),
+        variant: @js($variant),
         state: {!! $stateJs !!},
         locationLabel: {!! $locationJs !!},
         statusValue: {!! $statusJs !!},
@@ -110,15 +113,17 @@
             setTimeout(() => this.map.invalidateSize(), 300);
         },
 
-        vehicleIcon() {
+        markerIcon() {
+            // Single quotes only: this string lives inside the x-data attribute, and a
+            // double quote would close it.
+            const glyph = this.variant === 'office' ? '📍' : '🚚';
+
             return L.divIcon({
                 className: '',
                 iconSize: [46, 46],
                 iconAnchor: [23, 46],
                 popupAnchor: [0, -46],
-                // Single quotes only: this string lives inside the x-data attribute, and a
-                // double quote would close it.
-                html: `<div style='width:46px;height:46px;border-radius:9999px;background:#102946;border:3px solid #fff;box-shadow:0 2px 10px rgba(16,41,70,.45);display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1'>🚚</div>`,
+                html: `<div style='width:46px;height:46px;border-radius:9999px;background:#102946;border:3px solid #fff;box-shadow:0 2px 10px rgba(16,41,70,.45);display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1'>${glyph}</div>`,
             });
         },
 
@@ -142,7 +147,7 @@
                 return;
             }
 
-            this.marker = L.marker([lat, lng], { draggable: this.editable, icon: this.vehicleIcon() })
+            this.marker = L.marker([lat, lng], { draggable: this.editable, icon: this.markerIcon() })
                 .addTo(this.map)
                 .bindPopup(this.popupHtml(), { closeButton: true, offset: [0, 0] })
                 .openPopup();

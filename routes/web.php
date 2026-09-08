@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\TrackingController;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Support\Facades\Route;
@@ -14,7 +15,10 @@ Route::prefix('{locale}')
         Route::view('/', 'pages.home')->name('home');
         Route::view('a-propos', 'pages.about')->name('about');
         Route::view('services', 'pages.services')->name('services');
-        Route::view('contact', 'pages.contact')->name('contact');
+        Route::get('contact', [ContactController::class, 'index'])->name('contact');
+        Route::post('contact', [ContactController::class, 'store'])
+            ->name('contact.store')
+            ->middleware('throttle:5,1');
 
         // Legal pages ship with placeholder text; the client supplies the wording.
         Route::view('mentions-legales', 'pages.legal.notice')->name('legal.notice');

@@ -70,6 +70,10 @@ return [
         'phone_href' => '+33000000000',
         'hours_weekday' => 'Lun – Ven : 08h00 – 18h00',
         'hours_weekend' => 'Sam – Dim : fermé',
+        // Where the contact page drops its pin. Paris until the client confirms the
+        // office; both are editable from the admin Settings page.
+        'map_lat' => '48.8566',
+        'map_lng' => '2.3522',
     ],
 
     'fonts' => [

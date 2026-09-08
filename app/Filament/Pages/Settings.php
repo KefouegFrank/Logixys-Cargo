@@ -63,6 +63,13 @@ class Settings extends Page
                             ->helperText('Format international sans espaces, ex. +33123456789.')
                             ->maxLength(40),
                     ]),
+                Section::make('Position sur la carte')
+                    ->description('Le point affiché sur la page contact.')
+                    ->columns(2)
+                    ->schema([
+                        TextInput::make('map_lat')->label('Latitude')->numeric()->minValue(-90)->maxValue(90),
+                        TextInput::make('map_lng')->label('Longitude')->numeric()->minValue(-180)->maxValue(180),
+                    ]),
                 Section::make('Horaires')
                     ->columns(2)
                     ->schema([
