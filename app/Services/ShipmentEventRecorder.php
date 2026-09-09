@@ -49,8 +49,8 @@ class ShipmentEventRecorder
 
         $status = $status instanceof ShipmentStatus ? $status : ShipmentStatus::from($status);
 
-        DB::transaction(function () use ($shipment, $event, $status) {
-            $shipment->events()->create([
+        $record = DB::transaction(function () use ($shipment, $event, $status) {
+            $record = $shipment->events()->create([
                 'status' => $status,
                 'location_label' => $event['event_location'] ?? null,
                 'location_lat' => $event['event_position']['lat'] ?? null,
@@ -69,7 +69,12 @@ class ShipmentEventRecorder
             }
 
             $shipment->save();
+
+            return $record;
         });
+
+        // Outside the transaction: a rollback must not leave mail already on the queue.
+        app(ShipmentNotifier::class)->statusChanged($shipment->refresh(), $record);
 
         return true;
     }

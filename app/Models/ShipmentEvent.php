@@ -24,6 +24,7 @@ class ShipmentEvent extends Model
             'location_lng' => 'decimal:7',
             'is_manual_position' => 'boolean',
             'is_public' => 'boolean',
+            'notified_at' => 'datetime',
             'occurred_at' => 'datetime',
         ];
     }
@@ -45,6 +46,15 @@ class ShipmentEvent extends Model
                 }
             }
         });
+    }
+
+    /**
+     * The one column allowed to settle after insert. Written straight to the row because
+     * the append-only guard above blocks ordinary updates.
+     */
+    public function stampNotified(): void
+    {
+        static::withoutEvents(fn () => $this->newQuery()->whereKey($this->id)->update(['notified_at' => now()]));
     }
 
     /** @return BelongsTo<Shipment, $this> */

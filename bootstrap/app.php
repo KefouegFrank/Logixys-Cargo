@@ -16,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'locale' => SetLocale::class,
         ]);
+
+        // Signed by Resend rather than by a session.
+        $middleware->validateCsrfTokens(except: ['webhooks/resend']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

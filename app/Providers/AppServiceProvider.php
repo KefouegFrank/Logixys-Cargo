@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Setting;
 use App\Services\Geocoding\GeocoderProvider;
 use App\Services\Geocoding\NominatimGeocoder;
+use App\Services\ShipmentNotifier;
 use Filament\Forms\Components\Select;
 use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
@@ -20,6 +21,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // One instance per request: it batches notices so a single save sends a single mail.
+        $this->app->singleton(ShipmentNotifier::class);
+
         $this->app->bind(GeocoderProvider::class, function () {
             $provider = config('services.geocoder.provider');
 

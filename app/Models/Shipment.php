@@ -9,6 +9,7 @@ use App\Enums\ShipmentStatus;
 use App\Services\DistanceCalculator;
 use App\Services\Geocoding\GeocodingService;
 use App\Services\PackageTotalsCalculator;
+use App\Services\ShipmentNotifier;
 use App\Services\ShipmentTotalsCalculator;
 use App\Services\TrackingNumberGenerator;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -106,6 +107,11 @@ class Shipment extends Model
                 )
                 : null;
         });
+
+        // Both parties hear about a shipment appearing and about later edits to it. The
+        // notifier merges these with any status change from the same save.
+        static::created(fn (Shipment $shipment) => app(ShipmentNotifier::class)->shipmentCreated($shipment));
+        static::updated(fn (Shipment $shipment) => app(ShipmentNotifier::class)->shipmentUpdated($shipment));
     }
 
     protected function casts(): array

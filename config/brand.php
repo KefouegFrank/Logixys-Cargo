@@ -65,7 +65,7 @@ return [
     // PLACEHOLDER — awaiting the client's real details.
     'contact' => [
         'address' => 'Adresse à confirmer',
-        'email' => 'contact@logixyscargo.fr',
+        'email' => 'info@logixyscargo.fr',
         'phone' => '+33 0 00 00 00 00',
         'phone_href' => '+33000000000',
         'hours_weekday' => 'Lun – Ven : 08h00 – 18h00',

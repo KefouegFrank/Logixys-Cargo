@@ -1,11 +1,15 @@
 <?php
 
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ResendWebhookController;
 use App\Http\Controllers\TrackingController;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/'.config('app.locale'));
+
+// Outside the locale group: Resend calls this, not a browser, and it signs its own requests.
+Route::post('webhooks/resend', ResendWebhookController::class)->name('webhooks.resend');
 
 Route::prefix('{locale}')
     ->where(['locale' => SetLocale::routePattern()])
