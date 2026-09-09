@@ -3,9 +3,9 @@
 namespace Tests\Feature\Services;
 
 use App\Enums\ServiceType;
-use App\Enums\ShipmentMode;
 use App\Enums\ShipmentStatus;
 use App\Models\Shipment;
+use App\Models\ShipmentMode;
 use App\Models\User;
 use App\Services\TrackingNumberGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -50,7 +50,7 @@ class TrackingNumberGeneratorTest extends TestCase
             'tracking_number' => $trackingNumber,
             'status' => ShipmentStatus::Pending,
             'service_type' => ServiceType::Road,
-            'shipment_mode' => ShipmentMode::DoorToDoor,
+            'shipment_mode' => ShipmentMode::DOOR_TO_DOOR,
             'shipper_name' => 'Shipper', 'shipper_city' => 'Paris',
             'receiver_name' => 'Receiver', 'receiver_city' => 'Lyon', 'receiver_country' => 'FR',
             'origin_label' => 'Paris', 'origin_lat' => 48.8566, 'origin_lng' => 2.3522,

@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\PaymentMode;
 use App\Enums\ServiceType;
-use App\Enums\ShipmentMode;
 use App\Enums\ShipmentStatus;
 use App\Services\DistanceCalculator;
 use App\Services\Geocoding\GeocodingService;
@@ -20,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Lang;
 
 #[Fillable([
-    'tracking_number', 'status', 'service_type', 'shipment_mode', 'carrier_name', 'carrier_reference', 'locale',
+    'tracking_number', 'status', 'service_type', 'shipment_mode', 'shipment_mode_id', 'carrier_name', 'carrier_reference', 'locale',
     'carrier_id',
     'shipper_name', 'shipper_company', 'shipper_email', 'shipper_phone', 'shipper_address', 'shipper_postcode', 'shipper_city', 'shipper_country',
     'receiver_name', 'receiver_company', 'receiver_email', 'receiver_phone', 'receiver_address', 'receiver_postcode', 'receiver_city', 'receiver_country',
@@ -33,7 +31,7 @@ use Illuminate\Support\Facades\Lang;
     'total_ht', 'tax_amount', 'total_ttc',
     'freight_cost', 'insurance_cost', 'customs_cost', 'other_cost',
     'tax_rate', 'tax_label', 'tax_exemption_note',
-    'payment_mode', 'payment_status', 'created_by',
+    'payment_mode', 'payment_mode_id', 'payment_status', 'created_by',
 ])]
 class Shipment extends Model
 {
@@ -119,8 +117,6 @@ class Shipment extends Model
         return [
             'status' => ShipmentStatus::class,
             'service_type' => ServiceType::class,
-            'shipment_mode' => ShipmentMode::class,
-            'payment_mode' => PaymentMode::class,
             'origin_lat' => 'decimal:7',
             'origin_lng' => 'decimal:7',
             'destination_lat' => 'decimal:7',
@@ -144,6 +140,17 @@ class Shipment extends Model
         ];
     }
 
+    /**
+     * "75001 Paris, FR" from whichever of those the row actually has. Ville and Pays left
+     * the booking form, so older rows carry them and newer ones lean on the address line.
+     */
+    public function partyLocality(string $prefix): string
+    {
+        $city = trim($this->{"{$prefix}_postcode"}.' '.$this->{"{$prefix}_city"});
+
+        return trim($city.', '.$this->{"{$prefix}_country"}, ' ,');
+    }
+
     // payment_status is a free-text column on the admin form, so a value with no
     // translation shows exactly as it was typed.
     public function paymentStatusLabel(): string
@@ -151,6 +158,18 @@ class Shipment extends Model
         $key = 'shipment.payment_status.'.$this->payment_status;
 
         return Lang::has($key) ? __($key) : (string) $this->payment_status;
+    }
+
+    /** @return BelongsTo<PaymentMode, $this> */
+    public function paymentMode(): BelongsTo
+    {
+        return $this->belongsTo(PaymentMode::class, 'payment_mode_id');
+    }
+
+    /** @return BelongsTo<ShipmentMode, $this> */
+    public function shipmentMode(): BelongsTo
+    {
+        return $this->belongsTo(ShipmentMode::class, 'shipment_mode_id');
     }
 
     /** @return BelongsTo<Carrier, $this> */

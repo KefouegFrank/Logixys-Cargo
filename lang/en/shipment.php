@@ -21,12 +21,6 @@ return [
         'customs' => 'Customs clearance',
     ],
 
-    'shipment_mode' => [
-        'door_to_door' => 'Door to door',
-        'door_to_port' => 'Door to port',
-        'port_to_port' => 'Port to port',
-    ],
-
     'location_type' => [
         'city' => 'City',
         'port' => 'Port',
@@ -42,13 +36,6 @@ return [
         'conteneur' => 'Container',
         'enveloppe' => 'Envelope',
         'fut' => 'Drum',
-    ],
-
-    'payment_mode' => [
-        'virement' => 'Bank transfer',
-        'especes' => 'Cash',
-        'carte' => 'Card',
-        'credit' => 'Credit account',
     ],
 
     'payment_status' => [

@@ -68,7 +68,7 @@
                     <div class="label">Transport</div>
                     {{ $shipment->origin_label }} → {{ $shipment->destination_label }}<br>
                     <span class="muted">
-                        {{ $shipment->service_type->label() }} · {{ $shipment->shipment_mode->label() }}
+                        {{ $shipment->service_type->label() }} · {{ $shipment->shipment_mode }}
                         @if ($shipment->carrier_name) · {{ $shipment->carrier_name }} @endif
                     </span><br>
                     <span class="muted">

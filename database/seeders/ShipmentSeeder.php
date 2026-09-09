@@ -4,11 +4,11 @@ namespace Database\Seeders;
 
 use App\Enums\PackageType;
 use App\Enums\ServiceType;
-use App\Enums\ShipmentMode;
 use App\Enums\ShipmentStatus;
 use App\Enums\UserRole;
 use App\Models\Shipment;
 use App\Models\ShipmentEvent;
+use App\Models\ShipmentMode;
 use App\Models\User;
 use App\Services\TrackingNumberGenerator;
 use Illuminate\Database\Seeder;
@@ -30,6 +30,7 @@ class ShipmentSeeder extends Seeder
                 'status' => end($lane['statuses']),
                 'service_type' => $lane['service_type'],
                 'shipment_mode' => $lane['shipment_mode'],
+                'shipment_mode_id' => ShipmentMode::firstOrCreate(['name' => $lane['shipment_mode']])->id,
                 'locale' => 'fr',
                 'shipper_name' => $lane['shipper_name'],
                 'shipper_city' => $lane['origin_city'],
@@ -93,7 +94,7 @@ class ShipmentSeeder extends Seeder
         return [
             [
                 'service_type' => ServiceType::Road,
-                'shipment_mode' => ShipmentMode::DoorToDoor,
+                'shipment_mode' => ShipmentMode::DOOR_TO_DOOR,
                 'shipper_name' => 'Atelier Dubois', 'origin_city' => 'Paris', 'origin_country' => 'FR',
                 'receiver_name' => 'Menuiserie Lyonnaise', 'destination_city' => 'Lyon', 'destination_country' => 'FR',
                 'origin_label' => 'Paris, France', 'origin_lat' => 48.8566, 'origin_lng' => 2.3522,
@@ -108,7 +109,7 @@ class ShipmentSeeder extends Seeder
             ],
             [
                 'service_type' => ServiceType::Air,
-                'shipment_mode' => ShipmentMode::DoorToDoor,
+                'shipment_mode' => ShipmentMode::DOOR_TO_DOOR,
                 'shipper_name' => 'Cosmetiques de Provence', 'origin_city' => 'Paris', 'origin_country' => 'FR',
                 'receiver_name' => 'Boutique Manhattan', 'destination_city' => 'New York', 'destination_country' => 'US',
                 'origin_label' => 'Paris CDG, France', 'origin_lat' => 49.0097, 'origin_lng' => 2.5479,
@@ -123,7 +124,7 @@ class ShipmentSeeder extends Seeder
             ],
             [
                 'service_type' => ServiceType::Sea,
-                'shipment_mode' => ShipmentMode::PortToPort,
+                'shipment_mode' => ShipmentMode::PORT_TO_PORT,
                 'shipper_name' => 'Materiaux Normands', 'origin_city' => 'Le Havre', 'origin_country' => 'FR',
                 'receiver_name' => 'BTP Douala', 'destination_city' => 'Douala', 'destination_country' => 'CM',
                 'origin_label' => 'Le Havre, France', 'origin_lat' => 49.4944, 'origin_lng' => 0.1079,
@@ -138,7 +139,7 @@ class ShipmentSeeder extends Seeder
             ],
             [
                 'service_type' => ServiceType::Warehousing,
-                'shipment_mode' => ShipmentMode::DoorToDoor,
+                'shipment_mode' => ShipmentMode::DOOR_TO_DOOR,
                 'shipper_name' => 'Distribution Ile-de-France', 'origin_city' => 'Paris', 'origin_country' => 'FR',
                 'receiver_name' => 'Entrepot Logixys', 'destination_city' => 'Paris', 'destination_country' => 'FR',
                 'origin_label' => 'Paris, France', 'origin_lat' => 48.8566, 'origin_lng' => 2.3522,
@@ -153,7 +154,7 @@ class ShipmentSeeder extends Seeder
             ],
             [
                 'service_type' => ServiceType::Customs,
-                'shipment_mode' => ShipmentMode::PortToPort,
+                'shipment_mode' => ShipmentMode::PORT_TO_PORT,
                 'shipper_name' => 'Import Export Med', 'origin_city' => 'Marseille', 'origin_country' => 'FR',
                 'receiver_name' => 'Entrepot sous douane', 'destination_city' => 'Marseille', 'destination_country' => 'FR',
                 'origin_label' => 'Port de Marseille, France', 'origin_lat' => 43.2965, 'origin_lng' => 5.3698,

@@ -2,17 +2,16 @@
 
 namespace App\Filament\Resources\Shipments\Schemas;
 
-use App\Enums\LocationType;
 use App\Enums\PackageType;
-use App\Enums\PaymentMode;
 use App\Enums\ServiceType;
-use App\Enums\ShipmentMode;
 use App\Enums\ShipmentStatus;
 use App\Filament\Forms\Components\LocationPinField;
 use App\Models\Carrier;
 use App\Models\Location;
+use App\Models\PaymentMode;
 use App\Models\Shipment;
 use App\Models\ShipmentEvent;
+use App\Models\ShipmentMode;
 use App\Services\Geocoding\GeocodingService;
 use App\Services\PackageTotalsCalculator;
 use App\Services\ShipmentEventRecorder;
@@ -108,6 +107,8 @@ class ShipmentForm
 
                 // Filled from the Origine / Destination selects below; the shipment keeps
                 // its own copy so later edits to a location never rewrite past bookings.
+                Hidden::make('shipment_mode'),
+                Hidden::make('payment_mode'),
                 Hidden::make('origin_label'),
                 Hidden::make('origin_lat'),
                 Hidden::make('origin_lng'),
@@ -159,8 +160,7 @@ class ShipmentForm
                         ->all()),
                 Select::make('event_status')
                     ->label('Statut')
-                    ->options(ShipmentStatus::class)
-                    ->placeholder('Sélectionner le type'),
+                    ->options(ShipmentStatus::class),
                 Textarea::make('event_remarks')
                     ->label('Remarques')
                     ->rows(3),
@@ -231,12 +231,6 @@ class ShipmentForm
             TextInput::make("{$prefix}_phone")->label('Numéro de téléphone')->tel()->maxLength(40),
             TextInput::make("{$prefix}_email")->label('E-mail')->email()->maxLength(150),
             TextInput::make("{$prefix}_address")->label('Adresse')->maxLength(255),
-            TextInput::make("{$prefix}_city")->label('Ville')->required()->maxLength(120),
-            TextInput::make("{$prefix}_country")
-                ->label('Pays')
-                ->default($prefix === 'shipper' ? 'FR' : null)
-                ->required()
-                ->maxLength(2),
         ];
     }
 
@@ -249,8 +243,18 @@ class ShipmentForm
             self::derived('total_weight_kg', 'Poids', 'kg'),
             self::derived('package_count', 'Forfaits'),
             Textarea::make('goods_description')->label('Produit')->rows(2),
-            Select::make('payment_mode')
-                ->label('Mode de paiement')->options(PaymentMode::class),
+            Select::make('payment_mode_id')
+                ->label('Mode de paiement')
+                ->relationship('paymentMode', 'name')
+                ->searchable()
+                ->preload()
+                ->live()
+                // payment_mode is the name kept on the shipment; the FK only records
+                // which row it came from, as with the carrier and the shipment mode.
+                ->afterStateUpdated(fn (Set $set, $state) => $set('payment_mode', $state ? PaymentMode::find($state)?->name : null))
+                ->createOptionForm([
+                    TextInput::make('name')->label('Nom')->required()->maxLength(120)->unique('payment_modes', 'name'),
+                ]),
             Select::make('carrier_id')
                 ->label('Transporteur')
                 ->relationship('carrier', 'name')
@@ -262,9 +266,6 @@ class ShipmentForm
                 ->afterStateUpdated(fn (Set $set, $state) => $set('carrier_name', $state ? Carrier::find($state)?->name : null))
                 ->createOptionForm([
                     TextInput::make('name')->label('Nom')->required()->maxLength(120),
-                    TextInput::make('code')->label('Code')->maxLength(20),
-                    TextInput::make('contact_email')->label('E-mail')->email()->maxLength(150),
-                    TextInput::make('contact_phone')->label('Téléphone')->tel()->maxLength(40),
                 ]),
             TimePicker::make('departure_time')->label('Heure de départ')->seconds(false),
             self::locationSelect('destination', 'Destination'),
@@ -279,9 +280,23 @@ class ShipmentForm
             TextInput::make('carrier_name')
                 ->label('Courier')
                 ->maxLength(120)
-                ->helperText('Repris du transporteur choisi'),
-            Select::make('shipment_mode')
-                ->label('Mode')->options(ShipmentMode::class)->required(),
+                ->helperText(''),
+            Select::make('shipment_mode_id')
+                ->label('Mode')
+                ->relationship('shipmentMode', 'name')
+                ->searchable()
+                ->preload()
+                // Required only on create, as with Origine and Destination: rows inserted
+                // outside this form carry the name with no FK, and re-requiring the picker
+                // would block editing anything about them.
+                ->required(fn (string $operation) => $operation === 'create')
+                ->live()
+                // shipment_mode is the name kept on the shipment; the FK only records
+                // which row it came from, as with the carrier.
+                ->afterStateUpdated(fn (Set $set, $state) => $set('shipment_mode', $state ? ShipmentMode::find($state)?->name : null))
+                ->createOptionForm([
+                    TextInput::make('name')->label('Nom')->required()->maxLength(120)->unique('shipment_modes', 'name'),
+                ]),
             self::derived('total_quantity', 'Quantité'),
             TextInput::make('freight_cost')
                 ->label('Total du fret')
@@ -329,15 +344,7 @@ class ShipmentForm
                 $set("{$prefix}_label", $location->label());
                 $set("{$prefix}_lat", $location->lat);
                 $set("{$prefix}_lng", $location->lng);
-            })
-            ->createOptionForm([
-                TextInput::make('name')->label('Nom')->required()->maxLength(150),
-                Select::make('type')->label('Type')->options(LocationType::class)->default(LocationType::City)->required(),
-                TextInput::make('city')->label('Ville')->maxLength(120),
-                TextInput::make('country')->label('Pays')->default('FR')->maxLength(2),
-                TextInput::make('lat')->label('Latitude')->numeric(),
-                TextInput::make('lng')->label('Longitude')->numeric(),
-            ]);
+            });
     }
 
     /**

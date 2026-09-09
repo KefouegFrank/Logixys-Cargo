@@ -3,12 +3,12 @@
 namespace Tests\Feature\Notifications;
 
 use App\Enums\ServiceType;
-use App\Enums\ShipmentMode;
 use App\Enums\ShipmentStatus;
 use App\Mail\ShipmentNotice;
 use App\Mail\ShipmentNoticeBrief;
 use App\Models\MailSuppression;
 use App\Models\Shipment;
+use App\Models\ShipmentMode;
 use App\Models\User;
 use App\Services\ShipmentEventRecorder;
 use App\Services\ShipmentNotifier;
@@ -226,7 +226,7 @@ class ShipmentNotifierTest extends TestCase
             'tracking_number' => 'LGXY'.fake()->unique()->numerify('#########').'-CARGO',
             'status' => ShipmentStatus::Pending,
             'service_type' => ServiceType::Road,
-            'shipment_mode' => ShipmentMode::DoorToDoor,
+            'shipment_mode' => ShipmentMode::DOOR_TO_DOOR,
             'locale' => 'fr',
             'shipper_name' => 'Jean Martin', 'shipper_city' => 'Paris', 'shipper_email' => 'sender@example.com',
             'receiver_name' => 'Ana Silva', 'receiver_city' => 'Lyon', 'receiver_country' => 'FR',

@@ -1,11 +1,9 @@
 {{-- Shipper or receiver block: everything the agent recorded for that party. --}}
 @props([
     'heading', 'name',
-    'company' => null, 'address' => null, 'postcode' => null,
-    'city' => null, 'country' => null, 'phone' => null, 'email' => null,
+    'company' => null, 'address' => null, 'locality' => null,
+    'phone' => null, 'email' => null,
 ])
-
-@php $locality = trim(trim($postcode.' '.$city).', '.$country, ' ,'); @endphp
 
 <x-tracking.section :heading="$heading">
     <div class="space-y-1 text-sm text-ink-muted">

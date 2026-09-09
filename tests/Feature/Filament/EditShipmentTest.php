@@ -3,11 +3,11 @@
 namespace Tests\Feature\Filament;
 
 use App\Enums\ServiceType;
-use App\Enums\ShipmentMode;
 use App\Enums\ShipmentStatus;
 use App\Enums\UserRole;
 use App\Filament\Resources\Shipments\Pages\EditShipment;
 use App\Models\Shipment;
+use App\Models\ShipmentMode;
 use App\Models\User;
 use App\Services\ShipmentEventRecorder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -132,7 +132,7 @@ class EditShipmentTest extends TestCase
             'tracking_number' => 'LGXY'.fake()->unique()->numerify('#########').'-CARGO',
             'status' => ShipmentStatus::Pending,
             'service_type' => ServiceType::Road,
-            'shipment_mode' => ShipmentMode::DoorToDoor,
+            'shipment_mode' => ShipmentMode::DOOR_TO_DOOR,
             'shipper_name' => 'Shipper', 'shipper_city' => 'Paris',
             'receiver_name' => 'Receiver', 'receiver_city' => 'Lyon', 'receiver_country' => 'FR',
             'origin_label' => 'Paris', 'origin_lat' => 48.8566, 'origin_lng' => 2.3522,

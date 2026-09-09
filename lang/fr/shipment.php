@@ -21,12 +21,6 @@ return [
         'customs' => 'Dédouanement',
     ],
 
-    'shipment_mode' => [
-        'door_to_door' => 'Porte à porte',
-        'door_to_port' => 'Porte à port',
-        'port_to_port' => 'Port à port',
-    ],
-
     'location_type' => [
         'city' => 'Ville',
         'port' => 'Port',
@@ -42,13 +36,6 @@ return [
         'conteneur' => 'Conteneur',
         'enveloppe' => 'Enveloppe',
         'fut' => 'Fût',
-    ],
-
-    'payment_mode' => [
-        'virement' => 'Virement bancaire',
-        'especes' => 'Espèces',
-        'carte' => 'Carte bancaire',
-        'credit' => 'Compte crédit',
     ],
 
     'payment_status' => [

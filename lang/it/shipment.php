@@ -19,11 +19,6 @@ return [
         'warehousing' => 'Stoccaggio e transito',
         'customs' => 'Sdoganamento',
     ],
-    'shipment_mode' => [
-        'door_to_door' => 'Porta a porta',
-        'door_to_port' => 'Porta a porto',
-        'port_to_port' => 'Porto a porto',
-    ],
 
     'location_type' => [
         'city' => 'Città',
@@ -40,13 +35,6 @@ return [
         'conteneur' => 'Container',
         'enveloppe' => 'Busta',
         'fut' => 'Fusto',
-    ],
-
-    'payment_mode' => [
-        'virement' => 'Bonifico bancario',
-        'especes' => 'Contanti',
-        'carte' => 'Carta',
-        'credit' => 'Conto credito',
     ],
 
     'payment_status' => [

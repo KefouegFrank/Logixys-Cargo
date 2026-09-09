@@ -19,11 +19,6 @@ return [
         'warehousing' => 'Almacenaje y tránsito',
         'customs' => 'Despacho de aduana',
     ],
-    'shipment_mode' => [
-        'door_to_door' => 'Puerta a puerta',
-        'door_to_port' => 'Puerta a puerto',
-        'port_to_port' => 'Puerto a puerto',
-    ],
 
     'location_type' => [
         'city' => 'Ciudad',
@@ -40,13 +35,6 @@ return [
         'conteneur' => 'Contenedor',
         'enveloppe' => 'Sobre',
         'fut' => 'Bidón',
-    ],
-
-    'payment_mode' => [
-        'virement' => 'Transferencia bancaria',
-        'especes' => 'Efectivo',
-        'carte' => 'Tarjeta',
-        'credit' => 'Cuenta de crédito',
     ],
 
     'payment_status' => [

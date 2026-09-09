@@ -4,13 +4,13 @@ namespace Tests\Feature\Filament;
 
 use App\Enums\LocationType;
 use App\Enums\ServiceType;
-use App\Enums\ShipmentMode;
 use App\Enums\ShipmentStatus;
 use App\Enums\UserRole;
 use App\Filament\Resources\Shipments\Pages\CreateShipment;
 use App\Models\Carrier;
 use App\Models\Location;
 use App\Models\Shipment;
+use App\Models\ShipmentMode;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -210,14 +210,10 @@ class CreateShipmentTest extends TestCase
         return [
             'carrier_id' => $carrier->id,
             'service_type' => ServiceType::Road->value,
-            'shipment_mode' => ShipmentMode::DoorToDoor->value,
+            'shipment_mode_id' => ShipmentMode::firstOrCreate(['name' => ShipmentMode::DOOR_TO_DOOR])->id,
             'locale' => 'fr',
             'shipper_name' => 'Atelier Dubois',
-            'shipper_city' => 'Paris',
-            'shipper_country' => 'FR',
             'receiver_name' => 'Menuiserie Lyonnaise',
-            'receiver_city' => 'Lyon',
-            'receiver_country' => 'FR',
             'origin_location_id' => $origin->id,
             'origin_label' => 'Paris, FR',
             'origin_lat' => 48.8566,
@@ -250,7 +246,7 @@ class CreateShipmentTest extends TestCase
             'tracking_number' => 'LGXY'.fake()->unique()->numerify('#########').'-CARGO',
             'status' => ShipmentStatus::Pending,
             'service_type' => ServiceType::Road,
-            'shipment_mode' => ShipmentMode::DoorToDoor,
+            'shipment_mode' => ShipmentMode::DOOR_TO_DOOR,
             'shipper_name' => 'Shipper', 'shipper_city' => 'Paris',
             'receiver_name' => 'Receiver', 'receiver_city' => 'Lyon', 'receiver_country' => 'FR',
             'origin_label' => 'Paris', 'origin_lat' => 48.8566, 'origin_lng' => 2.3522,

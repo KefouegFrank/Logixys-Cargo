@@ -63,13 +63,13 @@
             <tr>
                 <td class="party" colspan="2">
                     {{ $shipment->shipper_address }}<br>
-                    {{ $shipment->shipper_city }}, {{ $shipment->shipper_country }}<br>
+                    @if ($shipment->partyLocality('shipper')){{ $shipment->partyLocality('shipper') }}<br>@endif
                     {{ $shipment->shipper_phone }}<br>
                     {{ $shipment->shipper_email }}
                 </td>
                 <td class="party" colspan="2">
                     {{ $shipment->receiver_address }}<br>
-                    {{ $shipment->receiver_city }}, {{ $shipment->receiver_country }}<br>
+                    @if ($shipment->partyLocality('receiver')){{ $shipment->partyLocality('receiver') }}<br>@endif
                     {{ $shipment->receiver_phone }}<br>
                     {{ $shipment->receiver_email }}
                 </td>
@@ -83,8 +83,8 @@
             <tr>
                 <td><span class="lbl">Total du fret :</span> {{ $shipment->freight_cost }} {{ $shipment->currency }}</td>
                 <td><span class="lbl">Quantité :</span> {{ $shipment->total_quantity }}</td>
-                <td><span class="lbl">Mode de paiement :</span> {{ $shipment->payment_mode?->label() ?: '—' }}</td>
-                <td><span class="lbl">Mode :</span> {{ $shipment->shipment_mode->label() }}</td>
+                <td><span class="lbl">Mode de paiement :</span> {{ $shipment->payment_mode ?: '—' }}</td>
+                <td><span class="lbl">Mode :</span> {{ $shipment->shipment_mode }}</td>
             </tr>
             <tr>
                 <td><span class="lbl">Statut :</span> {{ $shipment->status->label() }}</td>

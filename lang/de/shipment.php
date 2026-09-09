@@ -19,11 +19,6 @@ return [
         'warehousing' => 'Lagerung und Transit',
         'customs' => 'Zollabfertigung',
     ],
-    'shipment_mode' => [
-        'door_to_door' => 'Haus zu Haus',
-        'door_to_port' => 'Haus zu Hafen',
-        'port_to_port' => 'Hafen zu Hafen',
-    ],
 
     'location_type' => [
         'city' => 'Stadt',
@@ -40,13 +35,6 @@ return [
         'conteneur' => 'Container',
         'enveloppe' => 'Umschlag',
         'fut' => 'Fass',
-    ],
-
-    'payment_mode' => [
-        'virement' => 'Überweisung',
-        'especes' => 'Bargeld',
-        'carte' => 'Kartenzahlung',
-        'credit' => 'Kreditkonto',
     ],
 
     'payment_status' => [

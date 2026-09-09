@@ -41,9 +41,7 @@
                     :name="$shipment->shipper_name"
                     :company="$shipment->shipper_company"
                     :address="$shipment->shipper_address"
-                    :postcode="$shipment->shipper_postcode"
-                    :city="$shipment->shipper_city"
-                    :country="$shipment->shipper_country"
+                    :locality="$shipment->partyLocality('shipper')"
                     :phone="$shipment->shipper_phone"
                     :email="$shipment->shipper_email"
                 />
@@ -52,9 +50,7 @@
                     :name="$shipment->receiver_name"
                     :company="$shipment->receiver_company"
                     :address="$shipment->receiver_address"
-                    :postcode="$shipment->receiver_postcode"
-                    :city="$shipment->receiver_city"
-                    :country="$shipment->receiver_country"
+                    :locality="$shipment->partyLocality('receiver')"
                     :phone="$shipment->receiver_phone"
                     :email="$shipment->receiver_email"
                 />
@@ -75,7 +71,7 @@
                     <x-tracking.field :label="__('tracking.result_status')">{{ $shipment->status->label() }}</x-tracking.field>
 
                     <x-tracking.field :label="__('tracking.result_service_type')">{{ $shipment->service_type?->label() }}</x-tracking.field>
-                    <x-tracking.field :label="__('tracking.result_shipment_mode')">{{ $shipment->shipment_mode?->label() }}</x-tracking.field>
+                    <x-tracking.field :label="__('tracking.result_shipment_mode')">{{ $shipment->shipment_mode }}</x-tracking.field>
                     <x-tracking.field :label="__('tracking.result_carrier')">{{ $shipment->carrier_name ?: $shipment->carrier?->name }}</x-tracking.field>
 
                     <x-tracking.field :label="__('tracking.result_carrier_reference')">{{ $shipment->carrier_reference }}</x-tracking.field>
@@ -109,7 +105,7 @@
                     <x-tracking.field :label="__('tracking.result_delivered_at')">
                         {{ $shipment->delivered_at?->translatedFormat('d/m/Y H:i') }}
                     </x-tracking.field>
-                    <x-tracking.field :label="__('tracking.result_payment_mode')">{{ $shipment->payment_mode?->label() }}</x-tracking.field>
+                    <x-tracking.field :label="__('tracking.result_payment_mode')">{{ $shipment->payment_mode }}</x-tracking.field>
                     <x-tracking.field :label="__('tracking.result_payment_status')">{{ $shipment->paymentStatusLabel() }}</x-tracking.field>
 
                     <x-tracking.field :label="__('tracking.result_goods')" wide>{{ $shipment->goods_description }}</x-tracking.field>

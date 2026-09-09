@@ -2,11 +2,11 @@
 
 namespace Tests\Feature\Http;
 
-use App\Enums\PaymentMode;
 use App\Enums\ServiceType;
-use App\Enums\ShipmentMode;
 use App\Enums\ShipmentStatus;
+use App\Models\PaymentMode;
 use App\Models\Shipment;
+use App\Models\ShipmentMode;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -63,7 +63,7 @@ class TrackingControllerTest extends TestCase
             'goods_description' => 'Jantes mercedes ML de 20 pouces',
             'declared_value' => 50000,
             'freight_cost' => 750,
-            'payment_mode' => PaymentMode::Virement,
+            'payment_mode' => PaymentMode::VIREMENT,
             'payment_status' => 'unpaid',
             'pickup_time' => '09:00',
             'departure_time' => '15:00',
@@ -84,7 +84,7 @@ class TrackingControllerTest extends TestCase
             $response->assertSee($expected, false);
         }
 
-        $response->assertSee(PaymentMode::Virement->label());
+        $response->assertSee(PaymentMode::VIREMENT);
         $response->assertSee(__('shipment.payment_status.unpaid'));
     }
 
@@ -301,7 +301,7 @@ class TrackingControllerTest extends TestCase
             'tracking_number' => 'LGXY'.fake()->unique()->bothify('#########').'-CARGO',
             'status' => ShipmentStatus::Pending,
             'service_type' => ServiceType::Road,
-            'shipment_mode' => ShipmentMode::DoorToDoor,
+            'shipment_mode' => ShipmentMode::DOOR_TO_DOOR,
             'shipper_name' => 'Shipper', 'shipper_city' => 'Paris', 'shipper_country' => 'FR',
             'receiver_name' => 'Receiver', 'receiver_city' => 'Lyon', 'receiver_country' => 'FR',
             'origin_label' => 'Paris', 'origin_lat' => 48.8566, 'origin_lng' => 2.3522,

@@ -2,13 +2,13 @@
 
 namespace Tests\Feature\Services;
 
-use App\Enums\PaymentMode;
 use App\Enums\ServiceType;
-use App\Enums\ShipmentMode;
 use App\Enums\ShipmentStatus;
 use App\Enums\UserRole;
+use App\Models\PaymentMode;
 use App\Models\Receipt;
 use App\Models\Shipment;
+use App\Models\ShipmentMode;
 use App\Models\User;
 use App\Services\Documents\PdfRenderer;
 use App\Services\Documents\ReceiptIssuer;
@@ -64,13 +64,12 @@ class ReceiptIssuerTest extends TestCase
         $this->assertStringStartsWith('%PDF-', $pdf);
     }
 
-    public function test_the_waybill_renders_with_every_enum_backed_field_set(): void
+    public function test_the_waybill_renders_with_a_payment_mode_recorded(): void
     {
-        // payment_mode had no model cast, so the waybill's ->label() call fatalled on a
-        // raw string whenever a shipment actually had a payment mode recorded.
-        $shipment = $this->shipment(['payment_mode' => PaymentMode::Virement]);
+        // The waybill prints payment_mode straight: it holds the mode's name, not a key.
+        $shipment = $this->shipment(['payment_mode' => PaymentMode::VIREMENT]);
 
-        $this->assertInstanceOf(PaymentMode::class, $shipment->payment_mode);
+        $this->assertSame(PaymentMode::VIREMENT, $shipment->payment_mode);
         $this->assertStringStartsWith('%PDF-', app(PdfRenderer::class)->waybill($shipment));
     }
 
@@ -85,7 +84,7 @@ class ReceiptIssuerTest extends TestCase
         $shipment = Shipment::create([
             'status' => ShipmentStatus::Pending,
             'service_type' => ServiceType::Road,
-            'shipment_mode' => ShipmentMode::DoorToDoor,
+            'shipment_mode' => ShipmentMode::DOOR_TO_DOOR,
             'shipper_name' => 'Atelier Dubois', 'shipper_city' => 'Paris',
             'receiver_name' => 'Menuiserie Lyonnaise', 'receiver_city' => 'Lyon', 'receiver_country' => 'FR',
             'origin_label' => 'Paris', 'origin_lat' => 48.8566, 'origin_lng' => 2.3522,

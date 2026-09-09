@@ -3,9 +3,7 @@
 namespace Tests\Feature\Filament;
 
 use App\Enums\LocationType;
-use App\Enums\PaymentMode;
 use App\Enums\ServiceType;
-use App\Enums\ShipmentMode;
 use App\Enums\ShipmentStatus;
 use App\Enums\UserRole;
 use App\Filament\Resources\Shipments\Pages\CreateShipment;
@@ -13,8 +11,10 @@ use App\Filament\Resources\Shipments\Pages\EditShipment;
 use App\Models\Carrier;
 use App\Models\Location;
 use App\Models\Package;
+use App\Models\PaymentMode;
 use App\Models\Shipment;
 use App\Models\ShipmentEvent;
+use App\Models\ShipmentMode;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -89,7 +89,6 @@ class ShipmentRoundTripTest extends TestCase
         Livewire::test(EditShipment::class, ['record' => $shipment->id])
             ->fillForm([
                 'shipper_name' => 'Edited Shipper',
-                'receiver_city' => 'Edited City',
                 'freight_cost' => 999,
                 'carrier_reference' => 'REF-EDITED',
                 'goods_description' => 'Edited goods',
@@ -99,7 +98,6 @@ class ShipmentRoundTripTest extends TestCase
 
         $shipment->refresh();
         $this->assertSame('Edited Shipper', $shipment->shipper_name);
-        $this->assertSame('Edited City', $shipment->receiver_city);
         $this->assertSame('999.00', $shipment->freight_cost);
         $this->assertSame('REF-EDITED', $shipment->carrier_reference);
         $this->assertSame('Edited goods', $shipment->goods_description);
@@ -134,9 +132,12 @@ class ShipmentRoundTripTest extends TestCase
         $origin = Location::create(['name' => 'Marseille', 'type' => LocationType::Port, 'city' => 'Marseille', 'country' => 'FR', 'lat' => 43.2965, 'lng' => 5.3698]);
         $destination = Location::create(['name' => 'Douala', 'type' => LocationType::Port, 'city' => 'Douala', 'country' => 'CM', 'lat' => 4.0511, 'lng' => 9.7679]);
 
+        $mode = ShipmentMode::firstOrCreate(['name' => ShipmentMode::PORT_TO_PORT]);
+        $paymentMode = PaymentMode::firstOrCreate(['name' => PaymentMode::VIREMENT]);
+
         $form = [
             'service_type' => ServiceType::Sea->value,
-            'shipment_mode' => ShipmentMode::PortToPort->value,
+            'shipment_mode_id' => $mode->id,
             'carrier_id' => $carrier->id,
             'carrier_name' => 'Audit Carrier',
             'carrier_reference' => 'REF-12345',
@@ -145,14 +146,10 @@ class ShipmentRoundTripTest extends TestCase
             'shipper_email' => 'shipper@audit.test',
             'shipper_phone' => '0102030405',
             'shipper_address' => '1 Quai du Port',
-            'shipper_city' => 'Marseille',
-            'shipper_country' => 'FR',
             'receiver_name' => 'Audit Receiver',
             'receiver_email' => 'receiver@audit.test',
             'receiver_phone' => '0607080910',
             'receiver_address' => '2 Rue Douala',
-            'receiver_city' => 'Douala',
-            'receiver_country' => 'CM',
             'origin_location_id' => $origin->id,
             'destination_location_id' => $destination->id,
             'pickup_date' => '2026-10-01',
@@ -168,7 +165,7 @@ class ShipmentRoundTripTest extends TestCase
             'tax_rate' => 20,
             'tax_label' => 'TVA',
             'tax_exemption_note' => 'Exoneration article 262',
-            'payment_mode' => PaymentMode::Virement->value,
+            'payment_mode_id' => $paymentMode->id,
             'payment_status' => 'paid',
             'packages' => [
                 [
@@ -181,7 +178,7 @@ class ShipmentRoundTripTest extends TestCase
 
         $expected = [
             'service_type' => 'sea',
-            'shipment_mode' => 'port_to_port',
+            'shipment_mode_id' => (string) $mode->id,
             'carrier_id' => (string) $carrier->id,
             'carrier_name' => 'Audit Carrier',
             'carrier_reference' => 'REF-12345',
@@ -190,14 +187,10 @@ class ShipmentRoundTripTest extends TestCase
             'shipper_email' => 'shipper@audit.test',
             'shipper_phone' => '0102030405',
             'shipper_address' => '1 Quai du Port',
-            'shipper_city' => 'Marseille',
-            'shipper_country' => 'FR',
             'receiver_name' => 'Audit Receiver',
             'receiver_email' => 'receiver@audit.test',
             'receiver_phone' => '0607080910',
             'receiver_address' => '2 Rue Douala',
-            'receiver_city' => 'Douala',
-            'receiver_country' => 'CM',
             'origin_location_id' => (string) $origin->id,
             'destination_location_id' => (string) $destination->id,
             'pickup_time' => '08:30:00',
@@ -211,7 +204,7 @@ class ShipmentRoundTripTest extends TestCase
             'tax_rate' => '20.00',
             'tax_label' => 'TVA',
             'tax_exemption_note' => 'Exoneration article 262',
-            'payment_mode' => 'virement',
+            'payment_mode_id' => (string) $paymentMode->id,
             'payment_status' => 'paid',
         ];
 

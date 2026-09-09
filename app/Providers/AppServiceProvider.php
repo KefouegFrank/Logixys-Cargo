@@ -44,7 +44,11 @@ class AppServiceProvider extends ServiceProvider
         // Native <select> popups are destroyed by any Livewire re-render, so a dropdown
         // shuts the moment you open it. Filament's own is Alpine-driven and survives one.
         // SelectFilter covers TernaryFilter too: configuration walks the class hierarchy.
-        Select::configureUsing(fn (Select $select) => $select->native(false));
+        Select::configureUsing(fn (Select $select) => $select
+            ->native(false)
+            // One empty-state wording across the panel. A field that wants its own still
+            // wins, since a chained ->placeholder() runs after this.
+            ->placeholder('-- Choisissez --'));
         SelectFilter::configureUsing(fn (SelectFilter $filter) => $filter->native(false));
 
         // Self-hosted: a blocked or unreachable CDN left the map a blank box with no

@@ -41,13 +41,13 @@ class ShipmentsTable
 
                 TextColumn::make('shipper_name')
                     ->label('Nom de l\'expéditeur')
-                    ->description(fn (Shipment $record) => $record->shipper_city)
+                    ->description(fn (Shipment $record) => $record->shipper_city ?: $record->origin_label)
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('receiver_name')
                     ->label('Nom du destinataire')
-                    ->description(fn (Shipment $record) => $record->receiver_company ?: $record->receiver_city)
+                    ->description(fn (Shipment $record) => $record->receiver_company ?: ($record->receiver_city ?: $record->destination_label))
                     ->searchable(query: fn (Builder $query, string $search) => $query->where(
                         fn (Builder $q) => $q
                             ->where('receiver_name', 'like', "%{$search}%")
