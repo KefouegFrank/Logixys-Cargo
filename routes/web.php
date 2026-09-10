@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AddressSearchController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ResendWebhookController;
 use App\Http\Controllers\TrackingController;
@@ -7,6 +8,11 @@ use App\Http\Middleware\SetLocale;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/'.config('app.locale'));
+
+// Panel-only, outside the locale group: the booking form calls it, never the public site.
+Route::get('admin/address-search', AddressSearchController::class)
+    ->middleware('throttle:60,1')
+    ->name('admin.address-search');
 
 // Outside the locale group: Resend calls this, not a browser, and it signs its own requests.
 Route::post('webhooks/resend', ResendWebhookController::class)->name('webhooks.resend');

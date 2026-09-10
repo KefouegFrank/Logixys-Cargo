@@ -18,6 +18,7 @@
     'centerLat' => 46.6034,
     'centerLng' => 2.2137,
     'height' => '420px',
+    'radius' => '0.5rem',
     // 'vehicle' is the shipment pin; 'office' is the static one on the contact page.
     'variant' => 'vehicle',
 ])
@@ -167,7 +168,7 @@
         },
     }"
 >
-    <div x-ref="map" style="height: {{ $height }}; border-radius: 0.5rem;"></div>
+    <div x-ref="map" style="height: {{ $height }}; border-radius: {{ $radius }};"></div>
 
     <p class="mt-2 text-sm" style="color:#b91c1c" x-show="failed" x-cloak>{{ __('tracking.map_unavailable') }}</p>
 </div>

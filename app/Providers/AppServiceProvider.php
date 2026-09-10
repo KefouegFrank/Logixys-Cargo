@@ -3,6 +3,11 @@
 namespace App\Providers;
 
 use App\Models\Setting;
+use App\Services\AddressSearch\AddressSearchService;
+use App\Services\AddressSearch\BanProvider;
+use App\Services\AddressSearch\GeoapifyProvider;
+use App\Services\AddressSearch\LocationIqProvider;
+use App\Services\AddressSearch\PhotonProvider;
 use App\Services\Geocoding\GeocoderProvider;
 use App\Services\Geocoding\NominatimGeocoder;
 use App\Services\ShipmentNotifier;
@@ -21,6 +26,24 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->singleton(AddressSearchService::class, function () {
+            $providers = [
+                'ban' => fn () => new BanProvider,
+                'photon' => fn () => new PhotonProvider,
+                'geoapify' => fn () => new GeoapifyProvider(config('services.address_search.geoapify_key')),
+                'locationiq' => fn () => new LocationIqProvider(config('services.address_search.locationiq_key')),
+            ];
+
+            $build = fn (string $key) => collect(config("services.address_search.{$key}"))
+                ->map(fn (string $name) => $providers[trim($name)] ?? null)
+                ->filter()
+                ->map(fn (callable $make) => $make())
+                ->values()
+                ->all();
+
+            return new AddressSearchService($build('primary'), $build('fallback'));
+        });
+
         // One instance per request: it batches notices so a single save sends a single mail.
         $this->app->singleton(ShipmentNotifier::class);
 

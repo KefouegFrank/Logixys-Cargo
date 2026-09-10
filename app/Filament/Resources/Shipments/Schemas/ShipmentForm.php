@@ -5,18 +5,17 @@ namespace App\Filament\Resources\Shipments\Schemas;
 use App\Enums\PackageType;
 use App\Enums\ServiceType;
 use App\Enums\ShipmentStatus;
+use App\Filament\Forms\Components\AddressAutocomplete;
 use App\Filament\Forms\Components\LocationPinField;
 use App\Models\Carrier;
-use App\Models\Location;
 use App\Models\PaymentMode;
 use App\Models\Shipment;
-use App\Models\ShipmentEvent;
 use App\Models\ShipmentMode;
-use App\Services\Geocoding\GeocodingService;
 use App\Services\PackageTotalsCalculator;
 use App\Services\ShipmentEventRecorder;
 use App\Services\ShipmentTotalsCalculator;
 use App\Services\TrackingNumberGenerator;
+use App\Support\Countries;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
@@ -108,11 +107,11 @@ class ShipmentForm
                 // Filled from the Origine / Destination selects below; the shipment keeps
                 // its own copy so later edits to a location never rewrite past bookings.
                 Hidden::make('shipment_mode'),
-                Hidden::make('payment_mode'),
                 Hidden::make('origin_label'),
+                Hidden::make('destination_label'),
+                Hidden::make('payment_mode'),
                 Hidden::make('origin_lat'),
                 Hidden::make('origin_lng'),
-                Hidden::make('destination_label'),
                 Hidden::make('destination_lat'),
                 Hidden::make('destination_lng'),
             ]);
@@ -136,28 +135,11 @@ class ShipmentForm
                     ->label('Heure')
                     ->seconds(false)
                     ->default(fn () => now()->format('H:i')),
-                TextInput::make('event_location')
+                AddressAutocomplete::make('event_location')
                     ->label('Emplacement')
                     ->maxLength(255)
-                    ->live(onBlur: true)
-                    ->afterStateUpdated(function (?string $state, Set $set) {
-                        if (blank($state)) {
-                            return;
-                        }
-
-                        $coords = app(GeocodingService::class)->geocode($state);
-
-                        if ($coords !== null) {
-                            $set('event_position', ['lat' => $coords['lat'], 'lng' => $coords['lng'], 'isManual' => false]);
-                        }
-                    })
-                    ->datalist(fn () => ShipmentEvent::query()
-                        ->whereNotNull('location_label')
-                        ->distinct()
-                        ->orderBy('location_label')
-                        ->limit(50)
-                        ->pluck('location_label')
-                        ->all()),
+                    // The pick carries coordinates, so the map moves without a geocode call.
+                    ->fills(['lat' => 'event_position.lat', 'lng' => 'event_position.lng']),
                 Select::make('event_status')
                     ->label('Statut')
                     ->options(ShipmentStatus::class),
@@ -230,7 +212,18 @@ class ShipmentForm
             TextInput::make("{$prefix}_name")->label($nameLabel)->required()->maxLength(150),
             TextInput::make("{$prefix}_phone")->label('Numéro de téléphone')->tel()->maxLength(40),
             TextInput::make("{$prefix}_email")->label('E-mail')->email()->maxLength(150),
-            TextInput::make("{$prefix}_address")->label('Adresse')->maxLength(255),
+            AddressAutocomplete::make("{$prefix}_address")
+                ->label('Adresse')
+                ->maxLength(255)
+                ->fills([
+                    'postcode' => "{$prefix}_postcode",
+                    'city' => "{$prefix}_city",
+                    'country' => "{$prefix}_country",
+                ]),
+            // Filled by the pick above rather than typed; they still feed the documents.
+            Hidden::make("{$prefix}_postcode"),
+            Hidden::make("{$prefix}_city"),
+            Hidden::make("{$prefix}_country"),
         ];
     }
 
@@ -317,34 +310,21 @@ class ShipmentForm
      * copies its label and coordinates onto the shipment, which then owns them — editing
      * the location later never rewrites past bookings.
      */
+    /**
+     * Origine and Destination are the countries the shipment runs between. Where the
+     * goods actually are is Emplacement, recorded per tracking event.
+     */
     private static function locationSelect(string $prefix, string $label): Select
     {
-        $relationship = $prefix === 'origin' ? 'originLocation' : 'destinationLocation';
-
-        return Select::make("{$prefix}_location_id")
+        return Select::make("{$prefix}_country")
             ->label($label)
-            ->relationship($relationship, 'name')
-            ->getOptionLabelFromRecordUsing(fn (Location $record) => $record->label())
-            ->searchable(['name', 'city'])
-            ->preload()
-            // Required only on create: it's the sole way to fill the NOT NULL *_label
-            // column, so a new shipment needs it. On edit, that column already holds a
-            // value — from the form or, for shipments inserted directly (the seeder,
-            // for one), never through a Location — so re-requiring the picker there
-            // blocked editing anything about them until an unrelated field was touched.
+            ->options(Countries::options())
+            ->searchable()
             ->required(fn (string $operation) => $operation === 'create')
             ->live()
-            ->afterStateUpdated(function (Set $set, $state) use ($prefix) {
-                $location = $state ? Location::find($state) : null;
-
-                if ($location === null) {
-                    return;
-                }
-
-                $set("{$prefix}_label", $location->label());
-                $set("{$prefix}_lat", $location->lat);
-                $set("{$prefix}_lng", $location->lng);
-            });
+            // The name is kept on the shipment so the documents and the tracking page
+            // read the country as it was booked, whatever the viewer's language.
+            ->afterStateUpdated(fn (Set $set, $state) => $set("{$prefix}_label", Countries::name($state)));
     }
 
     /**

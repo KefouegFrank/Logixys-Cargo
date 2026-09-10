@@ -134,7 +134,7 @@ class ManagedOptionListsTest extends TestCase
     {
         $html = $this->actingAs($this->admin())->get('/admin/shipments/create')->getContent();
 
-        foreach (['service_type', 'shipment_mode_id', 'payment_mode_id', 'carrier_id', 'origin_location_id'] as $field) {
+        foreach (['service_type', 'shipment_mode_id', 'payment_mode_id', 'carrier_id'] as $field) {
             $this->assertStringContainsString($field, $html);
         }
 

@@ -36,6 +36,20 @@ return [
         ],
     ],
 
+    /*
+     * Address autocomplete, tried in the order listed. BAN and Photon need no key and
+     * carry the load; the two metered services only run when those find nothing.
+     */
+    'address_search' => [
+        // Keyless and free: both are asked on every lookup and their results merged, so a
+        // French address and a worldwide place can appear side by side.
+        'primary' => array_filter(explode(',', (string) env('ADDRESS_SEARCH_PRIMARY', 'ban,photon'))),
+        // Metered: only reached when the pair above finds nothing at all.
+        'fallback' => array_filter(explode(',', (string) env('ADDRESS_SEARCH_FALLBACK', 'geoapify,locationiq'))),
+        'geoapify_key' => env('GEOAPIFY_API_KEY'),
+        'locationiq_key' => env('LOCATIONIQ_API_KEY'),
+    ],
+
     'geocoder' => [
         'provider' => env('GEOCODER_PROVIDER', 'nominatim'),
         'api_key' => env('GEOCODER_API_KEY'),

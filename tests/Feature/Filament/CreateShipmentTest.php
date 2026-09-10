@@ -46,7 +46,7 @@ class CreateShipmentTest extends TestCase
         $this->assertMatchesRegularExpression('/^LGXY\d{9}-CARGO$/', $shipment->tracking_number);
         $this->assertSame(ShipmentStatus::Pending, $shipment->status);
         $this->assertSame($form['carrier_id'], $shipment->carrier_id);
-        $this->assertSame($form['origin_location_id'], $shipment->origin_location_id);
+        $this->assertSame($form['origin_country'], $shipment->origin_country);
         $this->assertSame('08:30:00', $shipment->pickup_time);
         $this->assertSame('11:00:00', $shipment->departure_time);
         $this->assertSame($admin->id, $shipment->created_by);
@@ -214,12 +214,10 @@ class CreateShipmentTest extends TestCase
             'locale' => 'fr',
             'shipper_name' => 'Atelier Dubois',
             'receiver_name' => 'Menuiserie Lyonnaise',
-            'origin_location_id' => $origin->id,
-            'origin_label' => 'Paris, FR',
+            'origin_country' => 'FR',
             'origin_lat' => 48.8566,
             'origin_lng' => 2.3522,
-            'destination_location_id' => $destination->id,
-            'destination_label' => 'Lyon, FR',
+            'destination_country' => 'CM',
             'destination_lat' => 45.7640,
             'destination_lng' => 4.8357,
             'pickup_date' => '2026-09-10',
