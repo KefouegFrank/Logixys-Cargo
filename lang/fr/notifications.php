@@ -1,12 +1,14 @@
 <?php
 
 return [
+    'layout' => [
+        'tagline' => 'Votre partenaire logistique de confiance',
+        'auto' => 'Message envoyé automatiquement lors de la mise à jour de votre expédition.',
+    ],
     'shipment' => [
-        'subject' => [
-            'created' => 'Envoi enregistré · :tracking',
-            'status' => ':status · :tracking',
-            'updated' => 'Envoi mis à jour · :tracking',
-        ],
+        // Requested verbatim by the client; kept as one line for every
+        // notice kind rather than the created/status/updated variants it replaced.
+        'subject' => 'Notification d\'expédition Logixys Cargo Shippement # :tracking.',
         'headline' => [
             'created' => 'Votre envoi est enregistré',
             'updated' => 'Informations mises à jour',
@@ -18,6 +20,12 @@ return [
         'greeting' => 'Bonjour :name,',
         'intro_shipper' => 'Voici où en est l\'envoi :tracking que vous nous avez confié.',
         'intro_receiver' => 'Voici où en est le colis :tracking qui vous est adressé.',
+        'details_heading' => 'Détails de l\'expédition',
+        'service' => 'Type de service',
+        'carrier' => 'Transporteur',
+        'goods' => 'Marchandises',
+        'packages' => 'Colis',
+        'support' => 'Une question ? Répondez simplement à cet e-mail, notre équipe vous répondra.',
         'tracking' => 'Numéro de suivi',
         'route' => 'Trajet',
         'status' => 'Statut',

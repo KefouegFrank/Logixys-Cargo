@@ -32,9 +32,8 @@ class ShipmentNotice extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: __('notifications.shipment.subject.'.$this->kind, [
+            subject: __('notifications.shipment.subject', [
                 'tracking' => $this->shipment->tracking_number,
-                'status' => $this->shipment->status->label(),
             ]),
             // From has to stay on the verified sending domain; replies go to the office.
             replyTo: [new Address(config('brand.contact.email'), config('app.name'))],
@@ -43,7 +42,7 @@ class ShipmentNotice extends Mailable
 
     public function content(): Content
     {
-        return new Content(markdown: 'mail.shipment-notice', with: [
+        return new Content(view: 'mail.shipment-notice', with: [
             'headline' => $this->kind === ShipmentNotifier::STATUS
                 ? $this->shipment->status->label()
                 : __('notifications.shipment.headline.'.$this->kind),

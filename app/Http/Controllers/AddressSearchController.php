@@ -6,6 +6,7 @@ use App\Services\AddressSearch\AddressSearchService;
 use App\Services\AddressSearch\AddressSuggestion;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 /**
  * Suggestions for the booking form. Server-side so the Geoapify and LocationIQ keys
@@ -29,7 +30,11 @@ class AddressSearchController extends Controller
         $suggestions = $addresses->search($validated['q'], $validated['country'] ?? null);
 
         return response()->json([
-            'results' => array_map(fn (AddressSuggestion $s) => $s->toArray(), $suggestions),
+            // Without 'source': which provider answered is ours to know, not the agent's.
+            'results' => array_map(
+                fn (AddressSuggestion $s) => Arr::except($s->toArray(), 'source'),
+                $suggestions,
+            ),
         ]);
     }
 }

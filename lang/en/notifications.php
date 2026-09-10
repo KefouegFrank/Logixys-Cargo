@@ -1,12 +1,14 @@
 <?php
 
 return [
+    'layout' => [
+        'tagline' => 'Your trusted logistics partner',
+        'auto' => 'Sent automatically when your shipment was updated.',
+    ],
     'shipment' => [
-        'subject' => [
-            'created' => 'Shipment registered · :tracking',
-            'status' => ':status · :tracking',
-            'updated' => 'Shipment updated · :tracking',
-        ],
+        // Requested verbatim by the client; kept as one line for every
+        // notice kind rather than the created/status/updated variants it replaced.
+        'subject' => 'Logixys Cargo Shipment Notification # :tracking.',
         'headline' => [
             'created' => 'Your shipment is registered',
             'updated' => 'Details updated',
@@ -18,6 +20,12 @@ return [
         'greeting' => 'Hello :name,',
         'intro_shipper' => 'Here is where shipment :tracking, which you entrusted to us, stands.',
         'intro_receiver' => 'Here is where shipment :tracking, addressed to you, stands.',
+        'details_heading' => 'Shipment details',
+        'service' => 'Service type',
+        'carrier' => 'Carrier',
+        'goods' => 'Goods',
+        'packages' => 'Packages',
+        'support' => 'A question? Just reply to this email and our team will get back to you.',
         'tracking' => 'Tracking number',
         'route' => 'Route',
         'status' => 'Status',

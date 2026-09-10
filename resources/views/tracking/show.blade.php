@@ -112,13 +112,8 @@
                     <x-tracking.field :label="__('tracking.result_comments')" wide>{{ $events->last()?->remarks }}</x-tracking.field>
                 </dl>
             </x-tracking.section>
-        </div>
-    </x-layout.container>
 
-    <x-tracking.map :shipment="$shipment" :events="$events" />
-
-    <x-layout.container class="pb-10 pt-8 print:pb-0">
-        <div class="mx-auto max-w-4xl space-y-8">
+            <x-tracking.map :shipment="$shipment" :events="$events" />
 
             <x-tracking.section :heading="__('tracking.charges_heading')">
                 <dl class="grid grid-cols-1 gap-x-8 gap-y-5 text-sm sm:grid-cols-2 lg:grid-cols-3">

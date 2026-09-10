@@ -42,7 +42,7 @@ class ShipmentNoticeBrief extends Mailable
 
     public function content(): Content
     {
-        return new Content(markdown: 'mail.shipment-notice-brief', with: [
+        return new Content(view: 'mail.shipment-notice-brief', with: [
             'adminUrl' => route('filament.admin.resources.shipments.edit', $this->shipment),
         ]);
     }

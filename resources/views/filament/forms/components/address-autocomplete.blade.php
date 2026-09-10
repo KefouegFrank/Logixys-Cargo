@@ -85,7 +85,7 @@
         }"
         x-on:keydown.escape="open = false"
         x-on:click.outside="open = false"
-        style="position:relative"
+        class="relative"
     >
         {{-- Filament's own input, so the field is styled by the panel rather than by
              utility classes this view would have to keep in step with. --}}
@@ -103,25 +103,41 @@
             />
         </x-filament::input.wrapper>
 
-        <span x-show="loading" x-cloak class="fi-loading" style="position:absolute;inset-inline-end:0.75rem;top:0.65rem;font-size:0.75rem;color:#9ca3af">…</span>
+        <span x-show="loading" x-cloak class="absolute end-3 top-2.5 text-xs text-gray-400 dark:text-gray-500">…</span>
 
-        <ul
+        {{-- Panel styling is spelled out rather than reusing .fi-dropdown-panel: that class
+             is built for action menus and caps itself at max-width 14rem !important, which
+             an address never fits inside. --}}
+        <div
             x-show="open"
             x-cloak
-            x-transition.opacity.duration.150ms
-            style="position:absolute;z-index:30;margin-top:0.25rem;max-height:18rem;width:100%;overflow-y:auto;border-radius:0.5rem;background:#fff;padding-block:0.25rem;font-size:0.875rem;box-shadow:0 10px 30px rgba(16,41,70,.18);border:1px solid rgba(16,41,70,.12)"
+            x-transition:enter="transition ease-out duration-150"
+            x-transition:enter-start="opacity-0 -translate-y-1"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-100"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="absolute inset-x-0 top-full z-20 mt-1 max-h-72 w-full overflow-y-auto overflow-x-hidden rounded-lg bg-white shadow-lg ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10"
         >
-            <template x-for="(result, index) in results" :key="index">
-                <li
-                    x-on:click="choose(result)"
-                    x-on:mouseenter="highlighted = index"
-                    :style="highlighted === index ? 'background:#f0f6fd' : ''"
-                    style="cursor:pointer;padding:0.5rem 0.75rem;transition:background-color .12s ease"
-                >
-                    <span style="display:block;color:#102946" x-text="result.label"></span>
-                    <span style="display:block;font-size:0.75rem;color:#9ca3af" x-text="result.source"></span>
-                </li>
-            </template>
-        </ul>
+            <ul class="divide-y divide-gray-100 dark:divide-white/5" role="listbox">
+                <template x-for="(result, index) in results" :key="index">
+                    <li>
+                        <button
+                            type="button"
+                            role="option"
+                            :aria-selected="highlighted === index"
+                            x-on:click="choose(result)"
+                            x-on:mouseenter="highlighted = index"
+                            :class="highlighted === index && 'bg-gray-50 dark:bg-white/5'"
+                            {{-- Wrapping, not nowrap: a full address would otherwise force
+                                 the panel to scroll sideways. --}}
+                            class="block w-full whitespace-normal break-words px-4 py-2.5 text-start text-sm leading-snug text-gray-950 transition-colors duration-75 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
+                            x-text="result.label"
+                        ></button>
+                    </li>
+                </template>
+            </ul>
+        </div>
+
     </div>
 </x-dynamic-component>
