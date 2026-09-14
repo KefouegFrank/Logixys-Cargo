@@ -33,6 +33,13 @@ class ShipmentPolicy
         return $user->isAdmin();
     }
 
+    // Filament resolves bulk deletes against this; without it a missing method reads as
+    // "allowed" and agents delete through the table what delete() denies them per row.
+    public function deleteAny(User $user): bool
+    {
+        return $user->isAdmin();
+    }
+
     public function restore(User $user, Shipment $shipment): bool
     {
         return $user->isAdmin();

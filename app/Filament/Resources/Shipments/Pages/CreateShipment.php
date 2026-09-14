@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Shipments\Pages;
 use App\Filament\Resources\Shipments\ShipmentResource;
 use App\Services\ShipmentEventRecorder;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\Auth;
 
 class CreateShipment extends CreateRecord
 {
@@ -24,6 +25,10 @@ class CreateShipment extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         [$this->eventData, $data] = ShipmentEventRecorder::split($data);
+
+        // Stamped here rather than carried in a hidden field, so the browser cannot file
+        // a shipment under someone else's name.
+        $data['created_by'] = Auth::id();
 
         return $data;
     }

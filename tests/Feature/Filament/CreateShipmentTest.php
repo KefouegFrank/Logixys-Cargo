@@ -258,6 +258,25 @@ class CreateShipmentTest extends TestCase
         return $shipment->fresh('packages');
     }
 
+    // created_by is stamped from the session, so a submission claiming someone else
+    // is recorded against whoever actually sent it.
+    public function test_the_creator_comes_from_the_session_not_the_submission(): void
+    {
+        $agent = User::create([
+            'name' => 'Agent', 'email' => 'agent@example.com', 'password' => 'password',
+            'role' => UserRole::Agent, 'is_active' => true,
+        ]);
+        $admin = $this->admin();
+        $this->actingAs($agent);
+
+        Livewire::test(CreateShipment::class)
+            ->fillForm([...$this->validForm(), 'created_by' => $admin->id])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $this->assertSame($agent->id, Shipment::firstOrFail()->created_by);
+    }
+
     private function admin(): User
     {
         return User::firstOrCreate(

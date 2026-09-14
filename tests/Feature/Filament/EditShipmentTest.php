@@ -126,6 +126,27 @@ class EditShipmentTest extends TestCase
         $this->assertModelMissing($shipment);
     }
 
+    // Editing never reassigns authorship, whoever is doing the editing.
+    public function test_an_edit_cannot_reassign_who_created_the_shipment(): void
+    {
+        $admin = $this->admin();
+        $shipment = $this->shipment($admin);
+
+        $agent = User::create([
+            'name' => 'Agent', 'email' => 'agent@example.com', 'password' => 'password',
+            'role' => UserRole::Agent, 'is_active' => true,
+        ]);
+        $this->actingAs($agent);
+
+        Livewire::test(EditShipment::class, ['record' => $shipment->id])
+            ->fillForm(['shipper_name' => 'Renamed', 'created_by' => $agent->id])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertSame($admin->id, $shipment->refresh()->created_by);
+        $this->assertSame('Renamed', $shipment->shipper_name);
+    }
+
     private function shipment(User $admin): Shipment
     {
         return Shipment::create([

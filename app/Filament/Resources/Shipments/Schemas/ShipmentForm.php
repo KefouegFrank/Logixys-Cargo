@@ -102,7 +102,8 @@ class ShipmentForm
                     ->dehydrated()
                     // Inline: the panel has no custom Tailwind build, so utility classes here would no-op.
                     ->extraInputAttributes(['style' => 'font-size:1.125rem;font-weight:600;letter-spacing:0.02em;']),
-                Hidden::make('created_by')->default(fn () => Auth::id()),
+                // created_by is deliberately not a field here — a hidden input is still
+                // client-controlled, so CreateShipment stamps it from the session.
 
                 // Filled from the Origine / Destination selects below; the shipment keeps
                 // its own copy so later edits to a location never rewrite past bookings.

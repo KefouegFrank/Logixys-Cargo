@@ -32,6 +32,13 @@ class UserPolicy
         return $user->isAdmin() && $user->isNot($model);
     }
 
+    // Bulk deletes are gated here, per record by delete() — without this method Filament
+    // treats the bulk action as allowed and the self-delete guard above never runs.
+    public function deleteAny(User $user): bool
+    {
+        return $user->isAdmin();
+    }
+
     public function restore(User $user, User $model): bool
     {
         return $user->isAdmin();

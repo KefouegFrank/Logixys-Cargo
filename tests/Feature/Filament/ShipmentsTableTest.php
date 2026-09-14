@@ -9,6 +9,7 @@ use App\Filament\Resources\Shipments\Pages\ListShipments;
 use App\Models\Shipment;
 use App\Models\ShipmentMode;
 use App\Models\User;
+use Filament\Actions\Testing\TestAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -80,11 +81,47 @@ class ShipmentsTableTest extends TestCase
             ->assertCanNotSeeTableRecords([$old]);
     }
 
+    // The row menu hides Delete from agents; this covers the other way into the same
+    // operation, which used to go through whatever the policy said.
+    public function test_an_agent_cannot_delete_shipments_in_bulk(): void
+    {
+        $agent = $this->agent();
+        $this->actingAs($agent);
+        $shipment = $this->shipment();
+
+        Livewire::test(ListShipments::class)
+            ->selectTableRecords([$shipment->getKey()])
+            ->assertActionHidden(TestAction::make('delete')->table()->bulk());
+
+        $this->assertFalse($agent->can('delete', $shipment));
+        $this->assertModelExists($shipment);
+    }
+
+    public function test_an_admin_can_delete_shipments_in_bulk(): void
+    {
+        $this->actingAs($this->admin());
+        $shipment = $this->shipment();
+
+        Livewire::test(ListShipments::class)
+            ->selectTableRecords([$shipment->getKey()])
+            ->callAction(TestAction::make('delete')->table()->bulk());
+
+        $this->assertModelMissing($shipment);
+    }
+
     private function admin(): User
     {
         return User::create([
             'name' => 'Admin', 'email' => 'admin@example.com', 'password' => 'password',
             'role' => UserRole::Admin, 'is_active' => true,
+        ]);
+    }
+
+    private function agent(): User
+    {
+        return User::create([
+            'name' => 'Agent', 'email' => 'bulk-agent@example.com', 'password' => 'password',
+            'role' => UserRole::Agent, 'is_active' => true,
         ]);
     }
 
