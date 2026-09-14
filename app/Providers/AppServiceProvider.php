@@ -17,6 +17,7 @@ use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Rules\Password;
 use RuntimeException;
 
 class AppServiceProvider extends ServiceProvider
@@ -64,6 +65,12 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->overlayBrandSettings();
         $this->overlayCompanySettings();
+
+        // The breach check needs the network, so it is production-only: it fails open, but
+        // off the server it would just report a stray request on every password saved.
+        Password::defaults(fn () => $this->app->isProduction()
+            ? Password::min(12)->uncompromised()
+            : Password::min(12));
 
         // Native <select> popups are destroyed by any Livewire re-render, so a dropdown
         // shuts the moment you open it. Filament's own is Alpine-driven and survives one.

@@ -30,7 +30,7 @@ class ShipmentsNeedingAttention extends TableWidget
                     ->where(fn ($query) => $query
                         ->whereIn('status', [ShipmentStatus::OnHold, ShipmentStatus::Returned])
                         ->orWhere(fn ($query) => $query->overdue()))
-                    ->orderByRaw("expected_delivery_date IS NULL, expected_delivery_date asc")
+                    ->orderByRaw('expected_delivery_date IS NULL, expected_delivery_date asc')
             )
             ->paginated(false)
             ->recordUrl(fn (Shipment $record) => ShipmentResource::getUrl('edit', ['record' => $record]))

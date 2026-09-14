@@ -20,6 +20,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Validation\Rules\Password;
 
 class UserResource extends Resource
 {
@@ -62,6 +63,8 @@ class UserResource extends Resource
                     ->required(fn (string $operation) => $operation === 'create')
                     // Leaving it blank on edit must not blank the stored hash.
                     ->dehydrated(fn (?string $state) => filled($state))
+                    ->rule(Password::defaults())
+                    ->helperText('12 caractères minimum.')
                     ->maxLength(255),
                 Toggle::make('is_active')->label('Compte actif')->default(true),
             ]);

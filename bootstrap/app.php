@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -16,6 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'locale' => SetLocale::class,
         ]);
+
+        // Global rather than on the web group: the Filament panel builds its own stack, and
+        // Livewire's update endpoint is on neither.
+        $middleware->append(SecurityHeaders::class);
 
         // Trusted proxies live in config/trustedproxy.php, which TrustProxies reads itself:
         // config() is not bound yet this early, and trustProxies() would freeze the list at
