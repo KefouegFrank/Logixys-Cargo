@@ -9,6 +9,24 @@ return [
     'cta' => "En savoir plus sur nous",
     'need_help' => "Besoin d'aide ?",
     'badge' => "Fret aérien · maritime · routier ·",
+    'cta_services' => "Nos services",
+    'intro' => [
+        'eyebrow' => "En savoir plus",
+        'heading' => "Un transport fiable, livré à l'heure",
+        'body_1' => "Logixys Cargo organise et pilote vos expéditions par route, air, mer et entreposage, coordonnées par une seule équipe du départ jusqu'à la livraison.",
+        'body_2' => "Chaque expédition reste visible : les points de passage se mettent à jour au fil du trajet, et vous pouvez vérifier le statut vous-même à tout moment, sans attendre un appel.",
+    ],
+    'capabilities' => [
+        'eyebrow' => "Ce que nous faisons",
+        'heading' => "Une seule équipe, sur tout le trajet",
+        'body' => "Du départ jusqu'à la livraison, nous choisissons l'itinéraire, le bon mode de transport et vous tenons informé à chaque étape — un seul interlocuteur, pas cinq.",
+        'checklist' => [
+            'tracking' => "Suivi complet de l'expédition",
+            'handling' => "Manutention soignée et formée",
+            'contact' => "Un seul interlocuteur du début à la fin",
+            'support' => "Une équipe disponible quand vous en avez besoin",
+        ],
+    ],
     'features' => [
         'reach' => [
             'title' => "Couverture internationale",

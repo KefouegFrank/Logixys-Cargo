@@ -9,6 +9,24 @@ return [
     'cta' => "Know more about us",
     'need_help' => "Need help?",
     'badge' => "Air · sea · road freight ·",
+    'cta_services' => "Our services",
+    'intro' => [
+        'eyebrow' => "More about us",
+        'heading' => "Reliable transport, delivered on time",
+        'body_1' => "Logixys Cargo plans and runs your shipments across road, air, sea and warehousing, coordinated by one team from pickup to final delivery.",
+        'body_2' => "Every shipment stays visible: checkpoints update as your goods move, so you can check status yourself at any moment, without waiting on a phone call.",
+    ],
+    'capabilities' => [
+        'eyebrow' => "What we do",
+        'heading' => "One team, every leg of the journey",
+        'body' => "From pickup to final delivery, we choose the route, the right mode and keep you informed at each step — one point of contact, not five.",
+        'checklist' => [
+            'tracking' => "Full shipment tracking",
+            'handling' => "Careful, trained handling",
+            'contact' => "One point of contact throughout",
+            'support' => "Support when you need it",
+        ],
+    ],
     'features' => [
         'reach' => [
             'title' => "International coverage",
