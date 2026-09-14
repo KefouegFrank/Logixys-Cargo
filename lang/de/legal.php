@@ -3,14 +3,23 @@
 return [
     'notice' => [
         'title' => "Impressum",
-        'placeholder' => "Der Text dieser Seite wird vom Kunden bereitgestellt und ist rechtsraumabhängig. Er wird vor dem Start veröffentlicht.",
     ],
     'privacy' => [
         'title' => "Datenschutzerklärung",
-        'placeholder' => "Der Text dieser Seite wird vom Kunden bereitgestellt und ist rechtsraumabhängig. Er wird vor dem Start veröffentlicht.",
     ],
     'terms' => [
         'title' => "Allgemeine Geschäftsbedingungen",
-        'placeholder' => "Der Text dieser Seite wird vom Kunden bereitgestellt und ist rechtsraumabhängig. Er wird vor dem Start veröffentlicht.",
+    ],
+    'updated_at' => "Letzte Aktualisierung: :date.",
+    'summary' => "Inhaltsverzeichnis",
+    'identity' => [
+        'legal_name' => "Firmenname",
+        'legal_form' => "Rechtsform",
+        'share_capital' => "Stammkapital",
+        'address' => "Anschrift",
+        'tax_id' => "USt-IdNr.",
+        'director' => "Verantwortlich für den Inhalt",
+        'email' => "E-Mail",
+        'phone' => "Telefon",
     ],
 ];

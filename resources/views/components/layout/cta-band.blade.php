@@ -5,7 +5,7 @@
     fills only the lower half in footer navy, so the seam runs through the middle
     of the card and it straddles both — as in the reference.
 --}}
-<div class="relative print:hidden">
+<section class="relative print:hidden" aria-labelledby="cta-band-heading">
     <div class="absolute inset-x-0 bottom-0 top-1/2 bg-navy-950" aria-hidden="true"></div>
 
     <x-layout.container class="relative">
@@ -28,7 +28,7 @@
                     <img src="{{ asset('images/title-marker-navy.png') }}" width="31" height="23" alt="" class="h-4 w-auto" aria-hidden="true">
                     {{ __('footer.cta_eyebrow') }}
                 </p>
-                <p class="mt-3 max-w-2xl font-heading text-2xl font-extrabold leading-tight [hyphens:none] sm:text-3xl">
+                <p id="cta-band-heading" class="mt-3 max-w-2xl font-heading text-2xl font-extrabold leading-tight [hyphens:none] sm:text-3xl">
                     {{ __('footer.cta_heading') }}
                 </p>
             </div>
@@ -47,4 +47,4 @@
             </x-ui.button>
         </div>
     </x-layout.container>
-</div>
+</section>

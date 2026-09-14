@@ -3,13 +3,33 @@
 @section('title', __('legal.terms.title').' — '.config('app.name'))
 @section('robots', 'noindex')
 
-@section('content')
-    <x-layout.container size="prose" class="py-16">
-        <h1 class="font-heading text-3xl font-extrabold text-ink">{{ __('legal.terms.title') }}</h1>
+@php
+    $t = __('legal_terms');
+    $name = config('company.legal_name') ?? config('app.name');
+    $locale = app()->getLocale();
 
-        {{-- Placeholder: the text is client-supplied and jurisdiction-dependent. --}}
-        <p class="mt-6 rounded-card border border-warning-border bg-warning-bg px-5 py-4 text-sm text-warning-fg">
-            {{ __('legal.terms.placeholder') }}
-        </p>
+    $links = [
+        ':privacy_link:' => '<a href="'.route('legal.privacy', ['locale' => $locale]).'">'.$t['link_privacy'].'</a>',
+        ':name:' => e($name),
+    ];
+@endphp
+
+@section('content')
+    <x-layout.page-header :title="__('legal.terms.title')" />
+
+    <x-layout.container class="py-16">
+        <p class="text-sm text-ink-muted">{{ __('legal.updated_at', ['date' => now()->translatedFormat('d F Y')]) }}</p>
+
+        <div class="mt-8 grid gap-x-12 gap-y-10 lg:grid-cols-[16rem_1fr] lg:items-start">
+            <x-legal.toc :items="$t['sections']" />
+
+            <div class="max-w-3xl">
+                @foreach ($t['articles'] as $number => $body)
+                    <x-legal.article :number="$number" :title="$t['sections'][$number]">
+                        {!! strtr($body, $links) !!}
+                    </x-legal.article>
+                @endforeach
+            </div>
+        </div>
     </x-layout.container>
 @endsection

@@ -3,14 +3,23 @@
 return [
     'notice' => [
         'title' => "Legal notice",
-        'placeholder' => "The wording of this page is supplied by the client and depends on jurisdiction. It will be published before launch.",
     ],
     'privacy' => [
         'title' => "Privacy policy",
-        'placeholder' => "The wording of this page is supplied by the client and depends on jurisdiction. It will be published before launch.",
     ],
     'terms' => [
         'title' => "Terms and conditions",
-        'placeholder' => "The wording of this page is supplied by the client and depends on jurisdiction. It will be published before launch.",
+    ],
+    'updated_at' => "Last updated: :date.",
+    'summary' => "Contents",
+    'identity' => [
+        'legal_name' => "Company name",
+        'legal_form' => "Legal form",
+        'share_capital' => "Share capital",
+        'address' => "Address",
+        'tax_id' => "EU VAT number",
+        'director' => "Publication director",
+        'email' => "E-mail",
+        'phone' => "Phone",
     ],
 ];

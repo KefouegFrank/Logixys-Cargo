@@ -3,14 +3,23 @@
 return [
     'notice' => [
         'title' => "Mentions légales",
-        'placeholder' => "Le texte de cette page est fourni par le client et dépend de la juridiction. Il sera publié avant la mise en ligne.",
     ],
     'privacy' => [
         'title' => "Politique de confidentialité",
-        'placeholder' => "Le texte de cette page est fourni par le client et dépend de la juridiction. Il sera publié avant la mise en ligne.",
     ],
     'terms' => [
         'title' => "Conditions générales",
-        'placeholder' => "Le texte de cette page est fourni par le client et dépend de la juridiction. Il sera publié avant la mise en ligne.",
+    ],
+    'updated_at' => "Dernière mise à jour : :date.",
+    'summary' => "Sommaire",
+    'identity' => [
+        'legal_name' => "Raison sociale",
+        'legal_form' => "Forme juridique",
+        'share_capital' => "Capital social",
+        'address' => "Adresse",
+        'tax_id' => "N° de TVA intracommunautaire",
+        'director' => "Directeur de la publication",
+        'email' => "E-mail",
+        'phone' => "Téléphone",
     ],
 ];

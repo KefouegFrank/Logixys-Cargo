@@ -3,14 +3,23 @@
 return [
     'notice' => [
         'title' => "Aviso legal",
-        'placeholder' => "El texto de esta página lo proporciona el cliente y depende de la jurisdicción. Se publicará antes del lanzamiento.",
     ],
     'privacy' => [
         'title' => "Política de privacidad",
-        'placeholder' => "El texto de esta página lo proporciona el cliente y depende de la jurisdicción. Se publicará antes del lanzamiento.",
     ],
     'terms' => [
         'title' => "Términos y condiciones",
-        'placeholder' => "El texto de esta página lo proporciona el cliente y depende de la jurisdicción. Se publicará antes del lanzamiento.",
+    ],
+    'updated_at' => "Última actualización: :date.",
+    'summary' => "Índice",
+    'identity' => [
+        'legal_name' => "Razón social",
+        'legal_form' => "Forma jurídica",
+        'share_capital' => "Capital social",
+        'address' => "Dirección",
+        'tax_id' => "N.º de IVA intracomunitario",
+        'director' => "Director de la publicación",
+        'email' => "Correo electrónico",
+        'phone' => "Teléfono",
     ],
 ];

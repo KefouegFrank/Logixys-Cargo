@@ -63,6 +63,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->overlayBrandSettings();
+        $this->overlayCompanySettings();
 
         // Native <select> popups are destroyed by any Livewire re-render, so a dropdown
         // shuts the moment you open it. Filament's own is Alpine-driven and survives one.
@@ -99,5 +100,35 @@ class AppServiceProvider extends ServiceProvider
         }
 
         config(['brand.contact' => [...config('brand.contact'), ...$stored]]);
+    }
+
+    /**
+     * Same overlay as brand contact, prefixed `company_` in the settings table so it
+     * can't collide with those keys. 'identifiers' and 'host' are structured, so they're
+     * stored JSON-encoded and decoded here rather than flattened into more columns.
+     */
+    private function overlayCompanySettings(): void
+    {
+        $stored = collect(Setting::values())
+            ->filter(fn (?string $value, string $key) => str_starts_with($key, 'company_') && filled($value))
+            ->mapWithKeys(fn (string $value, string $key) => [substr($key, strlen('company_')) => $value]);
+
+        if ($stored->isEmpty()) {
+            return;
+        }
+
+        $identifiers = json_decode($stored->get('identifiers', '[]'), true) ?: [];
+        $host = json_decode($stored->get('host', '{}'), true) ?: [];
+        $mediator = json_decode($stored->get('mediator', '{}'), true) ?: [];
+
+        config([
+            'company' => [
+                ...config('company'),
+                ...$stored->except(['identifiers', 'host', 'mediator'])->all(),
+                'identifiers' => $identifiers ?: config('company.identifiers'),
+                'host' => [...config('company.host'), ...$host],
+                'mediator' => [...config('company.mediator'), ...$mediator],
+            ],
+        ]);
     }
 }

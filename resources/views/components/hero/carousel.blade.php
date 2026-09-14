@@ -34,8 +34,11 @@
     @endforeach
 
     {{-- Scrim. Heavier on the left so the copy keeps its contrast whatever the
-         photo does; the bottom fade seats the section against the page. --}}
-    <div class="absolute inset-0 bg-gradient-to-r from-navy-950/92 via-navy-950/70 to-navy-950/25" aria-hidden="true"></div>
+         photo does; the bottom fade seats the section against the page. The right
+         edge still has to stay dark enough on its own — text can run that far on
+         a long locale's heading, and measured contrast there fell as low as 2.4:1
+         against the old /25 floor. --}}
+    <div class="absolute inset-0 bg-gradient-to-r from-navy-950/92 via-navy-950/70 to-navy-950/55" aria-hidden="true"></div>
     <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-navy-950/70 to-transparent" aria-hidden="true"></div>
 
     {{-- Watermark: the service word, oversized and outlined, bottom right. --}}
