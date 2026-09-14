@@ -24,10 +24,37 @@ One cron entry drives everything in `routes/console.php`:
 * * * * * cd /var/www/logixys-cargo && php artisan schedule:run >> /dev/null 2>&1
 ```
 
+## Before the first deploy
+
+Run this on the server once the `.env` is in place, and again after every deploy:
+
+```
+php artisan deploy:check
+```
+
+It exits non-zero when the configuration is not safe to serve — debug mode left on, an
+insecure session cookie, a placeholder password still able to sign in. Wire it into the
+deploy script after `migrate` so a bad environment stops the release rather than reaching
+the public.
+
+The first administrator is created by the seeder from `SEED_ADMIN_EMAIL` and
+`SEED_ADMIN_PASSWORD`; it refuses to run while either is empty, so seeding can never plant
+a password that is known off this server. Everyone else is added from the panel.
+
+```
+php artisan db:seed --class=UserSeeder --force
+```
+
 ## Environment
 
 | Variable | Note |
 | --- | --- |
+| `APP_ENV` | `production`. |
+| `APP_DEBUG` | `false`. With it on, any error page prints every credential below. |
+| `LOG_LEVEL` | `error`. At `debug` the logs collect customer names and addresses. |
+| `SESSION_SECURE_COOKIE` | `true`, so the panel session cookie is never sent in clear. |
+| `SEED_ADMIN_EMAIL` | The first admin login. Required by `UserSeeder`. |
+| `SEED_ADMIN_PASSWORD` | Its password. Change it from the panel after first sign-in. |
 | `APP_URL` | Must be the public domain. Every link in every email is built from it. |
 | `MAIL_MAILER` | `resend` |
 | `MAIL_FROM_ADDRESS` | Must sit on a domain verified in Resend, or sends are rejected. |

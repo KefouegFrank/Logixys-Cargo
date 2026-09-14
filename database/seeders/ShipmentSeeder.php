@@ -20,7 +20,9 @@ class ShipmentSeeder extends Seeder
 
     public function run(): void
     {
-        $agent = User::where('role', UserRole::Agent)->first();
+        // Demo rows are attributed to an agent when there is one; since UserSeeder now
+        // creates only the first admin, fall back to whoever exists.
+        $agent = User::where('role', UserRole::Agent)->first() ?? User::firstOrFail();
 
         foreach ($this->lanes() as $lane) {
             $charges = $lane['charges'];
