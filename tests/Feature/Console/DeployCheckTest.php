@@ -69,6 +69,24 @@ class DeployCheckTest extends TestCase
             ->assertFailed();
     }
 
+    public function test_a_wildcard_proxy_list_fails_the_check(): void
+    {
+        $this->productionConfig();
+        config(['trustedproxy.proxies' => ['*']]);
+
+        $this->artisan('deploy:check')
+            ->expectsOutputToContain('Trusted proxies are named, not wildcarded')
+            ->assertFailed();
+    }
+
+    public function test_an_empty_proxy_list_fails_the_check(): void
+    {
+        $this->productionConfig();
+        config(['trustedproxy.proxies' => []]);
+
+        $this->artisan('deploy:check')->assertFailed();
+    }
+
     public function test_debug_logging_is_flagged_without_failing_the_deploy(): void
     {
         $this->productionConfig();
@@ -88,6 +106,7 @@ class DeployCheckTest extends TestCase
             'app.key' => 'base64:'.base64_encode(random_bytes(32)),
             'session.secure' => true,
             'logging.channels.single.level' => 'error',
+            'trustedproxy.proxies' => ['127.0.0.1', '::1'],
         ]);
     }
 }

@@ -91,6 +91,13 @@ class DeployCheck extends Command
                 $this->noKnownPasswordsInUse(),
                 'Change it from the panel. A seeded or placeholder password is a working login.',
             ],
+            [
+                'Trusted proxies are named, not wildcarded',
+                $this->trustedProxiesAreNamed(),
+                'Set TRUSTED_PROXIES to the proxy address or range. Empty means forwarded '
+                    ."addresses are ignored and every rate limiter shares one bucket; '*' means "
+                    .'anyone can claim any address.',
+            ],
         ];
     }
 
@@ -109,6 +116,13 @@ class DeployCheck extends Command
                 'Consider SESSION_ENCRYPT=true; sessions share the application database.',
             ],
         ];
+    }
+
+    private function trustedProxiesAreNamed(): bool
+    {
+        $proxies = (array) config('trustedproxy.proxies');
+
+        return $proxies !== [] && ! in_array('*', $proxies, true);
     }
 
     private function noKnownPasswordsInUse(): bool

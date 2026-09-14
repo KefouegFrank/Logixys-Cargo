@@ -17,6 +17,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'locale' => SetLocale::class,
         ]);
 
+        // Trusted proxies live in config/trustedproxy.php, which TrustProxies reads itself:
+        // config() is not bound yet this early, and trustProxies() would freeze the list at
+        // boot. Without them the client address behind the TLS proxy is the proxy's own, so
+        // every rate limiter buckets all visitors into one.
+
         // Signed by Resend rather than by a session.
         $middleware->validateCsrfTokens(except: ['webhooks/resend']);
     })
