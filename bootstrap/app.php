@@ -22,6 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // Livewire's update endpoint is on neither.
         $middleware->append(SecurityHeaders::class);
 
+        // Rejects any Host header outside APP_URL and its subdomains, so absolute URLs
+        // (mail links, redirects) can't be built from a forged Host. No-op in local/testing.
+        $middleware->trustHosts();
+
         // Trusted proxies live in config/trustedproxy.php, which TrustProxies reads itself:
         // config() is not bound yet this early, and trustProxies() would freeze the list at
         // boot. Without them the client address behind the TLS proxy is the proxy's own, so

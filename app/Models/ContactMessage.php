@@ -41,4 +41,18 @@ class ContactMessage extends Model
     {
         return $query->whereNull('read_at');
     }
+
+    /**
+     * ip_address and user_agent exist only for near-term abuse triage; past that they are
+     * just an address book of who contacted the company. Leaves the message itself intact.
+     *
+     * @param  Builder<ContactMessage>  $query
+     * @return Builder<ContactMessage>
+     */
+    public function scopeCarryingTriageDataOlderThan(Builder $query, \DateTimeInterface $cutoff): Builder
+    {
+        return $query
+            ->where('created_at', '<', $cutoff)
+            ->where(fn (Builder $q) => $q->whereNotNull('ip_address')->orWhereNotNull('user_agent'));
+    }
 }
