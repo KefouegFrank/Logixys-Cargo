@@ -37,13 +37,17 @@ insecure session cookie, a placeholder password still able to sign in. Wire it i
 deploy script after `migrate` so a bad environment stops the release rather than reaching
 the public.
 
-The first administrator is created by the seeder from `SEED_ADMIN_EMAIL` and
-`SEED_ADMIN_PASSWORD`; it refuses to run while either is empty, so seeding can never plant
-a password that is known off this server. Everyone else is added from the panel.
+The first administrator is created by hand, not seeded — there is no admin credential
+anywhere in `.env`, a seeder, or this repo for the same reason there's no `password.txt`:
 
 ```
-php artisan db:seed --class=UserSeeder --force
+php artisan app:make-admin
 ```
+
+It prompts for name, email and password and hashes the password straight into the
+database, so it never sits in `.env`, a deploy log, or shell history. Answer the prompts
+rather than passing `--password=` on the command line, which would land in shell history.
+Everyone after the first admin is added from the panel.
 
 ## Environment
 

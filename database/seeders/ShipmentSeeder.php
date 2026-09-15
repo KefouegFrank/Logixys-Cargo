@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Services\TrackingNumberGenerator;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
+use RuntimeException;
 
 class ShipmentSeeder extends Seeder
 {
@@ -20,9 +21,15 @@ class ShipmentSeeder extends Seeder
 
     public function run(): void
     {
-        // Demo rows are attributed to an agent when there is one; since UserSeeder now
-        // creates only the first admin, fall back to whoever exists.
-        $agent = User::where('role', UserRole::Agent)->first() ?? User::firstOrFail();
+        // Demo rows are attributed to an agent when there is one, falling back to whoever
+        // exists — but nothing seeds a first user any more, so there has to be one already.
+        $agent = User::where('role', UserRole::Agent)->first() ?? User::first();
+
+        if ($agent === null) {
+            throw new RuntimeException(
+                'No user exists to attribute demo shipments to. Run `php artisan app:make-admin` first.'
+            );
+        }
 
         foreach ($this->lanes() as $lane) {
             $charges = $lane['charges'];
