@@ -12,6 +12,7 @@ use App\Models\Location;
 use App\Models\Shipment;
 use App\Models\ShipmentMode;
 use App\Models\User;
+use App\Services\TrackingNumberGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Livewire\Livewire;
@@ -43,7 +44,7 @@ class CreateShipmentTest extends TestCase
 
         $shipment = Shipment::firstOrFail();
 
-        $this->assertMatchesRegularExpression('/^LGXY\d{9}-CARGO$/', $shipment->tracking_number);
+        $this->assertMatchesRegularExpression(TrackingNumberGenerator::formatRegex(), $shipment->tracking_number);
         $this->assertSame(ShipmentStatus::Pending, $shipment->status);
         $this->assertSame($form['carrier_id'], $shipment->carrier_id);
         $this->assertSame($form['origin_country'], $shipment->origin_country);
@@ -65,7 +66,7 @@ class CreateShipmentTest extends TestCase
         $page = Livewire::test(CreateShipment::class);
         $shown = $page->get('data.tracking_number');
 
-        $this->assertMatchesRegularExpression('/^LGXY\d{9}-CARGO$/', $shown);
+        $this->assertMatchesRegularExpression(TrackingNumberGenerator::formatRegex(), $shown);
 
         $page->fillForm($this->validForm())
             ->call('create')

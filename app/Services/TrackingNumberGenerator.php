@@ -9,16 +9,23 @@ class TrackingNumberGenerator
 {
     private const PREFIX = 'LGXY';
 
-    private const DIGITS = 9;
+    private const LENGTH = 9;
 
     private const SUFFIX = '-CARGO';
 
     private const MAX_ATTEMPTS = 10;
 
+    /**
+     * Crockford base32: digits plus A-Z minus I, L, O and U, which get misread against
+     * 1, 1, 0 and V when read aloud or handwritten. 32^9 candidates, against 10^9 for
+     * digits alone — the difference between a guessable number and one that isn't.
+     */
+    private const ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+
     public function generate(): string
     {
         for ($attempt = 0; $attempt < self::MAX_ATTEMPTS; $attempt++) {
-            $candidate = self::PREFIX.$this->randomDigits().self::SUFFIX;
+            $candidate = self::PREFIX.$this->randomCode().self::SUFFIX;
 
             if (! Shipment::where('tracking_number', $candidate)->exists()) {
                 return $candidate;
@@ -30,7 +37,9 @@ class TrackingNumberGenerator
 
     /**
      * Rebuilds the canonical stored form from whatever a visitor pastes into the
-     * tracking box — spacing, casing, a missing hyphen or a missing -CARGO suffix.
+     * tracking box — spacing, casing, a missing hyphen or a missing -CARGO suffix. Safe
+     * against a false match on the serial itself: O never appears in it, so "CARGO" can
+     * only ever be the literal suffix.
      */
     public static function normalize(string $input): string
     {
@@ -59,11 +68,17 @@ class TrackingNumberGenerator
 
     private static function pattern(): string
     {
-        return '/^'.self::PREFIX.'\d{'.self::DIGITS.'}'.self::SUFFIX.'$/';
+        return '/^'.self::PREFIX.'['.self::ALPHABET.']{'.self::LENGTH.'}'.self::SUFFIX.'$/';
     }
 
-    protected function randomDigits(): string
+    protected function randomCode(): string
     {
-        return str_pad((string) random_int(0, 10 ** self::DIGITS - 1), self::DIGITS, '0', STR_PAD_LEFT);
+        $code = '';
+
+        for ($i = 0; $i < self::LENGTH; $i++) {
+            $code .= self::ALPHABET[random_int(0, strlen(self::ALPHABET) - 1)];
+        }
+
+        return $code;
     }
 }

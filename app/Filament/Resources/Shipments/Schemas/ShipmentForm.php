@@ -96,7 +96,7 @@ class ShipmentForm
                     // before it ever queries the database — anything else is unfindable
                     // by the customer no matter how correctly it's saved.
                     ->regex(TrackingNumberGenerator::formatRegex())
-                    ->validationMessages(['regex' => 'Doit suivre le format LGXY + 9 chiffres + -CARGO, ex. LGXY123456789-CARGO.'])
+                    ->validationMessages(['regex' => 'Doit suivre le format LGXY + 9 caractères (chiffres et lettres, sans I, L, O ni U) + -CARGO, ex. LGXY7K4M2QXR9-CARGO.'])
                     // Dehydrated so the number shown on screen is the one that gets saved,
                     // rather than a preview the model would replace at insert time.
                     ->dehydrated()

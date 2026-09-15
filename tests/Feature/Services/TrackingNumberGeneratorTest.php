@@ -19,7 +19,7 @@ class TrackingNumberGeneratorTest extends TestCase
     {
         $number = (new TrackingNumberGenerator)->generate();
 
-        $this->assertMatchesRegularExpression('/^LGXY\d{9}-CARGO$/', $number);
+        $this->assertMatchesRegularExpression(TrackingNumberGenerator::formatRegex(), $number);
     }
 
     public function test_generate_retries_when_the_first_candidate_collides(): void
@@ -27,14 +27,14 @@ class TrackingNumberGeneratorTest extends TestCase
         $this->seedShipmentWithTrackingNumber('LGXY111111111-CARGO');
 
         $generator = $this->getMockBuilder(TrackingNumberGenerator::class)
-            ->onlyMethods(['randomDigits'])
+            ->onlyMethods(['randomCode'])
             ->getMock();
 
         $generator->expects($this->exactly(2))
-            ->method('randomDigits')
-            ->willReturnOnConsecutiveCalls('111111111', '222222222');
+            ->method('randomCode')
+            ->willReturnOnConsecutiveCalls('111111111', '7K4M2QXR9');
 
-        $this->assertSame('LGXY222222222-CARGO', $generator->generate());
+        $this->assertSame('LGXY7K4M2QXR9-CARGO', $generator->generate());
     }
 
     private function seedShipmentWithTrackingNumber(string $trackingNumber): void

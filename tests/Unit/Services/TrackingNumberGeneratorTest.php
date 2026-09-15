@@ -27,6 +27,12 @@ class TrackingNumberGeneratorTest extends TestCase
         $this->assertTrue(TrackingNumberGenerator::matchesFormat('LGXY013882535-CARGO'));
     }
 
+    // Digits alone are only one corner of the alphabet; letters carry most of the space.
+    public function test_matches_format_accepts_letters_in_the_serial(): void
+    {
+        $this->assertTrue(TrackingNumberGenerator::matchesFormat('LGXY7K4M2QXR9-CARGO'));
+    }
+
     public function test_matches_format_rejects_wrong_prefix(): void
     {
         $this->assertFalse(TrackingNumberGenerator::matchesFormat('CEEU013882535-CARGO'));
@@ -37,9 +43,14 @@ class TrackingNumberGeneratorTest extends TestCase
         $this->assertFalse(TrackingNumberGenerator::matchesFormat('LGXY013882535'));
     }
 
-    public function test_matches_format_rejects_letters_in_the_serial(): void
+    // I, L, O and U are excluded from generation because they're misread against 1, 1, 0
+    // and V — so the format itself refuses to accept them, on top of never producing them.
+    public function test_matches_format_rejects_excluded_ambiguous_letters(): void
     {
-        $this->assertFalse(TrackingNumberGenerator::matchesFormat('LGXY01388253A-CARGO'));
+        $this->assertFalse(TrackingNumberGenerator::matchesFormat('LGXY01388253O-CARGO'));
+        $this->assertFalse(TrackingNumberGenerator::matchesFormat('LGXY01388253I-CARGO'));
+        $this->assertFalse(TrackingNumberGenerator::matchesFormat('LGXY01388253L-CARGO'));
+        $this->assertFalse(TrackingNumberGenerator::matchesFormat('LGXY01388253U-CARGO'));
     }
 
     public function test_matches_format_rejects_wrong_length(): void
