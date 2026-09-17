@@ -1,5 +1,9 @@
 # Deploying the mail path
 
+This assumes a VPS with root — systemd or supervisor for the queue worker. Deploying to
+shared cPanel hosting instead (no persistent processes, no root)? See
+[`CPANEL.md`](CPANEL.md), which covers the whole deploy, not just mail.
+
 Mail is queued, so **nothing is delivered until a worker is running**. Two pieces have to
 exist on the server; neither is part of the application code.
 
@@ -57,8 +61,6 @@ Everyone after the first admin is added from the panel.
 | `APP_DEBUG` | `false`. With it on, any error page prints every credential below. |
 | `LOG_LEVEL` | `error`. At `debug` the logs collect customer names and addresses. |
 | `SESSION_SECURE_COOKIE` | `true`, so the panel session cookie is never sent in clear. |
-| `SEED_ADMIN_EMAIL` | The first admin login. Required by `UserSeeder`. |
-| `SEED_ADMIN_PASSWORD` | Its password. Change it from the panel after first sign-in. |
 | `APP_URL` | Must be the public domain. Every link in every email is built from it. |
 | `MAIL_MAILER` | `resend` |
 | `MAIL_FROM_ADDRESS` | Must sit on a domain verified in Resend, or sends are rejected. |
