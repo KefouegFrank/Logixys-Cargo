@@ -24,9 +24,9 @@ class SecurityHeaders
         $response->headers->set('X-Frame-Options', 'DENY');
         $response->headers->set('Content-Security-Policy', "frame-ancestors 'none'");
 
-        // The tracking number is the credential and it sits in the URL, so the map's tile
-        // requests would otherwise hand it to OpenStreetMap in the Referer.
-        $response->headers->set('Referrer-Policy', 'no-referrer');
+        // Cross-site requests get the origin only, keeping the tracking number in the URL
+        // private; OSM blocks tile requests that carry no Referer at all.
+        $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
         $response->headers->set('X-Content-Type-Options', 'nosniff');
 

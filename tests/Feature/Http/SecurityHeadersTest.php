@@ -23,13 +23,13 @@ class SecurityHeadersTest extends TestCase
     }
 
     #[DataProvider('publicPages')]
-    public function test_public_pages_refuse_framing_and_send_no_referrer(string $url): void
+    public function test_public_pages_refuse_framing_and_send_origin_only_referrer(string $url): void
     {
         $response = $this->get($url)->assertOk();
 
         $this->assertSame('DENY', $response->headers->get('X-Frame-Options'));
         $this->assertSame("frame-ancestors 'none'", $response->headers->get('Content-Security-Policy'));
-        $this->assertSame('no-referrer', $response->headers->get('Referrer-Policy'));
+        $this->assertSame('strict-origin-when-cross-origin', $response->headers->get('Referrer-Policy'));
         $this->assertSame('nosniff', $response->headers->get('X-Content-Type-Options'));
     }
 
@@ -44,15 +44,15 @@ class SecurityHeadersTest extends TestCase
         $response = $this->get('/admin/shipments')->assertOk();
 
         $this->assertSame('DENY', $response->headers->get('X-Frame-Options'));
-        $this->assertSame('no-referrer', $response->headers->get('Referrer-Policy'));
+        $this->assertSame('strict-origin-when-cross-origin', $response->headers->get('Referrer-Policy'));
     }
 
-    // The tracking number is in the URL, and the page loads OpenStreetMap tiles.
-    public function test_a_tracking_result_page_sends_no_referrer(): void
+    // The tracking number is in the URL; OSM tiles must get a Referer, but only the origin.
+    public function test_a_tracking_result_page_sends_origin_only_referrer(): void
     {
         $response = $this->get('/fr/suivi/LGXY123456789-CARGO');
 
-        $this->assertSame('no-referrer', $response->headers->get('Referrer-Policy'));
+        $this->assertSame('strict-origin-when-cross-origin', $response->headers->get('Referrer-Policy'));
     }
 
     public function test_hsts_is_sent_over_https_only(): void
