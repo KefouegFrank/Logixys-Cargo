@@ -1,17 +1,10 @@
 @php
-    $company = config('company');
     $contact = config('brand.contact');
 
-    // Only real, known values are shown — nothing here is invented, and a field
-    // with no value yet simply doesn't render a row rather than flagging a gap.
+    // A field with no value yet is left out rather than flagged.
     $rows = collect([
-        [__('legal.identity.legal_name'), $company['legal_name'] ?? config('app.name')],
-        [__('legal.identity.legal_form'), $company['legal_form'] ?? null],
-        [__('legal.identity.share_capital'), $company['share_capital'] ?? null],
-        [__('legal.identity.address'), $company['address'] ?? ($contact['address'] ?? null)],
-        [__('legal.identity.tax_id'), $company['tax_id'] ?? null],
-        ...collect($company['identifiers'] ?? [])->map(fn ($i) => [$i['label'], $i['value']])->all(),
-        [__('legal.identity.director'), $company['director'] ?? null],
+        [__('legal.identity.legal_name'), config('app.name')],
+        [__('legal.identity.address'), $contact['address'] ?? null],
         [__('legal.identity.email'), $contact['email'] ?? null],
         [__('legal.identity.phone'), $contact['phone'] ?? null],
     ])->filter(fn ($row) => filled($row[1]));

@@ -14,11 +14,7 @@ return [
     'summary' => "Inhaltsverzeichnis",
     'identity' => [
         'legal_name' => "Firmenname",
-        'legal_form' => "Rechtsform",
-        'share_capital' => "Stammkapital",
         'address' => "Anschrift",
-        'tax_id' => "USt-IdNr.",
-        'director' => "Verantwortlich für den Inhalt",
         'email' => "E-Mail",
         'phone' => "Telefon",
     ],

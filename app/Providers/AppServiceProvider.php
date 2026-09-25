@@ -109,33 +109,11 @@ class AppServiceProvider extends ServiceProvider
         config(['brand.contact' => [...config('brand.contact'), ...$stored]]);
     }
 
-    /**
-     * Same overlay as brand contact, prefixed `company_` in the settings table so it
-     * can't collide with those keys. 'identifiers' and 'host' are structured, so they're
-     * stored JSON-encoded and decoded here rather than flattened into more columns.
-     */
+    // Same overlay as brand contact, stored as JSON under a `company_` key so it can't collide.
     private function overlayCompanySettings(): void
     {
-        $stored = collect(Setting::values())
-            ->filter(fn (?string $value, string $key) => str_starts_with($key, 'company_') && filled($value))
-            ->mapWithKeys(fn (string $value, string $key) => [substr($key, strlen('company_')) => $value]);
+        $mediator = json_decode(Setting::values()['company_mediator'] ?? '{}', true) ?: [];
 
-        if ($stored->isEmpty()) {
-            return;
-        }
-
-        $identifiers = json_decode($stored->get('identifiers', '[]'), true) ?: [];
-        $host = json_decode($stored->get('host', '{}'), true) ?: [];
-        $mediator = json_decode($stored->get('mediator', '{}'), true) ?: [];
-
-        config([
-            'company' => [
-                ...config('company'),
-                ...$stored->except(['identifiers', 'host', 'mediator'])->all(),
-                'identifiers' => $identifiers ?: config('company.identifiers'),
-                'host' => [...config('company.host'), ...$host],
-                'mediator' => [...config('company.mediator'), ...$mediator],
-            ],
-        ]);
+        config(['company.mediator' => [...config('company.mediator'), ...$mediator]]);
     }
 }
