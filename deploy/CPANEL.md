@@ -283,11 +283,13 @@ Point a Resend webhook at `https://your-domain.tld/webhooks/resend`, subscribed 
 
 ## Redeploying after this
 
-No Terminal needed. The server's Node is too old for Vite 8, so a GitHub Action
-(`.github/workflows/build-production.yml`) builds `public/build` on every push to `main`
-and commits it to the `production` branch. cPanel checks out `production`.
+No Terminal needed. The server's Node is too old for Vite 8, so `public/build` is built on
+your machine and committed to the `production` branch, which cPanel checks out. `main`
+stays source-only.
 
-1. Push to `main`, then wait for the "Build production branch" run to go green on GitHub.
+1. Push to `main`, then run `deploy/publish-production.sh` from the repo. It syncs
+   `vendor/` to the lock (the admin theme imports Filament's CSS from it), builds, and
+   pushes the build to `production`.
 2. cPanel → **Git™ Version Control** → Manage → **Pull or Deploy** → **Update from Remote**.
 3. **Deploy HEAD Commit**. `.cpanel.yml` runs `deploy/cpanel-deploy.sh`: composer install,
    maintenance mode, migrate, config/route/view cache, back up, then `deploy:check`.
