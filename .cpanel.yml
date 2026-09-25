@@ -1,0 +1,4 @@
+---
+deployment:
+  tasks:
+    - /bin/bash /home/logixysc/repositories/Logixys-Cargo/deploy/cpanel-deploy.sh

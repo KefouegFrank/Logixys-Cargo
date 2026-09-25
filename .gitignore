@@ -28,3 +28,8 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Left in the repo root by the host: PHP error log and cPanel Node app files.
+error_log
+/app.js
+/tmp

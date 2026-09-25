@@ -283,17 +283,20 @@ Point a Resend webhook at `https://your-domain.tld/webhooks/resend`, subscribed 
 
 ## Redeploying after this
 
-```
-cd ~/logixys-cargo
-git pull
-composer install --no-dev --optimize-autoloader
-npm run build          # or re-upload public/build if Node isn't on the server — step 6
-php artisan migrate --force
-php artisan config:cache
-php artisan deploy:check
-```
+No Terminal needed. The server's Node is too old for Vite 8, so a GitHub Action
+(`.github/workflows/build-production.yml`) builds `public/build` on every push to `main`
+and commits it to the `production` branch. cPanel checks out `production`.
 
-No `queue:restart` — see step 13.
+1. Push to `main`, then wait for the "Build production branch" run to go green on GitHub.
+2. cPanel → **Git™ Version Control** → Manage → **Pull or Deploy** → **Update from Remote**.
+3. **Deploy HEAD Commit**. `.cpanel.yml` runs `deploy/cpanel-deploy.sh`: composer install,
+   maintenance mode, migrate, config/route/view cache, back up, then `deploy:check`.
+
+A failed deploy shows in cPanel's deployment log; the same output is appended to
+`storage/logs/deploy.log`. The site is brought back up even when a step fails.
+
+cPanel refuses to deploy while tracked files differ from HEAD on the server. The script
+warns at the end if anything changed; never edit tracked files on the server directly.
 
 ## Troubleshooting
 
