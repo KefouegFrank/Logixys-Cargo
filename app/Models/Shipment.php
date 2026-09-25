@@ -40,7 +40,14 @@ class Shipment extends Model
         // Derived from the charge fields unless this save set them explicitly — the form
         // sends its own figures so an agent can override what the calculator produced.
         static::saving(function (Shipment $shipment) {
-            if ($shipment->isDirty(['total_ht', 'tax_amount', 'total_ttc'])) {
+            // A cleared field posts null into a NOT NULL column; the form's live totals read it as 0.
+            foreach (['freight_cost', 'insurance_cost', 'customs_cost', 'other_cost', 'tax_rate'] as $field) {
+                $shipment->{$field} ??= 0;
+            }
+
+            $totals = [$shipment->total_ht, $shipment->tax_amount, $shipment->total_ttc];
+
+            if ($shipment->isDirty(['total_ht', 'tax_amount', 'total_ttc']) && ! in_array(null, $totals, true)) {
                 return;
             }
 
