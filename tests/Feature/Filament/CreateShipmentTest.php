@@ -201,6 +201,48 @@ class CreateShipmentTest extends TestCase
         $this->assertSame('400.00', $shipment->chargeable_weight_kg);
     }
 
+    // A cleared charge field posts null into a NOT NULL column; the totals preview reads it as 0.
+    public function test_cleared_charge_fields_save_as_zero(): void
+    {
+        $this->actingAs($this->admin());
+
+        Livewire::test(CreateShipment::class)
+            ->fillForm([
+                ...$this->validForm(),
+                'tax_rate' => null,
+                'insurance_cost' => null,
+                'customs_cost' => null,
+                'other_cost' => null,
+            ])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $shipment = Shipment::firstOrFail();
+
+        $this->assertEquals(0, $shipment->tax_rate);
+        $this->assertEquals(0, $shipment->insurance_cost);
+        $this->assertEquals(400, $shipment->total_ht);
+        $this->assertEquals(0, $shipment->tax_amount);
+        $this->assertEquals(400, $shipment->total_ttc);
+    }
+
+    // Blanking a total drops the override rather than saving null.
+    public function test_a_cleared_total_is_recalculated(): void
+    {
+        $this->actingAs($this->admin());
+
+        Livewire::test(CreateShipment::class)
+            ->fillForm([...$this->validForm(), 'total_ht' => null, 'tax_amount' => null, 'total_ttc' => null])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $shipment = Shipment::firstOrFail();
+
+        $this->assertEquals(400, $shipment->total_ht);
+        $this->assertEquals(80, $shipment->tax_amount);
+        $this->assertEquals(480, $shipment->total_ttc);
+    }
+
     /** @return array<string, mixed> */
     private function validForm(): array
     {

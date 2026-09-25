@@ -243,17 +243,21 @@ cPanel → **Cron Jobs** → add two entries. This is the one real structural di
 `README.md`'s VPS instructions: there's no persistent worker process on shared hosting, so
 the queue runs in short bursts instead.
 
+Use the full path to the CLI binary (`which php` in Terminal). Cron's PATH is shorter, and
+on Asura bare `php` there is `/usr/bin/php`, the cgi-fcgi build: it drops artisan's
+arguments, so the job silently prints the command list and does nothing.
+
 **Scheduler** — drives `queue:prune-failed` and `contact-messages:prune`:
 
 ```
-* * * * * cd /home/<user>/logixys-cargo && php artisan schedule:run >> /dev/null 2>&1
+* * * * * cd /home/<user>/logixys-cargo && /usr/local/bin/php artisan schedule:run >> /dev/null 2>&1
 ```
 
 **Queue worker** — mail is queued so a slow Resend never blocks a response; nothing sends
 until something processes the queue:
 
 ```
-* * * * * cd /home/<user>/logixys-cargo && php artisan queue:work --stop-when-empty --max-time=55 >> /dev/null 2>&1
+* * * * * cd /home/<user>/logixys-cargo && /usr/local/bin/php artisan queue:work --stop-when-empty --max-time=55 >> /dev/null 2>&1
 ```
 
 Each run picks up whatever's queued and exits before the next one starts, so there's no
