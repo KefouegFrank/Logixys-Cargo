@@ -5,7 +5,7 @@
 
 @php
     $t = __('legal_terms');
-    $name = config('company.legal_name') ?? config('app.name');
+    $name = config('app.name');
     $locale = app()->getLocale();
 
     $links = [

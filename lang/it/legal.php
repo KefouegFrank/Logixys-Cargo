@@ -14,11 +14,7 @@ return [
     'summary' => "Sommario",
     'identity' => [
         'legal_name' => "Ragione sociale",
-        'legal_form' => "Forma giuridica",
-        'share_capital' => "Capitale sociale",
         'address' => "Indirizzo",
-        'tax_id' => "Partita IVA (UE)",
-        'director' => "Direttore della pubblicazione",
         'email' => "E-mail",
         'phone' => "Telefono",
     ],

@@ -3,9 +3,8 @@
 namespace App\Filament\Pages;
 
 use App\Models\Setting;
+use App\Services\Geocoding\GeocodingService;
 use BackedEnum;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -66,55 +65,11 @@ class Settings extends Page
                             ->helperText('Format international sans espaces, ex. +33123456789.')
                             ->maxLength(40),
                     ]),
-                Section::make('Position sur la carte')
-                    ->description('Le point affiché sur la page contact.')
-                    ->columns(2)
-                    ->schema([
-                        TextInput::make('map_lat')->label('Latitude')->numeric()->minValue(-90)->maxValue(90),
-                        TextInput::make('map_lng')->label('Longitude')->numeric()->minValue(-180)->maxValue(180),
-                    ]),
                 Section::make('Horaires')
                     ->columns(2)
                     ->schema([
                         TextInput::make('hours_weekday')->label('Semaine')->maxLength(120),
                         TextInput::make('hours_weekend')->label('Week-end')->maxLength(120),
-                    ]),
-                Section::make('Identité légale')
-                    ->description('Alimente les mentions légales, la politique de confidentialité et les CGV. Tant que ces champs sont vides, ces pages affichent un bandeau "à compléter" au public.')
-                    ->columns(2)
-                    ->schema([
-                        TextInput::make('company.legal_name')->label('Raison sociale')->maxLength(150),
-                        TextInput::make('company.legal_form')->label('Forme juridique')->placeholder('ex. SAS, SARL, EI')->maxLength(60),
-                        TextInput::make('company.share_capital')->label('Capital social')->placeholder('ex. 10 000 €')->maxLength(40),
-                        TextInput::make('company.tax_id')->label('N° TVA intracommunautaire')->maxLength(30),
-                        TextInput::make('company.address')
-                            ->label('Adresse du siège social')
-                            ->helperText('Celle des mentions légales — peut différer de l\'adresse publique ci-dessus.')
-                            ->columnSpanFull()
-                            ->maxLength(255),
-                        TextInput::make('company.director')->label('Directeur de la publication')->columnSpanFull()->maxLength(150),
-                        Repeater::make('company.identifiers')
-                            ->label('Numéros d\'immatriculation')
-                            ->helperText('SIRET, RCS, etc. — un couple libellé / valeur par ligne.')
-                            ->table([
-                                TableColumn::make('Libellé'),
-                                TableColumn::make('Valeur'),
-                            ])
-                            ->schema([
-                                TextInput::make('label')->placeholder('ex. SIRET')->required(),
-                                TextInput::make('value')->placeholder('ex. 123 456 789 00012')->required(),
-                            ])
-                            ->columnSpanFull()
-                            ->addActionLabel('Ajouter un numéro')
-                            ->reorderable(false),
-                    ]),
-                Section::make('Hébergeur')
-                    ->description('Obligatoire dans les mentions légales (LCEN art. 6-III) — l\'entité juridique de l\'hébergeur, pas seulement sa marque.')
-                    ->columns(2)
-                    ->schema([
-                        TextInput::make('company.host.name')->label('Raison sociale')->maxLength(150),
-                        TextInput::make('company.host.phone')->label('Téléphone')->maxLength(40),
-                        TextInput::make('company.host.address')->label('Adresse')->columnSpanFull()->maxLength(255),
                     ]),
                 Section::make('Médiateur de la consommation')
                     ->description('Requis si le site vend à des particuliers (Code de la consommation, art. L616-1) — l\'organisme de médiation auquel l\'entreprise a adhéré.')
@@ -133,14 +88,7 @@ class Settings extends Page
 
         Setting::putMany([
             ...$state,
-            'company_legal_name' => $company['legal_name'] ?? null,
-            'company_legal_form' => $company['legal_form'] ?? null,
-            'company_share_capital' => $company['share_capital'] ?? null,
-            'company_address' => $company['address'] ?? null,
-            'company_tax_id' => $company['tax_id'] ?? null,
-            'company_director' => $company['director'] ?? null,
-            'company_identifiers' => json_encode(array_values($company['identifiers'] ?? [])),
-            'company_host' => json_encode($company['host'] ?? []),
+            ...$this->mapPosition($state['address'] ?? null),
             'company_mediator' => json_encode($company['mediator'] ?? []),
         ]);
 
@@ -148,5 +96,17 @@ class Settings extends Page
             ->title('Coordonnées enregistrées')
             ->success()
             ->send();
+    }
+
+    // The contact-page pin follows the address, so the two can't drift apart.
+    /** @return array{map_lat: ?string, map_lng: ?string} */
+    private function mapPosition(?string $address): array
+    {
+        $coords = filled($address) ? app(GeocodingService::class)->geocode($address) : null;
+
+        return [
+            'map_lat' => isset($coords['lat']) ? (string) $coords['lat'] : null,
+            'map_lng' => isset($coords['lng']) ? (string) $coords['lng'] : null,
+        ];
     }
 }

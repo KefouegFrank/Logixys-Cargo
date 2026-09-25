@@ -5,7 +5,7 @@
 
 @php
     $t = __('legal_privacy');
-    $name = config('company.legal_name') ?? config('app.name');
+    $name = config('app.name');
     $email = config('brand.contact.email');
     $locale = app()->getLocale();
 
